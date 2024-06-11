@@ -1,0 +1,36 @@
+{
+  "name": "v-for-validation",
+  "version": "1.0.0",
+  "description": "Isomorphic javascript form and data validation library.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itihon/v-for-validation.git"
+  },
+  "keywords": [
+    "isomorphic",
+    "validation",
+    "validator",
+    "form",
+    "javascript",
+    "js",
+    "data",
+    "serverside",
+    "express",
+    "node"
+  ],
+  "author": "Alexandr Kalabin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/itihon/v-for-validation/issues"
+  },
+  "homepage": "https://github.com/itihon/v-for-validation#readme",
+  "devDependencies": {
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "validate-commit-msg": "^2.14.0"
+  }
+}
