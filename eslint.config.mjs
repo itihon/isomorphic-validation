@@ -1,5 +1,5 @@
-import config from "eslint-config-airbnb-base";
 import { FlatCompat } from "@eslint/eslintrc";
+import eslintConfigPrettier from "eslint-config-prettier";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -15,6 +15,7 @@ export default [
   //...[].concat(config),
   // mimic ESLintRC-style extends
     ...compat.extends("eslint-config-airbnb-base"),
+    eslintConfigPrettier,
   {
       ignores: ["dist/*", "tests/*"]
   }
