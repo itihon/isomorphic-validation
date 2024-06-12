@@ -11,12 +11,22 @@ const compat = new FlatCompat({
     baseDirectory: __dirname
 });
 
+/** @type { import("eslint").Linter.FlatConfig[] } */
 export default [
-  //...[].concat(config),
   // mimic ESLintRC-style extends
-    ...compat.extends("eslint-config-airbnb-base"),
+    ...compat.extends('eslint-config-airbnb-base')
+              .map(cfg => (cfg.files = ['src/*'], cfg)),
     eslintConfigPrettier,
-  {
-      ignores: ["dist/*", "tests/*"]
-  }
+    {
+      files: ['src/*.{js,mjs}'],
+      languageOptions: {
+        parserOptions: {
+          ecmaVersion: "latest",
+          sourceType: "module",
+        }
+      } 
+    },
+    {
+        ignores: ['dist/*', 'tests/*'],
+    }
 ];
