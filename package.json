@@ -4,9 +4,9 @@
   "description": "Isomorphic javascript form and data validation library.",
   "main": "index.js",
   "scripts": {
-    "format:check": "prettier --check src/",
-    "format:write": "prettier --write src/",
-    "lint": "eslint --fix src/",
+    "format:check": "prettier --check \"{src,__tests__}/**/*.{js,mjs}\"",
+    "format:write": "prettier --write \"{src,__tests__}/**/*.{js,mjs}\"",
+    "lint": "eslint --fix .",
     "commit": "git-cz",
     "test": "jest"
   },
@@ -40,6 +40,7 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
+    "jest": "^29.7.0",
     "prettier": "3.3.2",
     "validate-commit-msg": "^2.14.0"
   },
