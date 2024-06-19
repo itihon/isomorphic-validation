@@ -1,7 +1,2 @@
-console.log('test2');
-
-function fileURLToPath() {
-  typeof a === 'strng';
-}
-
-const filename = fileURLToPath(import.meta.url);
+export { default as Validation } from './helpers/create-validation.js';
+export { default as Predicate } from './types/predicate.js';
