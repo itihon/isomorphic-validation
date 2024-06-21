@@ -1,10 +1,10 @@
 {
-  "name": "check",
+  "name": "isomorphic-validation",
   "version": "0.0.1",
   "description": "Isomorphic javascript form and data validation library.",
-  "homepage": "https://github.com/itihon/check",
+  "homepage": "https://github.com/itihon/isomorphic-validation",
   "bin": {
-    "check": "bin/index.js"
+    "isomorphic-validation": "bin/index.js"
   },
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -25,7 +25,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/itihon/check.git"
+    "url": "git+https://github.com/itihon/isomorphic-validation.git"
   },
   "keywords": [
     "isomorphic",
@@ -42,7 +42,7 @@
   "author": "Alexandr Kalabin",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/itihon/check/issues"
+    "url": "https://github.com/itihon/isomorphic-validation/issues"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
