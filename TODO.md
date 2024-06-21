@@ -7,12 +7,21 @@
 
         - [ ] remove test commit
 
-        - [ ] split up one js file into different modules
+        - [x] split up one js file into different modules
 
-        - [ ] choose between parcel and rollup, install and configure one of these
+        - [x] choose between parcel and rollup, install and configure one of these
+
+        - [ ] find a vacant name for the library:
+            i-validation
+            isomorphic-validation
 
 
     ## Features
+
+
+    ## Refactor
+
+        - [ ] consider renaming ObserverAnd to something like AndGate
 
         
 
