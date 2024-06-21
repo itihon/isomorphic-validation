@@ -1,9 +1,13 @@
 {
-  "name": "v-for-validation",
+  "name": "check",
   "version": "1.0.0",
   "description": "Isomorphic javascript form and data validation library.",
+  "bin": {
+    "check": "./bin/index.js"
+  },
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
+  "browser": "dist/index.esm.js",
   "scripts": {
     "format:check": "prettier --check \"{src,__tests__}/**/*.{js,mjs}\"",
     "format:write": "prettier --write \"{src,__tests__}/**/*.{js,mjs}\"",
@@ -16,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/itihon/v-for-validation.git"
+    "url": "git+https://github.com/itihon/check.git"
   },
   "keywords": [
     "isomorphic",
@@ -33,9 +37,9 @@
   "author": "Alexandr Kalabin",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/itihon/v-for-validation/issues"
+    "url": "https://github.com/itihon/check/issues"
   },
-  "homepage": "https://github.com/itihon/v-for-validation#readme",
+  "homepage": "https://github.com/itihon/check#readme",
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
     "commitizen": "^4.3.0",
