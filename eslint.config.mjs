@@ -29,6 +29,17 @@ export default [
       } 
     },
     {
+      rules: {
+        "import/no-named-as-default": "off",
+        "import/no-named-as-default-member": "off",
+        "import/extensions": "off",
+        "no-cond-assign": ["error", "except-parens"],
+        "no-use-before-define": ["error", { "functions": false }],
+        "no-plusplus": "off",
+        "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsForRegex": [".*"] }],
+      }
+    },
+    {
         ignores: ['dist/*', 'coverage/*'],
     }
 ];
