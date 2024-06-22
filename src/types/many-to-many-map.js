@@ -37,7 +37,7 @@ export default function ManyToManyMap() {
       //     }
       // }
 
-      map.forEach((set, key) => {
+      map.constructor.prototype.forEach.call(map, (set, key) => {
         set.forEach((value) => {
           cbfunction(value, key, map);
         });
