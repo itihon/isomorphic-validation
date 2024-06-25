@@ -13,8 +13,8 @@
     "dist",
     "bin"
   ],
-  "type": "module",
   "scripts": {
+    "postinstall": "echo 'installing git hooks...' && git config core.hooksPath ./.git-hooks",
     "format:check": "prettier --check \"{src,__tests__}/**/*.{js,mjs}\"",
     "format:write": "prettier --write \"{src,__tests__}/**/*.{js,mjs}\"",
     "lint": "eslint --fix .",
