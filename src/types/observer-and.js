@@ -1,3 +1,4 @@
+import preventCyclicSubscription from '../helpers/prevent-cyclic-subscription.js';
 import Functions from './functions.js';
 
 export default function ObserverAnd(initVal = false) {
@@ -16,6 +17,9 @@ export default function ObserverAnd(initVal = false) {
   return {
     subscribe(subject = ObserverAnd()) {
       const subjectID = subject.getID();
+
+      preventCyclicSubscription(ID, subjectID);
+
       if (!slots.has(subjectID)) {
         depSum += subjectID;
         slots.set(subjectID, false);
