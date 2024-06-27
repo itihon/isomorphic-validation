@@ -1,6 +1,20 @@
 import preventCyclicSubscription from '../helpers/prevent-cyclic-subscription.js';
 import Functions from './functions.js';
 
+/**
+ * @typedef {Object} ObserverAnd
+ * @property {(subject: ObserverAnd) => ObserverAnd} subscribe
+ * @property {(value: boolean, args: any, id: number) => boolean} update
+ * @property {() => number} getID
+ * @property {() => boolean} getValue
+ * @property {(cb: (value: boolean, args: any, id: number) => void) => ObserverAnd} onChanged
+ */
+
+/**
+ * @param {Boolean} initVal
+ * @returns {ObserverAnd}
+ */
+
 export default function ObserverAnd(initVal = false) {
   if (!ObserverAnd.slotCount) {
     ObserverAnd.slotCount = 0;
