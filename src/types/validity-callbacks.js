@@ -7,7 +7,9 @@ export default function ValidityCallbacks(
   CBs = ValidityCallbacks(false, {}),
 ) {
   let isValid = initVal;
-  let { validCBs, invalidCBs, changedCBs, validatedCBs } = CBs.valueOf();
+  let { validCBs, invalidCBs, changedCBs, validatedCBs } = CBs
+    ? CBs.valueOf()
+    : {};
 
   validCBs = Functions(validCBs);
   invalidCBs = Functions(invalidCBs);
