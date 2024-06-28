@@ -3,20 +3,17 @@
 
     ## Chores
 
-        - [ ] change double qutes to single qutes in eslint.config.mjs and try to amend the commit in which eslint have been configured
+        - [ ] change double quotes to single quotes in eslint.config.mjs and try to amend the commit in which eslint have been configured
 
         - [ ] remove test commit
 
-        - [x] split up one js file into different modules
+        - [ ] publish a new version of the library since preventCyclicSubscriptions feature has been added
 
-        - [x] choose between parcel and rollup, install and configure one of these
-
-        - [ ] find a vacant name for the library:
-            i-validation
-            isomorphic-validation
 
 
     ## Features
+
+        - [ ] add boolean parameter clone with default value true to the group and glue functions (group([validations], clone = true))
 
 
     ## Refactor
@@ -31,3 +28,9 @@
 
 
     ## Bugs
+
+
+    ## Docs
+
+
+        - [ ] add jsdoc (one jsdoc declaration for observer-and.js is still in the stash)
