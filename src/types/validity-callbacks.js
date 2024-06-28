@@ -32,7 +32,7 @@ export default function ValidityCallbacks(
       return isValid;
     },
     valueOf() {
-      return { validCBs, invalidCBs, changedCBs };
+      return { validCBs, invalidCBs, changedCBs, validatedCBs };
     },
     valid: validCBs.push,
     invalid: invalidCBs.push,
