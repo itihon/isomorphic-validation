@@ -1,5 +1,20 @@
 import isFunction from '../utils/is-function.js';
 
+/**
+ * @typedef {Object} ArrayOfFunctions
+ * @property {(args) => Array} run
+ * @property {(...fns: Function[]) => Functions} push
+ */
+
+/**
+ * @typedef {ArrayOfFunctions & Array} Functions
+ */
+
+/**
+ * @param {Function[]} iterable
+ * @returns {Functions}
+ */
+
 export default function Functions(iterable = [][Symbol.iterator]()) {
   const obj = { ...iterable, length: 0 };
   const length = Object.keys(obj).length - 1;
