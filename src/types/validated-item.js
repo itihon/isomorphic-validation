@@ -1,12 +1,13 @@
 import memoize from '../utils/memoize.js';
+import ConsoleRepresentation from './console-representation.js';
 import Functions from './functions.js';
 
-export default memoize(function ValidatedItem(
+const ValidatedItem = memoize(function ValidatedItem(
   obj = {},
   propName = '',
   initVal = '',
 ) {
-  const onLastValidCBs = Functions();
+  const onRestoredCBs = Functions();
   let lastValid = initVal;
 
   return {
@@ -19,19 +20,34 @@ export default memoize(function ValidatedItem(
             */
     getObj: () => obj,
     getValue: () => obj[propName],
-    saveLastValid: () => {
+    saveValue: () => {
       lastValid = obj[propName];
     },
-    retrieveLastValid: (cbArgs) => {
+    restoreValue: (cbArgs) => {
       if (obj[propName] !== initVal) {
         obj[propName] = lastValid;
       } else {
         // obj[propName] = lastValid = initVal;
         lastValid = initVal;
       }
-      onLastValidCBs.run(cbArgs);
+      onRestoredCBs.run(cbArgs);
     },
-    onLastValid: onLastValidCBs.push,
+    onRestored: onRestoredCBs.push,
     [Symbol.toStringTag]: ValidatedItem.name,
   };
 });
+
+ValidatedItem.keepValid = (
+  items = [],
+  validationResult = ConsoleRepresentation(),
+) => {
+  const {isValid} = validationResult;
+  if (isValid) {
+    items.forEach((item) => item.saveValue());
+  } else {
+    items.forEach((item) => item.restoreValue(validationResult));
+  }
+  return !isValid;
+};
+
+export default ValidatedItem;
