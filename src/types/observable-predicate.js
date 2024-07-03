@@ -60,7 +60,7 @@ export default function ObservablePredicate(
     'ValidationResult',
     new Map(
       items.map((item) => [
-        item.getObj(),
+        item.getObject(),
         new Set([
           ConsoleRepresentation('Predicates', [representation], {
             isValid: { get: obs.getValue },

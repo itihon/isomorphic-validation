@@ -14,7 +14,7 @@ const ValidatedItem = memoize(
                 UPD: this kind of feature may be implemented
                 by adding the started event handler
             */
-      getObj: () => obj,
+      getObject: () => obj,
       getValue: () => obj[propName],
       saveValue: () => {
         savedValue = obj[propName];

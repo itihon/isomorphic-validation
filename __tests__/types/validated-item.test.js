@@ -31,14 +31,14 @@ describe('ValidatedItem', () => {
     expect(new Set(VIs).size).toBe(11);
   });
 
-  test('getObj, getValue', () => {
+  test('getObject, getValue', () => {
     const vi1 = ValidatedItem(obj1, 'value');
     const vi2 = ValidatedItem(obj2, 'value');
 
-    expect(vi1.getObj()).toBe(obj1);
+    expect(vi1.getObject()).toBe(obj1);
     expect(vi1.getValue()).toBe(1);
 
-    expect(vi2.getObj()).toBe(obj2);
+    expect(vi2.getObject()).toBe(obj2);
     expect(vi2.getValue()).toBe(2);
   });
 

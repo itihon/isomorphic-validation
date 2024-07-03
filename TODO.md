@@ -3,17 +3,9 @@
 
     ## Chores
 
-        - [ ] change double qutes to single qutes in eslint.config.mjs and try to amend the commit in which eslint have been configured
+        - [ ] change double quotes to single quotes in eslint.config.mjs and try to amend the commit in which eslint have been configured
 
         - [ ] remove test commit
-
-        - [x] split up one js file into different modules
-
-        - [x] choose between parcel and rollup, install and configure one of these
-
-        - [ ] find a vacant name for the library:
-            i-validation
-            isomorphic-validation
 
 
     ## Features
@@ -29,6 +21,7 @@
         - [x] ValidatedItem.keepValid([...items], validationResult{isValid})
         - [x] saveLastValid() and retrieveLastValid() into saveValue() and restoreValue()
         - [x] lastValidCBs -> restoredCBs, onLastValid(), keptValid() -> restored()
+        - [x] getObj() -> getObject()
         
 
     ## Tests
