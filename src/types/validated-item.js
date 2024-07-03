@@ -1,13 +1,13 @@
 import memoize from '../utils/memoize.js';
 import Functions from './functions.js';
 
-export default memoize(function ValidatedItem(
+const ValidatedItem = memoize(function ValidatedItem(
   obj = {},
   propName = '',
   initVal = '',
 ) {
-  const onLastValidCBs = Functions();
-  let lastValid = initVal;
+  const onRestoredCBs = Functions();
+  let savedValue = initVal;
 
   return {
     /*
@@ -19,19 +19,34 @@ export default memoize(function ValidatedItem(
             */
     getObj: () => obj,
     getValue: () => obj[propName],
-    saveLastValid: () => {
-      lastValid = obj[propName];
+    saveValue: () => {
+      savedValue = obj[propName];
     },
-    retrieveLastValid: (cbArgs) => {
+    restoreValue: (cbArgs) => {
       if (obj[propName] !== initVal) {
-        obj[propName] = lastValid;
+        obj[propName] = savedValue;
       } else {
         // obj[propName] = lastValid = initVal;
-        lastValid = initVal;
+        savedValue = initVal;
       }
-      onLastValidCBs.run(cbArgs);
+      onRestoredCBs.run(cbArgs);
     },
-    onLastValid: onLastValidCBs.push,
+    onRestored: onRestoredCBs.push,
     [Symbol.toStringTag]: ValidatedItem.name,
   };
 });
+
+ValidatedItem.keepValid = (
+  items = [],
+  validationResult = { isValid: false },
+) => {
+  const { isValid } = validationResult;
+  if (isValid === true) {
+    items.forEach((item) => item.saveValue());
+  } else {
+    items.forEach((item) => item.restoreValue(validationResult));
+  }
+  return !isValid;
+};
+
+export default ValidatedItem;

@@ -2,6 +2,7 @@ import Predicate from './predicate.js';
 import ObserverAnd from './observer-and.js';
 import ConsoleRepresentation from './console-representation.js';
 import indexedName from '../utils/indexed-name.js';
+import ValidatedItem from './validated-item.js';
 
 export default function ObservablePredicate(
   predicate = Predicate(),
@@ -25,7 +26,7 @@ export default function ObservablePredicate(
 ) {
   if (!(predicate instanceof Predicate)) return null;
 
-  const { fn, lastValidCBs, validityCBs } = predicate.valueOf();
+  const { fn, restoredCBs, validityCBs } = predicate.valueOf();
   // if (!isFunction(fn)) return null;
 
   const obs = ObserverAnd();
@@ -39,7 +40,7 @@ export default function ObservablePredicate(
       invalid: validityCBs.invalid,
       changed: validityCBs.changed,
       validated: validityCBs.validated,
-      keptValid: lastValidCBs.push,
+      restored: restoredCBs.push,
       // !consider for adding: started, deferred (or delayed), canceled???
     },
     {
@@ -75,18 +76,24 @@ export default function ObservablePredicate(
 
   let previousMicrotask;
 
-  items.forEach((item) => item.onLastValid(...lastValidCBs));
+  items.forEach((item) => item.onRestored(...restoredCBs));
 
   function predicatePostExec(result, forbidInvalid) {
+    notifySubscribers(result);
     if (forbidInvalid) {
-      if (result) {
-        items.forEach((item) => item.saveLastValid());
-      } else {
-        items.forEach((item) => item.retrieveLastValid(validationResult));
+      // if (result) {
+      //   items.forEach((item) => item.saveValue());
+      // } else {
+      // !!! At this point validationResult is not determined.
+      // !!! this is the result of the previous validation
+      //   items.forEach((item) => item.restoreValue(validationResult));
+      //   return obsPredicate(!forbidInvalid);
+      // }
+      if (ValidatedItem.keepValid(items, validationResult)) {
         return obsPredicate(!forbidInvalid);
       }
     }
-    return setValidity(notifySubscribers(result), validationResult);
+    return setValidity(result, validationResult);
   }
 
   function obsPredicate(forbidInvalid = keepValid, id = undefined) {
