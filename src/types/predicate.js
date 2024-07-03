@@ -6,23 +6,23 @@ import ValidityCallbacks from './validity-callbacks.js';
 export default function Predicate(fnOrPred) {
   if (!isFunction(fnOrPred) && !(fnOrPred instanceof Predicate)) return null;
 
-  let lastValidCBs;
+  let restoredCBs;
   let validityCBs;
 
-  const fn = ({ lastValidCBs, validityCBs } = fnOrPred.valueOf()).valueOf();
+  const fn = ({ restoredCBs, validityCBs } = fnOrPred.valueOf()).valueOf();
 
-  lastValidCBs = Functions(lastValidCBs);
+  restoredCBs = Functions(restoredCBs);
   validityCBs = ValidityCallbacks(false, validityCBs);
 
   const predicate = {
     valueOf() {
-      return { fn, lastValidCBs, validityCBs, valueOf: () => fn };
+      return { fn, restoredCBs, validityCBs, valueOf: () => fn };
     },
     valid: validityCBs.valid,
     invalid: validityCBs.invalid,
     changed: validityCBs.changed,
     validated: validityCBs.validated,
-    keptValid: lastValidCBs.push,
+    restored: restoredCBs.push,
     // !consider for adding: started, deferred (or delayed), canceled???
     [Symbol.toStringTag]: Predicate.name,
   };
