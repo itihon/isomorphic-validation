@@ -7,9 +7,6 @@
 
         - [ ] remove test commit
 
-        - [ ] publish a new version of the library since preventCyclicSubscriptions feature has been added
-
-
 
     ## Features
 
@@ -26,6 +23,7 @@
         - [x] ValidatedItem.keepValid([...items], validationResult{isValid})
         - [x] saveLastValid() and retrieveLastValid() into saveValue() and restoreValue()
         - [x] lastValidCBs -> restoredCBs, onLastValid(), keptValid() -> restored()
+        - [x] getObj() -> getObject()
         
 
     ## Tests
