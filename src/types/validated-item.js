@@ -8,7 +8,7 @@ const ValidatedItem = memoize(function ValidatedItem(
   initVal = '',
 ) {
   const onRestoredCBs = Functions();
-  let lastValid = initVal;
+  let savedValue = initVal;
 
   return {
     /*
@@ -21,14 +21,14 @@ const ValidatedItem = memoize(function ValidatedItem(
     getObj: () => obj,
     getValue: () => obj[propName],
     saveValue: () => {
-      lastValid = obj[propName];
+      savedValue = obj[propName];
     },
     restoreValue: (cbArgs) => {
       if (obj[propName] !== initVal) {
-        obj[propName] = lastValid;
+        obj[propName] = savedValue;
       } else {
         // obj[propName] = lastValid = initVal;
-        lastValid = initVal;
+        savedValue = initVal;
       }
       onRestoredCBs.run(cbArgs);
     },
@@ -41,7 +41,7 @@ ValidatedItem.keepValid = (
   items = [],
   validationResult = ConsoleRepresentation(),
 ) => {
-  const {isValid} = validationResult;
+  const { isValid } = validationResult;
   if (isValid) {
     items.forEach((item) => item.saveValue());
   } else {
