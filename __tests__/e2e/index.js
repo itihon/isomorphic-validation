@@ -6,6 +6,8 @@ describe('e2e', () => {
     'valid, invalid, changed etc. accept only functions and ignore anything else',
   );
 
+  it.todo('first argument for Validation(), what if it is not an object');
+
   it('is imposible to start an async predicate unless the previously launched is not finished', (done) => {
     const syncPredicate = jest.fn((value) => value === 42);
     const asyncPredicate = jest.fn(
