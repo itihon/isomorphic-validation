@@ -4,14 +4,16 @@ import ObservablePredicate from '../../src/types/observable-predicate.js';
 
 describe('ObservablePredicate', () => {
   it.todo(
-    'constructor: parameters: predicate and items. WRITE IN INTEGRATION TESTS',
+    '+ constructor: parameters: predicate and items. WRITTEN IN INTEGRATION TESTS',
   );
-  it.todo('Can be subscribed to. WRITE IN INTEGRATION TEST');
+  it.todo('+ Can be subscribed to. WRITTEN IN INTEGRATION TESTS');
 
   it.todo('constructor: parameters: anyData');
   it.todo('console representation');
 
-  it.todo('+ constructor: parameters: keepValid. WRITTEN IN E2E TESTS');
+  it.todo(
+    '+ constructor: parameters: keepValid. WRITTEN IN E2E AND INTEGRATION TESTS',
+  );
 
   it('should accept predicate as the first parameter and return a function, otherwise return null', () => {
     expect(ObservablePredicate()).toBe(null);
