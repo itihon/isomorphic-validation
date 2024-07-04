@@ -1,6 +1,7 @@
-import { expect, jest, it, describe } from '@jest/globals';
+import { expect, jest, it, describe, test } from '@jest/globals';
 import Predicate from '../../src/types/predicate.js';
 import ObservablePredicate from '../../src/types/observable-predicate.js';
+import protocols from '../protocols.js';
 
 describe('ObservablePredicate', () => {
   it.todo(
@@ -9,7 +10,7 @@ describe('ObservablePredicate', () => {
   it.todo('+ Can be subscribed to. WRITTEN IN INTEGRATION TESTS');
 
   it.todo('constructor: parameters: anyData');
-  it.todo('console representation');
+  it.todo('console representation, op(,id)');
 
   it.todo(
     '+ constructor: parameters: keepValid. WRITTEN IN E2E AND INTEGRATION TESTS',
@@ -57,19 +58,17 @@ describe('ObservablePredicate', () => {
     }, 1200);
   }, 2000);
 
-  it('should implement protocol ObserverAnd:Observable', () => {
-    expect(ObservablePredicate(Predicate(() => {}))).toHaveProperty('getID');
-    expect(ObservablePredicate(Predicate(() => {}))).toHaveProperty('getValue');
-    expect(ObservablePredicate(Predicate(() => {}))).toHaveProperty(
-      'onChanged',
-    );
-  });
+  test(
+    ...protocols.ObserverAnd.Observable(
+      ObservablePredicate(Predicate(() => {})),
+    ),
+  );
 
-  it('should implement protocol ConsoleRepresentation:Representable', () => {
-    expect(ObservablePredicate(Predicate(() => {}))).toHaveProperty(
-      'toRepresentation',
-    );
-  });
+  test(
+    ...protocols.ConsoleRepresentation.Representable(
+      ObservablePredicate(Predicate(() => {})),
+    ),
+  );
 
   it('invalidate sync', () => {
     const invalidCB = jest.fn();
