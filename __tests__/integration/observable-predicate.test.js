@@ -4,9 +4,9 @@ import ObservablePredicate from '../../src/types/observable-predicate.js';
 import Predicate from '../../src/types/predicate.js';
 import ValidatedItem from '../../src/types/validated-item.js';
 
-const obj1 = { value: 'Firstname' };
-const obj2 = { value: 'Lastname' };
-const obj3 = { value: 42 };
+export const obj1 = { value: 'Firstname' };
+export const obj2 = { value: 'Lastname' };
+export const obj3 = { value: 42 };
 
 const vi1 = ValidatedItem(obj1, 'value');
 const vi2 = ValidatedItem(obj2, 'value');
@@ -70,10 +70,10 @@ const p4 = Predicate(isNotEgual)
   .validated(validatedCB4)
   .restored(restoredCB4);
 
-const op1 = ObservablePredicate(p1, [vi1], true); // first name, letters
-const op2 = ObservablePredicate(p2, [vi2]); // last name, letters
-const op3 = ObservablePredicate(p3, [vi3]); // age, achived 18
-const op4 = ObservablePredicate(p4, [vi1, vi2]); // firstname !== lastname
+export const op1 = ObservablePredicate(p1, [vi1], true); // first name, letters
+export const op2 = ObservablePredicate(p2, [vi2]); // last name, letters
+export const op3 = ObservablePredicate(p3, [vi3]); // age, achived 18
+export const op4 = ObservablePredicate(p4, [vi1, vi2]); // firstname !== lastname
 
 const oa = ObserverAnd()
   .subscribe(op1)
