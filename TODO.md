@@ -33,8 +33,9 @@
 
     ## Bugs
 
+        - [ ] debounce functionality should not be applied on the server side.
+            check it!!!
 
-    ## Docs
+    ## Notes
 
-
-        - [ ] add jsdoc (one jsdoc declaration for observer-and.js is still in the stash)
+        - When a predicate added with the keepValid option, on every validation with the invalid result, it notifies subscribers twice: first when changed from valid to invalid and then when restores back to the last valid value. It also calls a predicate function twice. Not sure if this is appropriate. See ObservablePredicate integration tests.
