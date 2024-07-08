@@ -26,7 +26,11 @@ export default function ObservablePredicate(
 ) {
   if (!(predicate instanceof Predicate)) return null;
 
-  const { fn, restoredCBs, validityCBs } = predicate.valueOf();
+  let restoredCBs;
+  let validityCBs;
+
+  const fn = ({ restoredCBs, validityCBs } = predicate.valueOf()).valueOf();
+  // const { fn, restoredCBs, validityCBs } = predicate.valueOf();
   // if (!isFunction(fn)) return null;
 
   const obs = ObserverAnd();

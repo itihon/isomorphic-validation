@@ -10,6 +10,41 @@
 
     ## Features
 
+        - [ ] accept Event object in Validation().validate(event). In order to form.addEventListener('change', Validation().validate);
+                or maybe Validation().validateForm(form, input|change)
+                or maybe Validation().addForm(form, input|change)
+                or maybe Validation().subscribe(form, input|change)
+                or maybe Validation().listen(form, input|change)
+                or maybe Validation.form(selector).validateOn('input') to validate every field on the same event
+                or maybe Validation.form(selector)
+                            .firstName.validateOn('input')
+                            .email.validateOn('change') to validate different fields on different events
+        - [ ] Validation().onServer.{API} Validation().onClient.{API} Validation[onBoth].{API}
+        - [ ] Validation.getForm(selector) or Validation.form(selector)
+        - [ ] Representation -> ConsoleRepresentation, Representation -> DOMRepresentation
+        - [ ]   !consider adding Validation.from() as an immutable analog of .group()
+                or maybe something like this 
+                Validation.group([], {immutable: true}) or Validation.group([], {clone: true})
+                Validation.glue([], {immutable: true}) or Validation.glue([], {clone: true}) 
+                Validation.clone(Validation()) to clone a single validation object
+        - [ ] !consider for adding firing started and canceled??? and deferred (or delayed) events for debounced predicate
+        - [ ] optional constraint (when invalid, does not invalidate the Validation object)
+                Validation().constraint(Predicate, { optional: true })
+            or maybe optional Validation object (does not invalidate the group it is included in)
+            or maybe optional Validation should mean it is valid with the value equal to initVal
+            and runs predicates only when the value differs from initVal
+            in other words: the value either should be empty or conform to the added predicates if not empty
+                Validation(obj, propName, initVal, optinal = true)
+        - [ ] taking object's value as initial value when creating a new Validation (may be used for adding the optional constraint feature)
+
+        - [ ] Final decision: 
+            Validation.profile(formSelector, ['formFildNames'], [assossiatedValidations])
+                - cloning mechanism
+            Validation().listen(validatedForm|validatedFormField, 'event', { target: true })
+            Validation().bindObj(obj, propName, initVal) // !! can be invoked only on SINGLE validations
+                - ValidatedItem().setObj(obj, propName, initVal)
+                - ManyToManyMap().changeKey(oldKey, newKey)
+
 
     ## Refactor
 
@@ -23,6 +58,11 @@
         - [x] lastValidCBs -> restoredCBs, onLastValid(), keptValid() -> restored()
         - [x] getObj() -> getObject()
         
+        - [ ] when two or more validation assosiated with one object grouped into another validation, consider the possibility of merging collections of predicates into one instead of keeping them all in a set.
+
+        - [x] ObservablePredicate should unpack Predicate with valueOf() the same way Predicate does it inside itself while constructing an instance (from the consistency point of view).
+
+        - [ ] Remove ValidationBuilder.registry with valueOf() meachanism (for consistency) as it does exactly the same.
 
     ## Tests
 
@@ -37,3 +77,6 @@
     ## Notes
 
         - When a predicate added with the keepValid option, on every validation with the invalid result, it notifies subscribers twice: first when changed from valid to invalid and then when restores back to the last valid value. It also calls a predicate function twice. Not sure if this is appropriate. See ObservablePredicate integration tests.
+
+        - Binding Validation with a validated object makes more sense in validation profiles because each profile may have a form with it's own unique selector (e.g. #signin_form, #signup_form). Also having different form objects on the server is nessessary.
+        Consider to add this feature. Validation().bindObj(obj, propName, initVal)
