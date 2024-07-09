@@ -16,7 +16,7 @@ export default function Predicate(fnOrPred) {
 
   const predicate = {
     valueOf() {
-      return { fn, restoredCBs, validityCBs, valueOf: () => fn };
+      return { restoredCBs, validityCBs, valueOf: () => fn };
     },
     valid: validityCBs.valid,
     invalid: validityCBs.invalid,
