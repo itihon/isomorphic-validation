@@ -52,6 +52,9 @@ export default function ValidationBuilder({
           return pgs.toRepresentation(target);
         });
       },
+      valueOf() {
+        return { pgs, items, containedGroups };
+      },
       // constraints: new Map(pgs.toRepresentation()),
       constraints: pgs.toRepresentation(),
       validations: new Set(validations),
@@ -66,23 +69,5 @@ export default function ValidationBuilder({
     },
   );
 
-  return ValidationBuilder.registry.set(Object.freeze(representation), {
-    pgs,
-    items,
-    containedGroups,
-  });
+  return Object.freeze(representation);
 }
-
-ValidationBuilder.registry = (function createRegistry() {
-  const registry = new Map();
-
-  return {
-    set(id, value) {
-      registry.set(id, value);
-      return id;
-    },
-    get(id) {
-      return registry.get(id);
-    },
-  };
-})();

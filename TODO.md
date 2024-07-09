@@ -62,7 +62,7 @@
 
         - [x] ObservablePredicate should unpack Predicate with valueOf() the same way Predicate does it inside itself while constructing an instance (from the consistency point of view).
 
-        - [ ] Remove ValidationBuilder.registry with valueOf() meachanism (for consistency) as it does exactly the same.
+        - [x] Remove ValidationBuilder.registry with valueOf() mechanism (for consistency) as it does exactly the same.
 
     ## Tests
 

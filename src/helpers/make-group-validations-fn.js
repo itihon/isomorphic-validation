@@ -14,7 +14,7 @@ export default function makeGroupValidationsFn(TYPE = GROUPED) {
         pgs: vPgs,
         items: vItems,
         containedGroups: vContainedGroups,
-      } = ValidationBuilder.registry.get(validation);
+      } = validation.valueOf();
 
       pgs.mergeWith(vPgs);
       items.mergeWith(vItems);
