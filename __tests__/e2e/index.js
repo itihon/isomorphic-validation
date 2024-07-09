@@ -6,7 +6,14 @@ describe('e2e', () => {
     'valid, invalid, changed etc. accept only functions and ignore anything else',
   );
 
+  it.todo(
+    'newly created Validation is valid, when predicates are added becomes invalid',
+  );
+
   it.todo('first argument for Validation(), what if it is not an object');
+  it.todo(
+    'first argument for Validation(), what if it does not contain the specified propName',
+  );
 
   it('is imposible to start an async predicate unless the previously launched is not finished', (done) => {
     const syncPredicate = jest.fn((value) => value === 42);
