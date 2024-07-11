@@ -31,7 +31,7 @@ export default function debounceP(fn = Function.prototype, delay = 0) {
     promise = null;
   };
 
-  debouncedFn.valueOf = () => fn;
+  debouncedFn.valueOf = () => ({ fn, delay, valueOf: () => fn });
 
   return debouncedFn;
 }

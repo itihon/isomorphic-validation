@@ -23,8 +23,10 @@ describe('ObservablePredicates - a collection of instances of ObservablePredicat
     ops = ObservablePredicates();
   });
 
-  it.todo('debounce, (.invalid, .invalidate). WRITE IN E2E TESTS');
-  it.todo('next with debounce, (.invalid, .invalidate). WRITE IN E2E TESTS');
+  it.todo(
+    'next with debounce, (.invalid, .invalidate). WRITE IN E2E TESTS, OR IN INTEGRATION TESTS',
+  );
+  it.todo('next with debounce, (.cancel). WRITTEN IN E2E TESTS');
   it.todo('console representation, json representation, run(id)');
 
   it('should be true while no predicates added', () => {

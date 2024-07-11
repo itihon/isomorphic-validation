@@ -64,6 +64,8 @@
 
         - [x] Remove ValidationBuilder.registry with valueOf() mechanism (for consistency) as it does exactly the same.
 
+        - [x] Debounce should be unpacked in the same fashion as Predicate (i.e. two calls of valueOf())
+
     ## Tests
 
         - [ ] require/import test to check CJS/ESM compatibility

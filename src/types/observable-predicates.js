@@ -46,12 +46,18 @@ export default function ObservablePredicates() {
 
         /* 
                     !!? It probably should be not prevOf but rather the very first one
+                    (UPD: not first, but rather any before the current one)
                     with the parameter next = false, 
                     so all the rest predicates following it 
                     have to be canceled and invalidated in case that one is invalid
+
+                    UPD: It should be const idx = queueRules.firstIndexOf(false);
+                    predicates[idx].valueOf().valueOf().invalid()
                 */
         if (prevOf(queueRules) === false) {
+          // !! it probably should be withQueueRules === true
           prevOf(predicates)
+            .valueOf()
             .valueOf()
             .invalid(currOf(predicates).cancel, currOf(predicates).invalidate);
         }
