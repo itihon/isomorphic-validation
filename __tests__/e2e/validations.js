@@ -7,6 +7,7 @@ import {
   isPositiveInt,
   isLongerThan,
   isShorterThan,
+  isNotOneTimeEmail,
 } from '../predicates.js';
 
 const firstName = { value: 'John' };
@@ -26,7 +27,9 @@ export const pwdConfirmV = Validation(pwdConfirm);
 it.skip('', () => {
   // Constraints that are unique among Validations but common/shared among validation profiles
 
-  emailV.constraint(isEmail, { next: false, debounce: 2000 });
+  emailV
+    .constraint(isEmail, { next: false })
+    .constraint(isNotOneTimeEmail, { next: false, debounce: 2000 });
 
   ageV
     .constraint(isPositiveInt)

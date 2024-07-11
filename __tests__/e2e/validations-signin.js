@@ -42,7 +42,7 @@ it.skip('', () => {
 
   Validation.glue([passwordVp, pwdConfirmVp]).constraint(areEqual);
 
-  emailVp.constraint(isEmailNotBusy);
+  emailVp.constraint(isEmailNotBusy, { debounce: 2000 });
 
   const allVp = Validation.group([
     firstNameVp,

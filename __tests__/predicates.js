@@ -27,12 +27,23 @@ export const isEmail = jest.fn((value) =>
   ),
 );
 
+export const isNotOneTimeEmail = jest.fn((value) => {
+  const domainBlacklist = [
+    'bacaki.com',
+    'hellomailo.net',
+    'belgianairways.com',
+  ];
+  const domain = String(value).split('@')[1];
+
+  return !domainBlacklist.some((v) => v === domain);
+});
+
 export const isEmailNotBusy = jest.fn(
   (value) =>
     new Promise((res) => {
       setTimeout(
         res,
-        2000 + Math.floor(Math.random() * (8000 - 2000)),
+        200 + Math.floor(Math.random() * (800 - 200)),
         value !== 'q@q.q',
       );
     }),
