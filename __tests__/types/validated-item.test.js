@@ -1,10 +1,18 @@
-import { it, describe, jest, expect, test } from '@jest/globals';
+import { it, describe, jest, expect, test, beforeEach } from '@jest/globals';
 import ValidatedItem from '../../src/types/validated-item.js';
 
 const obj1 = { value: 1 };
 const obj2 = { value: 2 };
 
+const onRestoredCB1 = jest.fn();
+const onRestoredCB2 = jest.fn();
+const onRestoredCB3 = jest.fn();
+
 describe('ValidatedItem', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should return the same instance if the same arguments are passed including default parameters', () => {
     const VIs = [
       [],
@@ -43,9 +51,6 @@ describe('ValidatedItem', () => {
   });
 
   test('keepValid, saveValue, restoreValue, initVal, onRestored with cbArgs', () => {
-    const onRestoredCB1 = jest.fn();
-    const onRestoredCB2 = jest.fn();
-
     const initVal1 = 'initial value 1';
     const initVal2 = 'initial value 2';
 
@@ -173,5 +178,40 @@ describe('ValidatedItem', () => {
       isValid: false,
       desc: 'restored 4',
     });
+  });
+
+  it('should clone an instance', () => {
+    const vi1 = ValidatedItem(obj1, 'value');
+    vi1.onRestored(onRestoredCB1);
+
+    const vi2 = vi1.clone();
+    vi2.onRestored(onRestoredCB2);
+
+    const vi3 = vi2.clone();
+    vi3.onRestored(onRestoredCB3);
+
+    obj1.value = 42;
+    ValidatedItem.keepValid([vi1]);
+    expect(obj1.value).toBe('');
+    expect(onRestoredCB1).toHaveBeenCalledTimes(1);
+    expect(onRestoredCB2).toHaveBeenCalledTimes(0);
+    expect(onRestoredCB3).toHaveBeenCalledTimes(0);
+
+    obj1.value = 42;
+    ValidatedItem.keepValid([vi2]);
+    expect(obj1.value).toBe('');
+    expect(onRestoredCB1).toHaveBeenCalledTimes(2);
+    expect(onRestoredCB2).toHaveBeenCalledTimes(1);
+    expect(onRestoredCB3).toHaveBeenCalledTimes(0);
+
+    obj1.value = 42;
+    ValidatedItem.keepValid([vi3]);
+    expect(obj1.value).toBe('');
+    expect(onRestoredCB1).toHaveBeenCalledTimes(3);
+    expect(onRestoredCB2).toHaveBeenCalledTimes(2);
+    expect(onRestoredCB3).toHaveBeenCalledTimes(1);
+
+    expect(vi1.clone()).not.toBe(vi1);
+    expect(vi1.clone()).not.toBe(ValidatedItem(obj1, 'value'));
   });
 });

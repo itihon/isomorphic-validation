@@ -2,8 +2,12 @@ import memoize from '../utils/memoize.js';
 import Functions from './functions.js';
 
 const ValidatedItem = memoize(
-  function ValidatedItem(obj = {}, propName = '', initVal = '') {
-    const onRestoredCBs = Functions();
+  function ValidatedItem(
+    obj = {},
+    propName = '',
+    initVal = '',
+    onRestoredCBs = Functions(),
+  ) {
     let savedValue = initVal;
 
     return {
@@ -28,6 +32,8 @@ const ValidatedItem = memoize(
         }
         onRestoredCBs.run(cbArgs);
       },
+      clone: () =>
+        ValidatedItem(obj, propName, initVal, Functions(onRestoredCBs)),
       onRestored: onRestoredCBs.push,
       [Symbol.toStringTag]: ValidatedItem.name,
     };
