@@ -64,7 +64,7 @@
 
         - [x] Remove ValidationBuilder.registry with valueOf() mechanism (for consistency) as it does exactly the same.
 
-        - [ ] Debounce should be unpacked in the same fashion as Predicate (i.e. two calls of valueOf())
+        - [x] Debounce should be unpacked in the same fashion as Predicate (i.e. two calls of valueOf())
 
     ## Tests
 
