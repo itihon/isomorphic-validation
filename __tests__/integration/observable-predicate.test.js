@@ -202,4 +202,53 @@ describe('ObservablePredicate, Predicate, ValidatedItem, ObserverAnd', () => {
     expect(oa.getValue()).toBe(true);
     expect(onChangedCB).toHaveBeenCalledTimes(7); // !!called twice, notified subscribers twice
   });
+
+  it('should clone an instance', () => {
+    const invalidCB5 = jest.fn();
+    const invalidCB6 = jest.fn();
+    const onChangedCB56 = jest.fn();
+    const oa56 = ObserverAnd();
+
+    const op5 = op2.clone();
+    op5.invalid(invalidCB5);
+
+    const op6 = op5.clone();
+    op6.invalid(invalidCB6);
+
+    oa56.subscribe(op5).subscribe(op6).onChanged(onChangedCB56);
+
+    expect(op1.clone()).not.toBe(op1);
+
+    expect(onChangedCB).toHaveBeenCalledTimes(7);
+    expect(onChangedCB56).toHaveBeenCalledTimes(0);
+    expect(invalidCB5).toHaveBeenCalledTimes(0);
+    expect(invalidCB6).toHaveBeenCalledTimes(0);
+    expect(oa.getValue()).toBe(true);
+    expect(oa56.getValue()).toBe(false);
+
+    expect(op5()).toBe(true);
+    expect(op6()).toBe(true);
+    expect(onChangedCB56).toHaveBeenCalledTimes(1);
+    expect(oa56.getValue()).toBe(true);
+
+    obj2.value = '42';
+
+    expect(op5()).toBe(false);
+    expect(onChangedCB).toHaveBeenCalledTimes(7);
+    expect(onChangedCB56).toHaveBeenCalledTimes(2);
+    expect(invalidCB5).toHaveBeenCalledTimes(1);
+    expect(invalidCB6).toHaveBeenCalledTimes(0);
+    expect(oa.getValue()).toBe(true);
+    expect(oa56.getValue()).toBe(false);
+
+    expect(op6()).toBe(false);
+    expect(onChangedCB).toHaveBeenCalledTimes(7);
+    expect(onChangedCB56).toHaveBeenCalledTimes(2);
+    expect(invalidCB5).toHaveBeenCalledTimes(2);
+    expect(invalidCB6).toHaveBeenCalledTimes(1);
+    expect(oa.getValue()).toBe(true); // was not affected
+    expect(oa56.getValue()).toBe(false);
+
+    obj2.value = 'Lastname';
+  });
 });

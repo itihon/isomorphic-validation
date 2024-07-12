@@ -128,6 +128,15 @@ export default function ObservablePredicate(
     invalidate: {
       value: () => setValidity(notifySubscribers(false), validationResult),
     },
+    clone: {
+      value: () =>
+        ObservablePredicate(
+          Predicate(predicate),
+          items.map((item) => item.clone()),
+          keepValid,
+          anyData,
+        ),
+    },
     getID: { value: obs.getID },
     getValue: { value: obs.getValue },
     onChanged: { value: obs.onChanged },
