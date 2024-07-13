@@ -8,7 +8,7 @@ import addObservablePredicate from '../helpers/add-observable-predicate.js';
 export default function ValidationBuilder({
   pgs = PredicateGroups(),
   items = ManyToManyMap(),
-  containedGroups = new Set(),
+  containedGroups = new ManyToManyMap(),
   TYPE = SINGLE,
   validations = [],
 } = {}) {

@@ -36,8 +36,9 @@ export default function ObservablePredicate(
   const obs = ObserverAnd();
   const notifySubscribers = obs.update;
   const setValidity = validityCBs.set;
+  const fnName = fn.name || indexedName('predicate');
   const representation = ConsoleRepresentation(
-    fn.name || indexedName('predicate'),
+    fnName,
     {
       ...anyData,
       valid: validityCBs.valid,
@@ -120,6 +121,8 @@ export default function ObservablePredicate(
 
     return predicatePostExec(result, forbidInvalid);
   }
+
+  Object.defineProperty(obsPredicate, 'name', { value: `${fnName}_OP` });
 
   Reflect.setPrototypeOf(obsPredicate, ObservablePredicate.prototype);
 

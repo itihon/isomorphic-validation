@@ -2,9 +2,7 @@ import isFunction from '../utils/is-function.js';
 
 export default function Functions(iterable = [][Symbol.iterator]()) {
   const obj = { ...iterable, length: 0 };
-  const length = Object.keys(obj).length - 1;
-
-  obj.length = length;
+  obj.length = Object.keys(obj).length - 1;
 
   const fns = Array.from(obj).filter(isFunction);
 
