@@ -1,4 +1,5 @@
 import { describe, jest, it, expect } from '@jest/globals';
+import { isOnlyLetters } from '../predicates.js';
 import ObserverAnd from '../../src/types/observer-and.js';
 import ObservablePredicate from '../../src/types/observable-predicate.js';
 import Predicate from '../../src/types/predicate.js';
@@ -12,7 +13,6 @@ const vi1 = ValidatedItem(obj1, 'value');
 const vi2 = ValidatedItem(obj2, 'value');
 const vi3 = ValidatedItem(obj3, 'value');
 
-const isOnlyLetters = jest.fn((value) => /^[A-Za-z]+$/.test(value));
 const isGreaterOrEqual18 = jest.fn((value) => value >= 18);
 const isNotEgual = jest.fn((value1, value2) => value1 !== value2);
 
@@ -217,7 +217,7 @@ describe('ObservablePredicate, Predicate, ValidatedItem, ObserverAnd', () => {
 
     oa56.subscribe(op5).subscribe(op6).onChanged(onChangedCB56);
 
-    expect(op1.clone()).not.toBe(op1);
+    expect(op2.clone()).not.toBe(op2);
 
     expect(onChangedCB).toHaveBeenCalledTimes(7);
     expect(onChangedCB56).toHaveBeenCalledTimes(0);
@@ -250,5 +250,26 @@ describe('ObservablePredicate, Predicate, ValidatedItem, ObserverAnd', () => {
     expect(oa56.getValue()).toBe(false);
 
     obj2.value = 'Lastname';
+
+    expect(op5()).toBe(true);
+    expect(op6()).toBe(true);
+    expect(onChangedCB).toHaveBeenCalledTimes(7);
+    expect(onChangedCB56).toHaveBeenCalledTimes(3);
+    expect(invalidCB5).toHaveBeenCalledTimes(2);
+    expect(invalidCB6).toHaveBeenCalledTimes(1);
+    expect(oa.getValue()).toBe(true);
+    expect(oa56.getValue()).toBe(true);
+
+    op2.invalidate();
+    expect(oa.getValue()).toBe(false);
+    expect(oa56.getValue()).toBe(true); // was not affected
+
+    expect(op2()).toBe(true);
+    expect(oa.getValue()).toBe(true);
+    expect(oa56.getValue()).toBe(true);
+
+    op5.invalidate();
+    expect(oa.getValue()).toBe(true); // was not affected
+    expect(oa56.getValue()).toBe(false);
   });
 });

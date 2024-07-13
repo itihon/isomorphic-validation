@@ -77,6 +77,19 @@ export default function ObservablePredicates() {
           ? runPredicatesQueue(predicates, queueRules)
           : Promise.all(predicates.run(undefined, id));
       },
+      clone() {
+        return predicates
+          .map((predicate, idx) => {
+            let debounce;
+            const obsPredicate = ({ delay: debounce } =
+              predicate.valueOf()).valueOf();
+            return [obsPredicate.clone(), { next: queueRules[idx], debounce }];
+          })
+          .reduce(
+            (ops, predWithParams) => ops.add(...predWithParams),
+            ObservablePredicates(),
+          );
+      },
       toRepresentation() {
         return representation;
       },
