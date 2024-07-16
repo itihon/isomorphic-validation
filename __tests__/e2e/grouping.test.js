@@ -201,6 +201,8 @@ const dataTable = [
 ];
 
 describe('input params', () => {
+  const msg = 'Not a Validation was passed in';
+
   it.each([{ operation: 'group' }, { operation: 'glue' }])(
     '$operation: should accept validations or array/s of validations in any combination',
     ({ operation }) => {
@@ -230,7 +232,34 @@ describe('input params', () => {
     },
   );
 
-  it('should accept only a Validation/s and throw an exception otherwise', () => {});
+  it.each([{ operation: 'group' }, { operation: 'glue' }])(
+    '$operation: should accept only a Validation/s and throw an exception otherwise',
+    ({ operation }) => {
+      expect(() => Validation[operation](null, origVb, origVd1)).toThrow(msg);
+      expect(() => Validation[operation](origVa, {}, origVd1)).toThrow(msg);
+      expect(() => Validation[operation]([origVa, null], origVd1)).toThrow(msg);
+      expect(() =>
+        Validation[operation]([origVa, [() => {}]], origVd1),
+      ).toThrow(msg);
+      expect(() => Validation[operation](origVa, [origVb, 'origVd1'])).toThrow(
+        msg,
+      );
+      expect(() => Validation[operation](42, origVb, [origVd1])).toThrow(msg);
+      expect(() => Validation[operation](origVa, origVb, [[42]])).toThrow(msg);
+      expect(() => Validation[operation](origVa, [null], origVd1)).toThrow(msg);
+      expect(() => Validation[operation](origVa, [[{}]], origVd1)).toThrow(msg);
+      expect(() => Validation[operation]([origVa, origVb, {}])).toThrow(msg);
+    },
+  );
+
+  it('should accept only a Validation and throw an exception otherwise', () => {
+    expect(() => Validation.clone()).toThrow(msg);
+    expect(() => Validation.clone(null)).toThrow(msg);
+    expect(() => Validation.clone({})).toThrow(msg);
+    expect(() => Validation.clone(42)).toThrow(msg);
+    expect(() => Validation.clone('42')).toThrow(msg);
+    expect(() => Validation.clone([])).toThrow(msg);
+  });
 });
 
 describe('group with clone', () => {

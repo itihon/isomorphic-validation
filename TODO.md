@@ -49,7 +49,7 @@
     ## Refactor
 
         - [ ] consider renaming ObserverAnd to something like AndGate
-        - [ ] Validation.group, Validation.glue to accept validations divided by comma
+        - [x] Validation.group, Validation.glue to accept validations divided by comma
         - [x] consider moving out the keepValid functionality from ObservablePredicate to ValidatedItem as a decorator after the according e2e tests are written:
             ValidatedItem.keepValid(ObservablePredicate()) or
             ObservablePredicate({decorators: [debounceP, ValidatedItem.keepValid]});

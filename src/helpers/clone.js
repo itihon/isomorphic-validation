@@ -1,12 +1,14 @@
 import ManyToManyMap from '../types/many-to-many-map.js';
 import PredicateGroups from '../types/predicate-groups.js';
 import ValidationBuilder from '../types/validation-builder.js';
+import accepOnlyValidation from './accept-only-validation.js';
 
 // traverse validations, create a new pgs, remove its observable predicates with the cloned ones
 // remove pgs in clonedContained groups with the newly created
 // remove validation with newly created
 // repeat steps for nested validations
 export default function clone({ validation, upperPgs }) {
+  accepOnlyValidation(validation);
   const { pgs, items, containedGroups, TYPE } = validation.valueOf();
   const { validations } = validation; // Set()
 
