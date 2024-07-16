@@ -5,10 +5,11 @@ import ObservablePredicates from './observable-predicates.js';
 import ConsoleRepresentation from './console-representation.js';
 import indexedName from '../utils/indexed-name.js';
 
-export default function PredicateGroups() {
+export default function PredicateGroups(
+  pgs = ManyToManyMap(),
+  validityCBs = ValidityCallbacks(),
+) {
   const obs = ObserverAnd();
-  const validityCBs = ValidityCallbacks();
-  const pgs = ManyToManyMap();
   const representation = ConsoleRepresentation(
     'ValidationResult',
     ManyToManyMap(),
@@ -27,7 +28,7 @@ export default function PredicateGroups() {
               isValid: obs.getValue(),
             },
           );
-        },
+        }, // without bind jest throwed an error (in expect().toStrictEqual())
       },
     },
   );
@@ -65,6 +66,20 @@ export default function PredicateGroups() {
               ),
             );
       },
+      clone() {
+        const newPgs = PredicateGroups(
+          undefined,
+          ValidityCallbacks(false, validityCBs),
+        );
+
+        const cloneRegistry = new Map(); // for cloning glued predicates
+
+        pgs
+          .map((predicateGroup) => predicateGroup.clone(cloneRegistry))
+          .forEach((group, key) => newPgs.add(key, group));
+
+        return newPgs;
+      },
       toRepresentation(id) {
         representation.target = id;
         return representation;
@@ -79,6 +94,8 @@ export default function PredicateGroups() {
       map: pgs.map,
       forEach: pgs.forEach,
       mergeWith: pgs.mergeWith,
+      has: pgs.has.bind(pgs),
+      get: pgs.get.bind(pgs),
       [Symbol.toStringTag]: PredicateGroups.name,
     },
     {

@@ -8,19 +8,19 @@ const e = { value: 'obj e' };
 const g = { value: 'obj g' };
 const h = { value: 'obj h' };
 
-const Va = Validation(a);
-const Vb = Validation(b);
-const Vd1 = Validation(d); // different instances of Validaton assossiated with the same object
-const Vd2 = Validation(d); // different instances of Validaton assossiated with the same object
-const Ve = Validation(e);
-const Vg = Validation(g);
-const Vh = Validation(h);
+const origVa = Validation(a);
+const origVb = Validation(b);
+const origVd1 = Validation(d); // different instances of Validaton assossiated with the same object
+const origVd2 = Validation(d); // different instances of Validaton assossiated with the same object
+const origVe = Validation(e);
+const origVg = Validation(g);
+const origVh = Validation(h);
 
-const VC = Validation.group([Va, Vb]);
-const VJ = Validation.group([Vb, Vd1, Vd2]);
-const VK = Validation.glue([Ve, Vg]);
-const VF = Validation.group([VC, VJ, Ve, Vh]);
-const VI = Validation.group([VF, VK, Vh]);
+const origVC = Validation.group([origVa, origVb]);
+const origVJ = Validation.group([origVb, origVd1, origVd2]);
+const origVK = Validation.glue([origVe, origVg]);
+const origVF = Validation.group([origVC, origVJ, origVe, origVh]);
+const origVI = Validation.group([origVF, origVK, origVh]);
 
 const predicates = {
   P1a: jest.fn(() => true),
@@ -66,18 +66,18 @@ const predicates = {
   );
 })();
 
-Va.constraint(predicates.P1a).constraint(predicates.P2a);
-Vb.constraint(predicates.P1b).constraint(predicates.P2b);
-Vd1.constraint(predicates.P1d1).constraint(predicates.P2d1);
-Vd2.constraint(predicates.P1d2).constraint(predicates.P2d2);
-Ve.constraint(predicates.P1e).constraint(predicates.P2e);
-Vg.constraint(predicates.P1g).constraint(predicates.P2g);
-Vh.constraint(predicates.P1h).constraint(predicates.P2h);
-VC.constraint(predicates.P1c).constraint(predicates.P2c);
-VJ.constraint(predicates.P1j).constraint(predicates.P2j);
-VK.constraint(predicates.P1k).constraint(predicates.P2k);
-VF.constraint(predicates.P1f).constraint(predicates.P2f);
-VI.constraint(predicates.P1i).constraint(predicates.P2i);
+origVa.constraint(predicates.P1a).constraint(predicates.P2a);
+origVb.constraint(predicates.P1b).constraint(predicates.P2b);
+origVd1.constraint(predicates.P1d1).constraint(predicates.P2d1);
+origVd2.constraint(predicates.P1d2).constraint(predicates.P2d2);
+origVe.constraint(predicates.P1e).constraint(predicates.P2e);
+origVg.constraint(predicates.P1g).constraint(predicates.P2g);
+origVh.constraint(predicates.P1h).constraint(predicates.P2h);
+origVC.constraint(predicates.P1c).constraint(predicates.P2c);
+origVJ.constraint(predicates.P1j).constraint(predicates.P2j);
+origVK.constraint(predicates.P1k).constraint(predicates.P2k);
+origVF.constraint(predicates.P1f).constraint(predicates.P2f);
+origVI.constraint(predicates.P1i).constraint(predicates.P2i);
 
 function predicateNames(validation, obj) {
   return [
@@ -167,104 +167,150 @@ const predicateNamesVh = fnNames([
   predicates.P2i,
 ]);
 
-describe('grouping', () => {
+const dataTable = [
+  {
+    dataName: 'Original',
+    Va: origVa,
+    Vb: origVb,
+    Vd1: origVd1,
+    Vd2: origVd2,
+    Ve: origVe,
+    Vg: origVg,
+    Vh: origVh,
+    VC: origVC,
+    VJ: origVJ,
+    VK: origVK,
+    VF: origVF,
+    VI: origVI,
+  },
+  {
+    dataName: 'Cloned',
+    Va: Validation.clone(origVa),
+    Vb: Validation.clone(origVb),
+    Vd1: Validation.clone(origVd1),
+    Vd2: Validation.clone(origVd2),
+    Ve: Validation.clone(origVe),
+    Vg: Validation.clone(origVg),
+    Vh: Validation.clone(origVh),
+    VC: Validation.clone(origVC),
+    VJ: Validation.clone(origVJ),
+    VK: Validation.clone(origVK),
+    VF: Validation.clone(origVF),
+    VI: Validation.clone(origVI),
+  },
+];
+
+describe('input params', () => {
+  it('should accept only a Validation/s and throw an exception otherwise', () => {});
+});
+
+describe('group with clone', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   describe('nesting', () => {
-    it('should include nested validations', () => {
-      expect([...VC.validations]).toStrictEqual([Va, Vb]);
-      expect([...VJ.validations]).toStrictEqual([Vb, Vd1, Vd2]);
-      expect([...VK.validations]).toStrictEqual([Ve, Vg]);
-      expect([...VF.validations]).toStrictEqual([VC, VJ, Ve, Vh]);
-      expect([...VI.validations]).toStrictEqual([VF, VK, Vh]);
-    });
+    it.each([dataTable[0]])(
+      '$dataName: should include nested validations',
+      ({ Va, Vb, Vd1, Vd2, Ve, Vg, Vh, VC, VJ, VK, VF, VI }) => {
+        expect([...VC.validations]).toStrictEqual([Va, Vb]);
+        expect([...VJ.validations]).toStrictEqual([Vb, Vd1, Vd2]);
+        expect([...VK.validations]).toStrictEqual([Ve, Vg]);
+        expect([...VF.validations]).toStrictEqual([VC, VJ, Ve, Vh]);
+        expect([...VI.validations]).toStrictEqual([VF, VK, Vh]);
+      },
+    );
 
-    it('should include own predicates along with the predicates from outer levels', () => {
-      expect(predicateNames(Va, a)).toStrictEqual(predicateNamesVa);
+    it.each(dataTable)(
+      '$dataName: should include own predicates along with the predicates from outer levels',
+      ({ Va, Vb, Vd1, Vd2, Ve, Vg, Vh }) => {
+        expect(predicateNames(Va, a)).toStrictEqual(predicateNamesVa);
 
-      expect(predicateNames(Vb, b)).toStrictEqual(predicateNamesVb);
+        expect(predicateNames(Vb, b)).toStrictEqual(predicateNamesVb);
 
-      expect(predicateNames(Vd1, d)).toStrictEqual(predicateNamesVd1);
+        expect(predicateNames(Vd1, d)).toStrictEqual(predicateNamesVd1);
 
-      expect(predicateNames(Vd2, d)).toStrictEqual(predicateNamesVd2);
+        expect(predicateNames(Vd2, d)).toStrictEqual(predicateNamesVd2);
 
-      expect(predicateNames(Ve, e)).toStrictEqual(predicateNamesVe);
+        expect(predicateNames(Ve, e)).toStrictEqual(predicateNamesVe);
 
-      expect(predicateNames(Vg, g)).toStrictEqual(predicateNamesVg);
+        expect(predicateNames(Vg, g)).toStrictEqual(predicateNamesVg);
 
-      expect(predicateNames(Vh, h)).toStrictEqual(predicateNamesVh);
-    });
+        expect(predicateNames(Vh, h)).toStrictEqual(predicateNamesVh);
+      },
+    );
 
-    it('should include nested predicate groups', () => {
-      expect(predicateNames(VC)).toStrictEqual([
-        ...predicateNamesVa,
-        ...predicateNamesVb,
-      ]);
+    it.each(dataTable)(
+      '$dataName: should include nested predicate groups',
+      ({ VC, VJ, VK, VF, VI }) => {
+        expect(predicateNames(VC)).toStrictEqual([
+          ...predicateNamesVa,
+          ...predicateNamesVb,
+        ]);
 
-      expect(predicateNames(VC)).toStrictEqual([
-        ...predicateNames(VC, a),
-        ...predicateNames(VC, b),
-      ]);
+        expect(predicateNames(VC)).toStrictEqual([
+          ...predicateNames(VC, a),
+          ...predicateNames(VC, b),
+        ]);
 
-      expect(predicateNames(VJ)).toStrictEqual([
-        ...predicateNamesVb,
-        ...predicateNamesVd1,
-        ...predicateNamesVd2,
-      ]);
+        expect(predicateNames(VJ)).toStrictEqual([
+          ...predicateNamesVb,
+          ...predicateNamesVd1,
+          ...predicateNamesVd2,
+        ]);
 
-      expect(predicateNames(VJ)).toStrictEqual([
-        ...predicateNames(VJ, b),
-        ...predicateNames(VJ, d),
-      ]);
+        expect(predicateNames(VJ)).toStrictEqual([
+          ...predicateNames(VJ, b),
+          ...predicateNames(VJ, d),
+        ]);
 
-      expect(predicateNames(VK)).toStrictEqual([
-        ...predicateNamesVe,
-        ...predicateNamesVg,
-      ]);
+        expect(predicateNames(VK)).toStrictEqual([
+          ...predicateNamesVe,
+          ...predicateNamesVg,
+        ]);
 
-      expect(predicateNames(VK)).toStrictEqual([
-        ...predicateNames(VK, e),
-        ...predicateNames(VK, g),
-      ]);
+        expect(predicateNames(VK)).toStrictEqual([
+          ...predicateNames(VK, e),
+          ...predicateNames(VK, g),
+        ]);
 
-      expect(predicateNames(VF)).toStrictEqual([
-        ...predicateNamesVa,
-        ...predicateNamesVb,
-        ...predicateNamesVd1,
-        ...predicateNamesVd2,
-        ...predicateNamesVe,
-        ...predicateNamesVh,
-      ]);
+        expect(predicateNames(VF)).toStrictEqual([
+          ...predicateNamesVa,
+          ...predicateNamesVb,
+          ...predicateNamesVd1,
+          ...predicateNamesVd2,
+          ...predicateNamesVe,
+          ...predicateNamesVh,
+        ]);
 
-      expect(predicateNames(VF)).toStrictEqual([
-        ...predicateNames(VF, a),
-        ...predicateNames(VF, b),
-        ...predicateNames(VF, d),
-        ...predicateNames(VF, e),
-        ...predicateNames(VF, h),
-      ]);
+        expect(predicateNames(VF)).toStrictEqual([
+          ...predicateNames(VF, a),
+          ...predicateNames(VF, b),
+          ...predicateNames(VF, d),
+          ...predicateNames(VF, e),
+          ...predicateNames(VF, h),
+        ]);
 
-      expect(predicateNames(VI)).toStrictEqual([
-        ...predicateNamesVa,
-        ...predicateNamesVb,
-        ...predicateNamesVd1,
-        ...predicateNamesVd2,
-        ...predicateNamesVe,
-        ...predicateNamesVh,
-        ...predicateNamesVg,
-      ]);
+        expect(predicateNames(VI)).toStrictEqual([
+          ...predicateNamesVa,
+          ...predicateNamesVb,
+          ...predicateNamesVd1,
+          ...predicateNamesVd2,
+          ...predicateNamesVe,
+          ...predicateNamesVh,
+          ...predicateNamesVg,
+        ]);
 
-      expect(predicateNames(VI)).toStrictEqual([
-        ...predicateNames(VI, a),
-        ...predicateNames(VI, b),
-        ...predicateNames(VI, d),
-        ...predicateNames(VI, e),
-        ...predicateNames(VI, h),
-        ...predicateNames(VI, g),
-      ]);
-    });
+        expect(predicateNames(VI)).toStrictEqual([
+          ...predicateNames(VI, a),
+          ...predicateNames(VI, b),
+          ...predicateNames(VI, d),
+          ...predicateNames(VI, e),
+          ...predicateNames(VI, h),
+          ...predicateNames(VI, g),
+        ]);
+      },
+    );
   });
 
   describe('Validation.group', () => {
@@ -279,7 +325,7 @@ describe('grouping', () => {
     );
   });
 
-  describe('Validation.glue', () => {
+  describe.each(dataTable)('$dataName: Validation.glue', ({ Ve, Vg, VK }) => {
     it('should be predicate calls with glued validated values passed in', () => {
       Ve.validate();
       // glued
@@ -309,34 +355,48 @@ describe('grouping', () => {
     });
 
     it('should validate/invalidate another validation it is glued to', () => {
-      expect(Ve.isValid).toBe(true);
-      expect(Vg.isValid).toBe(true);
+      const [Ve1, Vg1] = [...VK.validations];
+
+      VK.validate();
+      expect(Ve1.isValid).toBe(true);
+      expect(Vg1.isValid).toBe(true);
 
       // predicate added on glued validation
       predicates.P1k.mockImplementationOnce(() => false);
 
-      Ve.validate();
-      expect(Ve.isValid).toBe(false);
-      expect(Vg.isValid).toBe(false);
+      Ve1.validate();
+      expect(Ve1.isValid).toBe(false);
+      expect(Vg1.isValid).toBe(false);
 
-      Vg.validate();
-      expect(Ve.isValid).toBe(true);
-      expect(Vg.isValid).toBe(true);
+      Vg1.validate();
+      expect(Ve1.isValid).toBe(true);
+      expect(Vg1.isValid).toBe(true);
 
       // predicate added on non glued validation
       predicates.P1i.mockImplementationOnce(() => false);
 
-      Ve.validate();
-      expect(Ve.isValid).toBe(false);
-      expect(Vg.isValid).toBe(true);
+      Ve1.validate();
+      expect(Ve1.isValid).toBe(false);
+      expect(Vg1.isValid).toBe(true);
 
-      Vg.validate();
-      expect(Ve.isValid).toBe(false);
-      expect(Vg.isValid).toBe(true);
+      Vg1.validate();
+      expect(Ve1.isValid).toBe(false);
+      expect(Vg1.isValid).toBe(true);
 
-      Ve.validate();
-      expect(Ve.isValid).toBe(true);
-      expect(Vg.isValid).toBe(true);
+      Ve1.validate();
+      expect(Ve1.isValid).toBe(true);
+      expect(Vg1.isValid).toBe(true);
     });
   });
+});
+
+describe('cloned object and its origin should not affect each other', () => {
+  it.todo('adding predicates to original and cloned objects');
+  it.todo('adding callbacks to original and cloned objects');
+  it.todo('grouping original and cloned objects');
+  it.todo('validating with/without id original and cloned objects');
+  it.todo('cloning glued debounced predicates');
+  it.todo(
+    'cloned object should preserve the structure of its origin. PARTLY TESTED IN THE TESTS ABOVE',
+  );
 });

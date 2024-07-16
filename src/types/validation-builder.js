@@ -53,7 +53,7 @@ export default function ValidationBuilder({
         });
       },
       valueOf() {
-        return { pgs, items, containedGroups };
+        return { pgs, items, containedGroups, TYPE };
       },
       // constraints: new Map(pgs.toRepresentation()),
       constraints: pgs.toRepresentation(),

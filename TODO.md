@@ -22,11 +22,11 @@
         - [ ] Validation().onServer.{API} Validation().onClient.{API} Validation[onBoth].{API}
         - [ ] Validation.getForm(selector) or Validation.form(selector)
         - [ ] Representation -> ConsoleRepresentation, Representation -> DOMRepresentation
-        - [ ]   !consider adding Validation.from() as an immutable analog of .group()
+        - [x]   !consider adding Validation.from() as an immutable analog of .group()
                 or maybe something like this 
                 Validation.group([], {immutable: true}) or Validation.group([], {clone: true})
                 Validation.glue([], {immutable: true}) or Validation.glue([], {clone: true}) 
-                Validation.clone(Validation()) to clone a single validation object
+                [x] Validation.clone(Validation()) to clone a single validation object
         - [ ] !consider for adding firing started and canceled??? and deferred (or delayed) events for debounced predicate
         - [ ] optional constraint (when invalid, does not invalidate the Validation object)
                 Validation().constraint(Predicate, { optional: true })
@@ -39,7 +39,7 @@
 
         - [ ] Final decision: 
             Validation.profile(formSelector, ['formFildNames'], [assossiatedValidations])
-                - cloning mechanism
+                - [x] cloning mechanism
             Validation().listen(validatedForm|validatedFormField, 'event', { target: true })
             Validation().bindObj(obj, propName, initVal) // !! can be invoked only on SINGLE validations
                 - ValidatedItem().setObj(obj, propName, initVal)
@@ -49,6 +49,7 @@
     ## Refactor
 
         - [ ] consider renaming ObserverAnd to something like AndGate
+        - [ ] Validation.group, Validation.glue to accept validations divided by comma
         - [x] consider moving out the keepValid functionality from ObservablePredicate to ValidatedItem as a decorator after the according e2e tests are written:
             ValidatedItem.keepValid(ObservablePredicate()) or
             ObservablePredicate({decorators: [debounceP, ValidatedItem.keepValid]});

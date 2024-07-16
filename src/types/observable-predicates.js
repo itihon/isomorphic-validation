@@ -77,13 +77,21 @@ export default function ObservablePredicates() {
           ? runPredicatesQueue(predicates, queueRules)
           : Promise.all(predicates.run(undefined, id));
       },
-      clone() {
+      clone(cloneRegistry = new Map()) {
         return predicates
           .map((predicate, idx) => {
             let debounce;
             const obsPredicate = ({ delay: debounce } =
               predicate.valueOf()).valueOf();
-            return [obsPredicate.clone(), { next: queueRules[idx], debounce }];
+
+            // for glued predicates
+            const clonedPredicate =
+              cloneRegistry.get(obsPredicate) ||
+              cloneRegistry
+                .set(obsPredicate, obsPredicate.clone())
+                .get(obsPredicate);
+
+            return [clonedPredicate, { next: queueRules[idx], debounce }];
           })
           .reduce(
             (ops, predWithParams) => ops.add(...predWithParams),
