@@ -4,10 +4,11 @@ import ManyToManyMap from '../types/many-to-many-map.js';
 import ValidationBuilder from '../types/validation-builder.js';
 
 export default function makeGroupValidationsFn(TYPE = GROUPED) {
-  return function groupValidations(validations = []) {
+  return function groupValidations(Validations = [], ...rest) {
     const pgs = PredicateGroups();
     const items = ManyToManyMap();
     const containedGroups = ManyToManyMap();
+    const validations = [Validations].concat(rest).flat(Infinity);
 
     validations.forEach((validation) => {
       const {

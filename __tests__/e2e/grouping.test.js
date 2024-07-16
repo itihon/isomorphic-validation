@@ -201,6 +201,35 @@ const dataTable = [
 ];
 
 describe('input params', () => {
+  it.each([{ operation: 'group' }, { operation: 'glue' }])(
+    '$operation: should accept validations or array/s of validations in any combination',
+    ({ operation }) => {
+      expect(Validation[operation]).not.toThrowError();
+
+      const validations = [origVa, origVb, origVd1];
+
+      const vg1 = Validation[operation](origVa, origVb, origVd1);
+      const vg2 = Validation[operation]([origVa, origVb], origVd1);
+      const vg3 = Validation[operation]([origVa, [origVb]], origVd1);
+      const vg4 = Validation[operation](origVa, [origVb, origVd1]);
+      const vg5 = Validation[operation](origVa, origVb, [origVd1]);
+      const vg6 = Validation[operation](origVa, origVb, [[origVd1]]);
+      const vg7 = Validation[operation](origVa, [origVb], origVd1);
+      const vg8 = Validation[operation](origVa, [[origVb]], origVd1);
+      const vg9 = Validation[operation]([origVa, origVb, origVd1]);
+
+      expect([...vg1.validations]).toStrictEqual(validations);
+      expect([...vg2.validations]).toStrictEqual(validations);
+      expect([...vg3.validations]).toStrictEqual(validations);
+      expect([...vg4.validations]).toStrictEqual(validations);
+      expect([...vg5.validations]).toStrictEqual(validations);
+      expect([...vg6.validations]).toStrictEqual(validations);
+      expect([...vg7.validations]).toStrictEqual(validations);
+      expect([...vg8.validations]).toStrictEqual(validations);
+      expect([...vg9.validations]).toStrictEqual(validations);
+    },
+  );
+
   it('should accept only a Validation/s and throw an exception otherwise', () => {});
 });
 
