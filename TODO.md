@@ -43,7 +43,7 @@
             Validation().listen(validatedForm|validatedFormField, 'event', { target: true })
             Validation().bindObj(obj, propName, initVal) // !! can be invoked only on SINGLE validations
                 - ValidatedItem().setObj(obj, propName, initVal)
-                - ManyToManyMap().changeKey(oldKey, newKey)
+                - [x] ManyToManyMap().changeKey(oldKey, newKey)
 
 
     ## Refactor

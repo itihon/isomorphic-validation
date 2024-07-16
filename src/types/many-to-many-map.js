@@ -22,6 +22,18 @@ export default function ManyToManyMap() {
 
       return this;
     },
+    changeKey(oldKey, newKey) {
+      if (oldKey === newKey) {
+        throw new Error('Old key must not be the same as new key');
+      }
+      if (map.has(oldKey)) {
+        map.get(oldKey).forEach((value) => map.add(newKey, value));
+        map.delete(oldKey);
+      } else {
+        throw new Error('There is no such old key');
+      }
+      return this;
+    },
     getAll() {
       return values;
     },
