@@ -18,13 +18,13 @@ export default function PredicateGroups(
       target: { writable: true },
       toJSON: {
         value() {
-          return [...this].reduce(
+          return [...representation].reduce(
             (acc, [key, set]) => {
               acc[key.name || indexedName('obj')] = [...set];
               return acc;
             },
             {
-              name: this[Symbol.toStringTag],
+              name: representation[Symbol.toStringTag],
               isValid: obs.getValue(),
             },
           );
