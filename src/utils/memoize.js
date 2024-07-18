@@ -8,7 +8,7 @@ export default function memoize(fn = Function.prototype, defaultParams = []) {
     (key) =>
       map.has(key) ? map.get(key) : map.set(key, value(...args)).get(key);
 
-  return function memoized(...args) {
+  const mergeWithDefaults = (args) => {
     const params = [];
     const length = Math.max(args.length, defaultParams.length);
 
@@ -16,8 +16,28 @@ export default function memoize(fn = Function.prototype, defaultParams = []) {
       params[i] = args[i] !== undefined ? args[i] : defaultParams[i];
     }
 
-    return retrieveIfHas(resIdxs)(fn, ...params)(
-      params.map(retrieveIfHas(argsIdxs)(counter)).join(','),
-    );
+    return params;
   };
+
+  const remember =
+    (Fn) =>
+    (...args) => {
+      const params = mergeWithDefaults(args);
+      return retrieveIfHas(resIdxs)(Fn, ...params)(
+        params.map(retrieveIfHas(argsIdxs)(counter)).join(','),
+      );
+    };
+
+  const memoized = remember(fn);
+
+  memoized.remember = (res, ...args) => remember(() => res)(...args);
+
+  memoized.forget = (...args) =>
+    resIdxs.delete(
+      mergeWithDefaults(args)
+        .map((arg) => argsIdxs.get(arg))
+        .join(','),
+    );
+
+  return memoized;
 }
