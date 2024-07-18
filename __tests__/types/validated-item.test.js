@@ -3,6 +3,7 @@ import ValidatedItem from '../../src/types/validated-item.js';
 
 const obj1 = { value: 1 };
 const obj2 = { value: 2 };
+const obj3 = { value: 3 };
 
 const onRestoredCB1 = jest.fn();
 const onRestoredCB2 = jest.fn();
@@ -190,6 +191,10 @@ describe('ValidatedItem', () => {
     const vi3 = vi2.clone();
     vi3.onRestored(onRestoredCB3);
 
+    expect(vi1).not.toBe(vi2);
+    expect(vi1).not.toBe(vi3);
+    expect(vi2).not.toBe(vi3);
+
     obj1.value = 42;
     ValidatedItem.keepValid([vi1]);
     expect(obj1.value).toBe('');
@@ -213,5 +218,26 @@ describe('ValidatedItem', () => {
 
     expect(vi1.clone()).not.toBe(vi1);
     expect(vi1.clone()).not.toBe(ValidatedItem(obj1, 'value'));
+  });
+
+  it('should change the validated object of an instance', () => {
+    const vi1 = ValidatedItem(obj1, 'value');
+    vi1.onRestored(onRestoredCB1);
+    expect(ValidatedItem(obj1, 'value')).toBe(vi1);
+
+    const vi2 = vi1.clone();
+    vi2.onRestored(onRestoredCB2);
+    expect(ValidatedItem(obj1, 'value')).toBe(vi1);
+    expect(ValidatedItem(obj1, 'value')).not.toBe(vi2);
+    expect(ValidatedItem(obj1, 'value')).not.toBe(vi2);
+
+    // changing the obj of a cloned item
+    vi2.setObject(obj2, 'value');
+    expect(ValidatedItem(obj1, 'value')).not.toBe(vi1); // should it be so ???
+    expect(ValidatedItem(obj2, 'value')).toBe(vi2);
+    expect(ValidatedItem(obj1, 'value')).not.toBe(vi2);
+
+    vi1.setObject(obj3, 'value');
+    expect(ValidatedItem(obj3, 'value')).toBe(vi1);
   });
 });

@@ -42,7 +42,7 @@
                 - [x] cloning mechanism
             Validation().listen(validatedForm|validatedFormField, 'event', { target: true })
             Validation().bindObj(obj, propName, initVal) // !! can be invoked only on SINGLE validations
-                - ValidatedItem().setObj(obj, propName, initVal)
+                - [x] ValidatedItem().setObj(obj, propName, initVal)
                 - [x] ManyToManyMap().changeKey(oldKey, newKey)
 
 
@@ -83,3 +83,5 @@
 
         - Binding Validation with a validated object makes more sense in validation profiles because each profile may have a form with it's own unique selector (e.g. #signin_form, #signup_form). Also having different form objects on the server is nessessary.
         Consider to add this feature. Validation().bindObj(obj, propName, initVal)
+
+        - On ValidatedItem. After calling setObject on a cloned item, the original item gets erased from the memoize function's registry. Should it be so??? This is a contradiction in logic: on the one hand memoization implies imposibility of existence of two instances of an item constructed with the same parameters, on the other hand in combination with cloning it becomes possible.
