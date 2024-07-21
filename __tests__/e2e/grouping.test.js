@@ -198,7 +198,25 @@ const dataTable = [
     VF: Validation.clone(origVF),
     VI: Validation.clone(origVI),
   },
+  {
+    dataName: 'Cloned 2',
+    Va: Validation.clone(Validation.clone(origVa)),
+    Vb: Validation.clone(Validation.clone(origVb)),
+    Vd1: Validation.clone(Validation.clone(origVd1)),
+    Vd2: Validation.clone(Validation.clone(origVd2)),
+    Ve: Validation.clone(Validation.clone(origVe)),
+    Vg: Validation.clone(Validation.clone(origVg)),
+    Vh: Validation.clone(Validation.clone(origVh)),
+    VC: Validation.clone(Validation.clone(origVC)),
+    VJ: Validation.clone(Validation.clone(origVJ)),
+    VK: Validation.clone(Validation.clone(origVK)),
+    VF: Validation.clone(Validation.clone(origVF)),
+    VI: Validation.clone(Validation.clone(origVI)),
+  },
 ];
+
+const iteratorOrderCmp = [];
+const getAllOrderCmp = [];
 
 describe('input params', () => {
   const msg = 'Not a Validation was passed in';
@@ -269,6 +287,7 @@ describe('group with clone', () => {
 
   describe('nesting', () => {
     it.each([dataTable[0]])(
+      // not performed for the cloned
       '$dataName: should include nested validations',
       ({ Va, Vb, Vd1, Vd2, Ve, Vg, Vh, VC, VJ, VK, VF, VI }) => {
         expect([...VC.validations]).toStrictEqual([Va, Vb]);
@@ -446,15 +465,181 @@ describe('group with clone', () => {
       expect(Vg1.isValid).toBe(true);
     });
   });
+
+  it.each(dataTable)(
+    '$dataName: should contain keys of nested pgs',
+    ({ VC, VJ, VK, VF, VI }) => {
+      const valueOf = (validation, idx) =>
+        [...validation.validations][idx].valueOf();
+
+      const { containedGroups: containedGroupsVC } = VC.valueOf();
+      const { containedGroups: containedGroupsVJ } = VJ.valueOf();
+      const { containedGroups: containedGroupsVK } = VK.valueOf();
+      const { containedGroups: containedGroupsVF } = VF.valueOf();
+      const { containedGroups: containedGroupsVI } = VI.valueOf();
+
+      const { containedGroups: containedGroupsVa } = valueOf(VC, 0);
+      const { containedGroups: containedGroupsVb } = valueOf(VC, 1);
+      const { containedGroups: containedGroupsVb1 } = valueOf(VJ, 0);
+      const { containedGroups: containedGroupsVd1 } = valueOf(VJ, 1);
+      const { containedGroups: containedGroupsVd2 } = valueOf(VJ, 2);
+      const { containedGroups: containedGroupsVe } = valueOf(VF, 2);
+      const { containedGroups: containedGroupsVe1 } = valueOf(VK, 0);
+      const { containedGroups: containedGroupsVh } = valueOf(VF, 3);
+      const { containedGroups: containedGroupsVh1 } = valueOf(VI, 2);
+      const { containedGroups: containedGroupsVg } = valueOf(VK, 1);
+
+      expect([...containedGroupsVa.keys()]).toStrictEqual([a]);
+      expect([...containedGroupsVb.keys()]).toStrictEqual([b]);
+      expect([...containedGroupsVb1.keys()]).toStrictEqual([b]);
+      expect([...containedGroupsVd1.keys()]).toStrictEqual([d]);
+      expect([...containedGroupsVd2.keys()]).toStrictEqual([d]);
+      expect([...containedGroupsVe.keys()]).toStrictEqual([e]);
+      expect([...containedGroupsVe1.keys()]).toStrictEqual([e]);
+      expect([...containedGroupsVh.keys()]).toStrictEqual([h]);
+      expect([...containedGroupsVh1.keys()]).toStrictEqual([h]);
+      expect([...containedGroupsVg.keys()]).toStrictEqual([g]);
+
+      expect([...containedGroupsVC.keys()]).toStrictEqual([a, b]);
+      expect([...containedGroupsVJ.keys()]).toStrictEqual([b, d]);
+      expect([...containedGroupsVK.keys()]).toStrictEqual([e, g]);
+      expect([...containedGroupsVF.keys()]).toStrictEqual([a, b, d, e, h]);
+      expect([...containedGroupsVI.keys()]).toStrictEqual([a, b, d, e, h, g]);
+    },
+  );
+
+  it.each(dataTable)(
+    '$dataName: should have the same instances of pgs',
+    ({ VI }) => {
+      const [VF, VK, Vhi] = [...VI.validations];
+      const [VC, VJ, Vef, Vhf] = [...VF.validations];
+      const [Vek, Vg] = [...VK.validations];
+      const [Va, Vbc] = [...VC.validations];
+      const [Vbj, Vd1, Vd2] = [...VJ.validations];
+
+      const markPgs = (pgs, key) => {
+        pgs.name = pgs.name
+          ? [...new Set([...pgs.name.split(', '), key.value])].join(', ')
+          : key.value;
+      };
+
+      const extractAndMark = (validation) => {
+        const { containedGroups, pgs } = validation.valueOf();
+        containedGroups.forEach(markPgs);
+        return [containedGroups, pgs];
+      };
+
+      const [[cgVI, pgsVI]] = [VI].map(extractAndMark);
+
+      const [[cgVF, pgsVF], [cgVK, pgsVK], [cgVhi, pgsVhi]] = [VF, VK, Vhi].map(
+        extractAndMark,
+      );
+
+      const [[cgVC, pgsVC], [cgVJ, pgsVJ], [cgVef, pgsVef], [cgVhf, pgsVhf]] = [
+        VC,
+        VJ,
+        Vef,
+        Vhf,
+      ].map(extractAndMark);
+
+      const [[cgVek, pgsVek], [cgVg, pgsVg]] = [Vek, Vg].map(extractAndMark);
+
+      const [[cgVa, pgsVa], [cgVbc, pgsVbc]] = [Va, Vbc].map(extractAndMark);
+
+      const [[cgVbj, pgsVbj], [cgVd1, pgsVd1], [cgVd2, pgsVd2]] = [
+        Vbj,
+        Vd1,
+        Vd2,
+      ].map(extractAndMark);
+
+      expect(Vhi).toBe(Vhf);
+      expect(Vef).toBe(Vek);
+      expect(Vbc).toBe(Vbj);
+
+      expect(pgsVhi).toBe(pgsVhf);
+      expect(pgsVef).toBe(pgsVek);
+      expect(pgsVbc).toBe(pgsVbj);
+
+      expect([...cgVa.getAll()]).toStrictEqual([pgsVa]);
+      expect([...cgVbc.getAll()]).toStrictEqual([pgsVbj]);
+      expect([...cgVbj.getAll()]).toStrictEqual([pgsVbc]);
+      expect([...cgVd1.getAll()]).toStrictEqual([pgsVd1]);
+      expect([...cgVd2.getAll()]).toStrictEqual([pgsVd2]);
+      expect([...cgVek.getAll()]).toStrictEqual([pgsVef]);
+      expect([...cgVef.getAll()]).toStrictEqual([pgsVek]);
+      expect([...cgVg.getAll()]).toStrictEqual([pgsVg]);
+      expect([...cgVhi.getAll()]).toStrictEqual([pgsVhf]);
+      expect([...cgVhf.getAll()]).toStrictEqual([pgsVhi]);
+      // note: own pgs is always on the second place
+      expect([...cgVC.getAll()]).toStrictEqual([pgsVa, pgsVC, pgsVbc]);
+
+      expect([...cgVJ.getAll()]).toStrictEqual([pgsVbj, pgsVJ, pgsVd1, pgsVd2]);
+
+      expect([...cgVK.getAll()]).toStrictEqual([pgsVek, pgsVK, pgsVg]);
+
+      expect([...cgVF.getAll()]).toStrictEqual([
+        pgsVa,
+        pgsVC,
+        pgsVbc,
+        pgsVF,
+        pgsVJ,
+        pgsVd1,
+        pgsVd2,
+        pgsVef,
+        pgsVhf,
+      ]);
+
+      expect([...cgVI.getAll()]).toStrictEqual([
+        pgsVa,
+        pgsVC,
+        pgsVbc,
+        pgsVF,
+        pgsVJ,
+        pgsVd1,
+        pgsVd2,
+        pgsVef,
+        pgsVhf,
+        pgsVI,
+        pgsVK,
+        pgsVg,
+      ]);
+
+      // console.log([...cgVI.getAll()].map(pgs => pgs.name));
+      // console.log([...cgVF].map(([obj, set]) => [...set].map(pgs => `${obj.value}: ${pgs.name}`)));
+
+      iteratorOrderCmp.push(
+        [...cgVI].map(([obj, set]) =>
+          [...set].map((pgs) => `${obj.value}: ${pgs.name}`),
+        ),
+      );
+
+      getAllOrderCmp.push([...cgVI.getAll()].map((pgs) => pgs.name));
+    },
+  );
+
+  it('should have a consistent order of pgs', () => {
+    const [iOrig, iCloned1, iCloned2] = iteratorOrderCmp;
+    const [gOrig, gCloned1, gCloned2] = getAllOrderCmp;
+
+    expect(iOrig).toStrictEqual(iCloned1);
+    expect(iCloned1).toStrictEqual(iCloned2);
+
+    expect(gOrig).toStrictEqual(gCloned1);
+    expect(gCloned1).toStrictEqual(gCloned2);
+  });
 });
 
 describe('cloned object and its origin should not affect each other', () => {
-  it.todo('adding predicates to original and cloned objects');
-  it.todo('adding callbacks to original and cloned objects');
-  it.todo('grouping original and cloned objects');
-  it.todo('validating with/without id original and cloned objects');
-  it.todo('cloning glued debounced predicates');
   it.todo(
-    'cloned object should preserve the structure of its origin. PARTLY TESTED IN THE TESTS ABOVE',
+    'adding predicates to original and cloned objects. PARTLY WRITTEN IN validation.test.js',
   );
+  it.todo(
+    'adding callbacks to original and cloned objects. PARTLY WRITTEN IN validation.test.js',
+  );
+  it.todo(
+    'validating with/without id original and cloned objects. PARTLY WRITTEN IN validation.test.js',
+  );
+  it.todo('grouping original objects with cloned objects');
+  it.todo('cloning glued debounced predicates');
+  it.todo('grouping duplicated validations');
 });
