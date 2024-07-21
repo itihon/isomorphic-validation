@@ -1,4 +1,4 @@
-import { SINGLE } from '../constants.js';
+import { INITVAL, PROPNAME, SINGLE } from '../constants.js';
 import PredicateGroups from './predicate-groups.js';
 import ManyToManyMap from './many-to-many-map.js';
 import ConsoleRepresentation from './console-representation.js';
@@ -51,6 +51,21 @@ export default function ValidationBuilder({
 
           return pgs.toRepresentation(target);
         });
+      },
+      bind(newObj = {}, propName = PROPNAME, initVal = INITVAL) {
+        if (TYPE !== SINGLE) {
+          throw new Error('Only single validation can be bound');
+        }
+
+        const [oldObj, set] = items.entries().next().value;
+        const validatedItem = [...set][0];
+
+        validatedItem.setObject(newObj, propName, initVal);
+        items.changeKey(oldObj, newObj);
+        pgs.changeKey(oldObj, newObj);
+        containedGroups.changeKey(oldObj, newObj);
+
+        return this;
       },
       valueOf() {
         return { pgs, items, containedGroups, TYPE };

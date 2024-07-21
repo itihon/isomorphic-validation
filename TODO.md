@@ -41,7 +41,7 @@
             Validation.profile(formSelector, ['formFildNames'], [assossiatedValidations])
                 - [x] cloning mechanism
             Validation().listen(validatedForm|validatedFormField, 'event', { target: true })
-            Validation().bindObj(obj, propName, initVal) // !! can be invoked only on SINGLE validations
+            - [x] Validation().bind(obj, propName, initVal) // !! can be invoked only on SINGLE validations
                 - [x] ValidatedItem().setObj(obj, propName, initVal)
                 - [x] ManyToManyMap().changeKey(oldKey, newKey)
 
@@ -70,6 +70,8 @@
     ## Tests
 
         - [ ] require/import test to check CJS/ESM compatibility
+        - [ ] performance: check what is faster new Set([value]) or new Set().add(value)
+        - [ ] grouping.test.js should be in integration tests
 
 
     ## Bugs
@@ -78,6 +80,8 @@
             check it!!!
 
     ## Notes
+
+        - Own pgs is always on the second place in containedGroups. This defines the order of validity callback invokations.
 
         - When a predicate added with the keepValid option, on every validation with the invalid result, it notifies subscribers twice: first when changed from valid to invalid and then when restores back to the last valid value. It also calls a predicate function twice. Not sure if this is appropriate. See ObservablePredicate integration tests.
 
