@@ -4,6 +4,7 @@ import ConsoleRepresentation from './console-representation.js';
 import ObservablePredicate from './observable-predicate.js';
 import debounceP from '../utils/debounce-p.js';
 import runPredicatesQueue from '../helpers/run-predicates-queue.js';
+import CloneRegistry from './clone-registry.js';
 
 export default function ObservablePredicates() {
   const obs = ObserverAnd(true); // absense of predicates means valid state of Validation
@@ -77,7 +78,7 @@ export default function ObservablePredicates() {
           ? runPredicatesQueue(predicates, queueRules)
           : Promise.all(predicates.run(undefined, id));
       },
-      clone(cloneRegistry = new Map()) {
+      clone(registry = CloneRegistry()) {
         return predicates
           .map((predicate, idx) => {
             let debounce;
@@ -85,11 +86,7 @@ export default function ObservablePredicates() {
               predicate.valueOf()).valueOf();
 
             // for glued predicates
-            const clonedPredicate =
-              cloneRegistry.get(obsPredicate) ||
-              cloneRegistry
-                .set(obsPredicate, obsPredicate.clone())
-                .get(obsPredicate);
+            const clonedPredicate = registry.cloneOnce(obsPredicate);
 
             return [clonedPredicate, { next: queueRules[idx], debounce }];
           })

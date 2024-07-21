@@ -1,4 +1,4 @@
-import { SINGLE, GLUED, GROUPED } from '../constants.js';
+import { SINGLE, GLUED, GROUPED, PROPNAME, INITVAL } from '../constants.js';
 import makeGroupValidationsFn from './make-group-validations-fn.js';
 import PredicateGroups from '../types/predicate-groups.js';
 import ManyToManyMap from '../types/many-to-many-map.js';
@@ -6,13 +6,14 @@ import ObservablePredicates from '../types/observable-predicates.js';
 import ValidatedItem from '../types/validated-item.js';
 import ValidationBuilder from '../types/validation-builder.js';
 import clone from './clone.js';
+import CloneRegistry from '../types/clone-registry.js';
 
 // !consider memoizing this function instead of ValidatedItem to avoid creation multiple Validation
 // objects of the same obj/propName conjuction
 export default function createValidation(
   obj = {},
-  propName = 'value',
-  initVal = '',
+  propName = PROPNAME,
+  initVal = INITVAL,
 ) {
   const pgs = PredicateGroups();
   const items = ManyToManyMap();
@@ -32,4 +33,5 @@ export default function createValidation(
 // Validation.glue([], {immutable: true}) ??? not sure about necessety of this one
 createValidation.group = makeGroupValidationsFn(GROUPED);
 createValidation.glue = makeGroupValidationsFn(GLUED);
-createValidation.clone = (validation) => clone({ validation });
+createValidation.clone = (validation) =>
+  clone({ validation, registry: CloneRegistry() });

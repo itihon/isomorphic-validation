@@ -1,51 +1,44 @@
-import ManyToManyMap from '../types/many-to-many-map.js';
-import PredicateGroups from '../types/predicate-groups.js';
+import CloneRegistry from '../types/clone-registry.js';
 import ValidationBuilder from '../types/validation-builder.js';
+import memoize from '../utils/memoize.js';
 import accepOnlyValidation from './accept-only-validation.js';
 
-// traverse validations, create a new pgs, remove its observable predicates with the cloned ones
-// remove pgs in clonedContained groups with the newly created
-// remove validation with newly created
-// repeat steps for nested validations
-export default function clone({ validation, upperPgs }) {
+const buildValidation = memoize(
+  (pgs, items, containedGroups, TYPE, validations) =>
+    ValidationBuilder({
+      pgs,
+      items,
+      containedGroups,
+      TYPE,
+      validations,
+    }),
+  undefined,
+  4, // parameter validations is not accounted since it is always a new set
+);
+
+export default function clone({ validation, registry = CloneRegistry() }) {
   accepOnlyValidation(validation);
   const { pgs, items, containedGroups, TYPE } = validation.valueOf();
   const { validations } = validation; // Set()
 
-  let clonedPgs;
-  const clonedContainedGroups = ManyToManyMap();
+  const clonedPgs = registry.cloneOnce(pgs, registry);
 
-  if (upperPgs === undefined) {
-    // topmost validation
-    clonedPgs = pgs.clone();
-  } else {
-    // nested validation
-    clonedPgs = PredicateGroups();
+  const clonedItems = registry.cloneMap(items);
 
-    pgs.forEach((_, key) => {
-      if (upperPgs.has(key)) {
-        upperPgs.get(key).forEach((group) => clonedPgs.add(key, group));
-      }
-    });
-  }
-
-  const clonedValidations = [...validations]
-    .map((v) => ({ validation: v, upperPgs: clonedPgs }))
-    .map(clone);
-
-  const clonedItems = items.map((item) => item.clone());
-
-  clonedItems.forEach((_, key) => clonedContainedGroups.add(key, pgs));
-
-  containedGroups.forEach((groups, key) =>
-    clonedContainedGroups.add(key, groups),
+  const clonedContainedGroups = registry.cloneMapOnce(
+    containedGroups,
+    registry,
   );
 
-  return ValidationBuilder({
-    pgs: clonedPgs,
-    items: clonedItems,
-    containedGroups: clonedContainedGroups,
+  const clonedValidations = [...validations]
+    .map((v) => ({ validation: v, registry }))
+    .map(clone);
+
+  return buildValidation(
+    clonedPgs,
+    clonedItems,
+    clonedContainedGroups,
     TYPE,
-    validations: clonedValidations,
-  });
+    clonedValidations,
+  );
 }

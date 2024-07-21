@@ -1,7 +1,7 @@
 import memoize from '../utils/memoize.js';
 import Functions from './functions.js';
 
-const ValidatedItem = memoize(createValidatedItem, [{}, '', '']);
+const ValidatedItem = memoize(createValidatedItem, () => [{}, '', '']);
 
 ValidatedItem.keepValid = (
   items = [],
@@ -26,6 +26,7 @@ function createValidatedItem(
   let ownObj = obj;
   let ownPropName = propName;
   let ownInitVal = initVal;
+  const ownOnRestoredCBs = Functions(onRestoredCBs);
 
   return {
     /*
@@ -43,7 +44,7 @@ function createValidatedItem(
       // forget previously memoized instance
       ValidatedItem.forget(object, propertyName, initialValue); // in case an instance with the new parameters already exists
       ValidatedItem.forget(ownObj, ownPropName, ownInitVal);
-      ValidatedItem.forget(ownObj, ownPropName, ownInitVal, onRestoredCBs); // in case it was cloned
+      ValidatedItem.forget(ownObj, ownPropName, ownInitVal, ownOnRestoredCBs); // in case it was cloned
 
       ownObj = object;
       ownPropName = propertyName;
@@ -64,11 +65,12 @@ function createValidatedItem(
         // obj[propName] = lastValid = initVal;
         savedValue = ownInitVal;
       }
-      onRestoredCBs.run(cbArgs);
+      ownOnRestoredCBs.run(cbArgs);
     },
+    // Since ValidatedItem is memoized, all clones of the same item are the same instance
     clone: () =>
-      ValidatedItem(ownObj, ownPropName, ownInitVal, Functions(onRestoredCBs)),
-    onRestored: onRestoredCBs.push,
+      ValidatedItem(ownObj, ownPropName, ownInitVal, ownOnRestoredCBs),
+    onRestored: ownOnRestoredCBs.push,
     [Symbol.toStringTag]: ValidatedItem.name,
   };
 }

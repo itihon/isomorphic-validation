@@ -4,6 +4,7 @@ import ManyToManyMap from './many-to-many-map.js';
 import ObservablePredicates from './observable-predicates.js';
 import ConsoleRepresentation from './console-representation.js';
 import indexedName from '../utils/indexed-name.js';
+import CloneRegistry from './clone-registry.js';
 
 export default function PredicateGroups(
   pgs = ManyToManyMap(),
@@ -39,6 +40,7 @@ export default function PredicateGroups(
   delete representation.getAll;
   delete representation.map;
   delete representation.mergeWith;
+  delete representation.changeKey;
 
   return Object.defineProperties(
     {
@@ -66,16 +68,16 @@ export default function PredicateGroups(
               ),
             );
       },
-      clone() {
+      clone(registry = CloneRegistry()) {
         const newPgs = PredicateGroups(
           undefined,
           ValidityCallbacks(false, validityCBs),
         );
 
-        const cloneRegistry = new Map(); // for cloning glued predicates
+        const gluedPredRegistry = CloneRegistry(); // for cloning glued predicates
 
         pgs
-          .map((predicateGroup) => predicateGroup.clone(cloneRegistry))
+          .map((group) => registry.cloneOnce(group, gluedPredRegistry))
           .forEach((group, key) => newPgs.add(key, group));
 
         return newPgs;
@@ -94,6 +96,7 @@ export default function PredicateGroups(
       map: pgs.map,
       forEach: pgs.forEach,
       mergeWith: pgs.mergeWith,
+      changeKey: pgs.changeKey,
       has: pgs.has.bind(pgs),
       get: pgs.get.bind(pgs),
       [Symbol.toStringTag]: PredicateGroups.name,
