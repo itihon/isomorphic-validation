@@ -169,8 +169,8 @@ describe('ManyToManyMap', () => {
         .add(keyObj2, 6)
         .add(keyObj2, 7)
         .add(keyObj3, 8)
-        .add(keyObj3, 9)
-        .add(keyObj4, 10)
+        .add(keyObj4, 9)
+        .add(keyObj3, 10)
         .add(keyObj4, 11);
 
       const pairIds = mtmm2.map(getPairID);
