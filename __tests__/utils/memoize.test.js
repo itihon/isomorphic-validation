@@ -5,7 +5,7 @@ const sum = jest.fn((a = 0, b = 0, ...args) =>
   Promise.resolve(args.reduce((acc, arg) => acc + arg, a + b)),
 );
 
-const memoizedSum = memoize(sum, [0, 0, 0, 0, 0]);
+const memoizedSum = memoize(sum, () => [0, 0, 0, 0, 0]);
 
 describe('memoize (with default parameters)', () => {
   it('should forget a memoized result', () => {

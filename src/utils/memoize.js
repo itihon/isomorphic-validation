@@ -1,4 +1,8 @@
-export default function memoize(fn = Function.prototype, defaultParams = []) {
+export default function memoize(
+  fn = Function.prototype,
+  defaults = () => [],
+  limit = Infinity,
+) {
   const argsIdxs = new Map();
   const resIdxs = new Map();
   const counter = () => argsIdxs.size;
@@ -10,6 +14,7 @@ export default function memoize(fn = Function.prototype, defaultParams = []) {
 
   const mergeWithDefaults = (args) => {
     const params = [];
+    const defaultParams = defaults();
     const length = Math.max(args.length, defaultParams.length);
 
     for (let i = 0; i < length; i++) {
@@ -24,7 +29,7 @@ export default function memoize(fn = Function.prototype, defaultParams = []) {
     (...args) => {
       const params = mergeWithDefaults(args);
       return retrieveIfHas(resIdxs)(Fn, ...params)(
-        params.map(retrieveIfHas(argsIdxs)(counter)).join(','),
+        params.map(retrieveIfHas(argsIdxs)(counter)).slice(0, limit).join(','),
       );
     };
 
