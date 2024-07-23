@@ -1,5 +1,6 @@
 import { FlatCompat } from "@eslint/eslintrc";
 import eslintConfigPrettier from "eslint-config-prettier";
+import globals from 'globals';
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -22,6 +23,9 @@ export default [
     {
       files: filesToLint,
       languageOptions: {
+        globals: {
+          ...globals.browser,
+        },
         parserOptions: {
           ecmaVersion: "latest",
           sourceType: "module",
@@ -37,6 +41,8 @@ export default [
         "no-use-before-define": ["error", { "functions": false }],
         "no-plusplus": "off",
         "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsForRegex": [".*"] }],
+        "no-nested-ternary": "off",
+        "max-classes-per-file": [ "error", { "ignoreExpressions": true, "max": 2 } ],
       }
     },
     {
