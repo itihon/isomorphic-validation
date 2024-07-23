@@ -39,6 +39,8 @@
 
         - [ ] Final decision: 
             Validation.profile(formSelector, ['formFildNames'], [assossiatedValidations])
+                - [ ] ValidatedForm
+                - [ ] getEnv
                 - [x] cloning mechanism
             Validation().listen(validatedForm|validatedFormField, 'event', { target: true })
             - [x] Validation().bind(obj, propName, initVal) // !! can be invoked only on SINGLE validations
@@ -69,6 +71,7 @@
 
     ## Tests
 
+        - [x] add a test script to package.json to run browser and node environment tests separately
         - [ ] require/import test to check CJS/ESM compatibility
         - [ ] performance: check what is faster new Set([value]) or new Set().add(value)
         - [ ] grouping.test.js should be in integration tests
