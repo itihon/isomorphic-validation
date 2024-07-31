@@ -9,7 +9,7 @@ export default function makeGroupValidationsFn(TYPE = GROUPED) {
     const pgs = PredicateGroups();
     const items = ManyToManyMap();
     const containedGroups = ManyToManyMap();
-    const validations = [Validations].concat(rest).flat(Infinity);
+    const validations = [...new Set([Validations].concat(rest).flat(Infinity))];
 
     validations.forEach((validation) => {
       accepOnlyValidation(validation);

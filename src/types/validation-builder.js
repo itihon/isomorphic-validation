@@ -72,7 +72,7 @@ export default function ValidationBuilder({
       },
       // constraints: new Map(pgs.toRepresentation()),
       constraints: pgs.toRepresentation(),
-      validations: new Set(validations),
+      validations,
       valid: pgs.valid,
       invalid: pgs.invalid,
       changed: pgs.changed,
