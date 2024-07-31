@@ -30,6 +30,9 @@
         - [ ] !consider for adding firing started and canceled??? and deferred (or delayed) events for debounced predicate
         - [ ] optional constraint (when invalid, does not invalidate the Validation object)
                 Validation().constraint(Predicate, { optional: true })
+                    Possible use case:
+                    when we are creating a product, the image constraints are required.
+                    when we are editing the product, the image constraints are optional.
             or maybe optional Validation object (does not invalidate the group it is included in)
             or maybe optional Validation should mean it is valid with the value equal to initVal
             and runs predicates only when the value differs from initVal
@@ -39,8 +42,9 @@
 
         - [ ] Final decision: 
             Validation.profile(formSelector, ['formFildNames'], [assossiatedValidations])
-                - [ ] ValidatedForm
-                - [ ] getEnv
+                Maybe it'd be better if ValidationProfile would have validations passed in combained in a grouped validation instead of a collection. Because they have to be grouped later anyway.
+                - [x] ValidatedForm
+                - [x] getEnv
                 - [x] cloning mechanism
             Validation().listen(validatedForm|validatedFormField, 'event', { target: true })
             - [x] Validation().bind(obj, propName, initVal) // !! can be invoked only on SINGLE validations
@@ -79,6 +83,7 @@
 
     ## Bugs
 
+        - [ ] When a Validation is bound to a new object after being grouped into another Validation, the grouping Validation doesn't know about it and the former remains assosiated with the old object.
         - [ ] debounce functionality should not be applied on the server side.
             check it!!!
 
@@ -91,4 +96,6 @@
         - Binding Validation with a validated object makes more sense in validation profiles because each profile may have a form with it's own unique selector (e.g. #signin_form, #signup_form). Also having different form objects on the server is nessessary.
         Consider to add this feature. Validation().bindObj(obj, propName, initVal)
 
-        - On ValidatedItem. After calling setObject on a cloned item, the original item gets erased from the memoize function's registry. Should it be so??? This is a contradiction in logic: on the one hand memoization implies imposibility of existence of two instances of an item constructed with the same parameters, on the other hand in combination with cloning it becomes possible.
+        + UPD: removed memoization. On ValidatedItem. After calling setObject on a cloned item, the original item gets erased from the memoize function's registry. Should it be so??? This is a contradiction in logic: on the one hand memoization implies imposibility of existence of two instances of an item constructed with the same parameters, on the other hand in combination with cloning it becomes possible.
+
+        - A predicate added on a glued validation is called twice while validating a group with no object passed in the validate() funciton. Although one call is enough. The second call is unnecessary.

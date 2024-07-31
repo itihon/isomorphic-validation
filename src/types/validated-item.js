@@ -1,7 +1,8 @@
-import memoize from '../utils/memoize.js';
+// import memoize from '../utils/memoize.js';
 import Functions from './functions.js';
 
-const ValidatedItem = memoize(createValidatedItem, () => [{}, '', '']);
+// const ValidatedItem = memoize(createValidatedItem, () => [{}, '', '']);
+const ValidatedItem = createValidatedItem;
 
 ValidatedItem.keepValid = (
   items = [],
@@ -42,16 +43,16 @@ function createValidatedItem(
       initialValue = ownInitVal,
     ) {
       // forget previously memoized instance
-      ValidatedItem.forget(object, propertyName, initialValue); // in case an instance with the new parameters already exists
-      ValidatedItem.forget(ownObj, ownPropName, ownInitVal);
-      ValidatedItem.forget(ownObj, ownPropName, ownInitVal, ownOnRestoredCBs); // in case it was cloned
+      // ValidatedItem.forget(object, propertyName, initialValue); // in case an instance with the new parameters already exists
+      // ValidatedItem.forget(ownObj, ownPropName, ownInitVal);
+      // ValidatedItem.forget(ownObj, ownPropName, ownInitVal, ownOnRestoredCBs); // in case it was cloned
 
       ownObj = object;
       ownPropName = propertyName;
       ownInitVal = initialValue;
 
       // register the instance with the new parameters
-      ValidatedItem.remember(this, ownObj, ownPropName, ownInitVal);
+      // ValidatedItem.remember(this, ownObj, ownPropName, ownInitVal);
     },
     getObject: () => ownObj,
     getValue: () => ownObj[ownPropName],
