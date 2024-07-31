@@ -11,7 +11,7 @@ export default function ManyToManyMap() {
   });
 
   return Object.assign(map, {
-    add(key, value) {
+    add(key, value, keepOrder = true) {
       values.add(value);
 
       if (map.has(key)) {
@@ -21,11 +21,11 @@ export default function ManyToManyMap() {
         set.add(value);
 
         if (size !== set.size) {
-          orderedSet.add([key, value]);
+          if (keepOrder) orderedSet.add([key, value]);
         }
       } else {
         map.set(key, new Set().add(value));
-        orderedSet.add([key, value]);
+        if (keepOrder) orderedSet.add([key, value]);
       }
 
       return this;
@@ -35,7 +35,7 @@ export default function ManyToManyMap() {
         throw new Error('Old key must not be the same as new key');
       }
       if (map.has(oldKey)) {
-        map.get(oldKey).forEach((value) => map.add(newKey, value));
+        map.get(oldKey).forEach((value) => map.add(newKey, value, false));
         map.delete(oldKey);
         orderedSet.forEach((entry) => {
           if (entry[0] === oldKey) {

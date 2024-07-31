@@ -203,6 +203,9 @@ describe('ManyToManyMap', () => {
     const noKeyMsg = 'There is no such old key';
     const noSameKeysMsg = 'Old key must not be the same as new key';
     const mtmm = ManyToManyMap();
+    const before = [];
+    const after = [];
+
     mtmm
       .add(keyObj1, valueObj1)
       .add(keyObj1, valueObj5)
@@ -214,6 +217,9 @@ describe('ManyToManyMap', () => {
       .add(keyObj4, valueObj4)
       .add(keyObj5, valueObj5);
 
+    before.push(...mtmm.getAll());
+    mtmm.forEach((value) => before.push(value));
+
     expect(mtmm.getAll()).toStrictEqual(
       new Set([valueObj1, valueObj5, valueObj2, valueObj4, valueObj3]),
     );
@@ -224,12 +230,15 @@ describe('ManyToManyMap', () => {
     );
 
     mtmm.changeKey(keyObj1, newKeyObj1);
+
     expect(mtmm.get(newKeyObj1)).toStrictEqual(new Set([valueObj1, valueObj5]));
 
     mtmm.changeKey(keyObj2, newKeyObj2);
+
     expect(mtmm.get(newKeyObj2)).toStrictEqual(new Set([valueObj2, valueObj4]));
 
     mtmm.changeKey(keyObj3, newKeyObj3);
+
     expect(mtmm.get(newKeyObj3)).toStrictEqual(
       new Set([valueObj1, valueObj3, valueObj5]),
     );
@@ -238,8 +247,14 @@ describe('ManyToManyMap', () => {
     expect(() => mtmm.changeKey(newKeyObj5, newKeyObj5)).toThrow(noSameKeysMsg);
 
     mtmm.changeKey(keyObj4, newKeyObj3); // newKeyObj already exists
+
     expect(mtmm.get(newKeyObj3)).toStrictEqual(
       new Set([valueObj4, valueObj1, valueObj3, valueObj5]),
     );
+
+    after.push(...mtmm.getAll());
+    mtmm.forEach((value) => after.push(value));
+
+    expect(before).toStrictEqual(after);
   });
 });
