@@ -1,17 +1,18 @@
 import { SINGLE, GLUED, GROUPED, PROPNAME, INITVAL } from '../constants.js';
 import makeGroupValidationsFn from './make-group-validations-fn.js';
+import clone from './clone.js';
+import createProfile from './create-profile.js';
 import PredicateGroups from '../types/predicate-groups.js';
 import ManyToManyMap from '../types/many-to-many-map.js';
 import ObservablePredicates from '../types/observable-predicates.js';
 import ValidatedItem from '../types/validated-item.js';
 import ValidationBuilder from '../types/validation-builder.js';
-import clone from './clone.js';
 import CloneRegistry from '../types/clone-registry.js';
 
 // !consider memoizing this function instead of ValidatedItem to avoid creation multiple Validation
 // objects of the same obj/propName conjuction
 export default function createValidation(
-  obj = {},
+  obj = { value: 'default' },
   propName = PROPNAME,
   initVal = INITVAL,
 ) {
@@ -35,3 +36,4 @@ createValidation.group = makeGroupValidationsFn(GROUPED);
 createValidation.glue = makeGroupValidationsFn(GLUED);
 createValidation.clone = (validation) =>
   clone({ validation, registry: CloneRegistry() });
+createValidation.profile = createProfile;
