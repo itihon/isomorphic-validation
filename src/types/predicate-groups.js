@@ -34,7 +34,9 @@ export default function PredicateGroups(
     },
   );
 
+  // bad. hiding unnecessary methods.
   const addRepresentation = representation.add;
+  const representationChangeKey = representation.changeKey;
   delete representation.add;
   delete representation.forEach;
   delete representation.getAll;
@@ -74,10 +76,8 @@ export default function PredicateGroups(
           ValidityCallbacks(false, validityCBs),
         );
 
-        const gluedPredRegistry = CloneRegistry(); // for cloning glued predicates
-
         pgs
-          .map((group) => registry.cloneOnce(group, gluedPredRegistry))
+          .map((group) => registry.cloneOnce(group, registry))
           .forEach((group, key) => newPgs.add(key, group));
 
         return newPgs;
@@ -85,6 +85,16 @@ export default function PredicateGroups(
       toRepresentation(id) {
         representation.target = id;
         return representation;
+      },
+      // changeKey: pgs.changeKey,
+      changeKey(...args) {
+        pgs.changeKey(...args);
+
+        representation.add = addRepresentation; // bad
+        representationChangeKey(...args);
+        delete representation.add; // bad
+
+        return this;
       },
       onChanged: obs.onChanged,
       valid: validityCBs.valid,
@@ -96,7 +106,6 @@ export default function PredicateGroups(
       map: pgs.map,
       forEach: pgs.forEach,
       mergeWith: pgs.mergeWith,
-      changeKey: pgs.changeKey,
       has: pgs.has.bind(pgs),
       get: pgs.get.bind(pgs),
       [Symbol.toStringTag]: PredicateGroups.name,

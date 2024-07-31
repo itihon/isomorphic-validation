@@ -4,7 +4,7 @@ export default function CloneRegistry() {
     cloneRegistry.get(item) || cloneRegistry.set(item, factoryFn()).get(item);
 
   return {
-    cloneOnce(item, registry = CloneRegistry()) {
+    cloneOnce(item, registry) {
       return retrieveIfHas(item, () => item.clone(registry));
     },
     cloneMapOnce(items = [], registry = CloneRegistry()) {
@@ -12,10 +12,10 @@ export default function CloneRegistry() {
         items.map((item) => registry.cloneOnce(item, registry)),
       );
     },
-    cloneMap(items = [], registry = CloneRegistry()) {
-      return retrieveIfHas(items, () =>
-        items.map((item) => item.clone(registry)),
-      );
-    },
+    // cloneMap(items = [], registry = undefined) {
+    //   return retrieveIfHas(items, () =>
+    //     items.map((item) => item.clone(registry)),
+    //   );
+    // },
   };
 }

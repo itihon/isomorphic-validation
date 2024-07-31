@@ -85,8 +85,7 @@ export default function ObservablePredicates() {
             const obsPredicate = ({ delay: debounce } =
               predicate.valueOf()).valueOf();
 
-            // for glued predicates
-            const clonedPredicate = registry.cloneOnce(obsPredicate);
+            const clonedPredicate = registry.cloneOnce(obsPredicate, registry);
 
             return [clonedPredicate, { next: queueRules[idx], debounce }];
           })

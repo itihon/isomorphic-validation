@@ -3,6 +3,7 @@ import ObserverAnd from './observer-and.js';
 import ConsoleRepresentation from './console-representation.js';
 import indexedName from '../utils/indexed-name.js';
 import ValidatedItem from './validated-item.js';
+import CloneRegistry from './clone-registry.js';
 
 export default function ObservablePredicate(
   predicate = Predicate(),
@@ -132,10 +133,10 @@ export default function ObservablePredicate(
       value: () => setValidity(notifySubscribers(false), validationResult),
     },
     clone: {
-      value: () =>
+      value: (registry = CloneRegistry()) =>
         ObservablePredicate(
           Predicate(predicate),
-          items.map((item) => item.clone()),
+          items.map((item) => registry.cloneOnce(item)),
           keepValid,
           anyData,
         ),

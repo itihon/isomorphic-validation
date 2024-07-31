@@ -23,7 +23,7 @@ export default function clone({ validation, registry = CloneRegistry() }) {
 
   const clonedPgs = registry.cloneOnce(pgs, registry);
 
-  const clonedItems = registry.cloneMap(items);
+  const clonedItems = registry.cloneMapOnce(items, registry);
 
   const clonedContainedGroups = registry.cloneMapOnce(
     containedGroups,
