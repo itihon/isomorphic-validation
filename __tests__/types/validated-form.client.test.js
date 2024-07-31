@@ -3,7 +3,7 @@
  */
 import { it, expect, describe } from '@jest/globals';
 import { IS_CLIENT, IS_SERVER } from '../../src/utils/getenv.js';
-import ValidationProfile from '../../src/types/validation-profile.js';
+import ValidatedForm from '../../src/types/validated-form.js';
 
 document.body.innerHTML = `
     <form id="form">
@@ -14,8 +14,7 @@ document.body.innerHTML = `
 `;
 
 const fieldNames = ['firstName', 'lastName', 'email'];
-const anyData = { validations: ['someValidations'] };
-const form = ValidationProfile('#form', fieldNames, anyData);
+const form = ValidatedForm('#form', fieldNames);
 
 describe('ValidatedForm', () => {
   it('should be client', () => {
@@ -24,22 +23,21 @@ describe('ValidatedForm', () => {
   });
 
   it('should give access to the form and its fields', () => {
-    expect(Object.prototype.toString.call(form.form)).toBe(
+    expect(Object.prototype.toString.call(form)).toBe(
       '[object HTMLFormElement]',
     );
 
-    expect(form.form.elements.firstName.value).toBe('John');
+    expect(form.elements.firstName.name).toBe('firstName');
+    expect(form.elements.firstName.value).toBe('John');
 
-    expect(form.form.elements.lastName.value).toBe('Doe');
+    expect(form.elements.lastName.name).toBe('lastName');
+    expect(form.elements.lastName.value).toBe('Doe');
 
-    expect(form.form.elements.email.value).toBe('q@q.q');
-  });
-
-  it('should give access to anyData', () => {
-    expect(form.validations).toStrictEqual(['someValidations']);
+    expect(form.elements.email.name).toBe('email');
+    expect(form.elements.email.value).toBe('q@q.q');
   });
 
   it('should throw an error', () => {
-    expect(() => ValidationProfile('#non existent selector')).toThrowError();
+    expect(() => ValidatedForm('#non existent selector')).toThrowError();
   });
 });

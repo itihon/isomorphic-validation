@@ -1,32 +1,31 @@
 import createDummyObj from '../utils/createDummyObj.js';
 import { ifSide } from '../utils/getenv.js';
 
-export default function ValidationProfile(
-  selector = '',
-  fieldNames = [],
-  anyData = {},
-) {
-  const form = ifSide(
+export default function ValidatedForm(selector = '', fieldNames = []) {
+  return ifSide(
+    // server side
     () => {
-      // server side
       const dummyObject = createDummyObj();
 
-      function FormField() {
-        this.value = '';
+      function FormField(name) {
+        this.name = name;
+        this.value = `${selector}.${name} 42`;
       }
       FormField.prototype = dummyObject;
 
       function FormFields() {
+        this.selector = selector;
         fieldNames.forEach((fieldName) => {
-          this[fieldName] = new FormField();
+          this[fieldName] = new FormField(fieldName);
         });
+        this[Symbol.toStringTag] = ValidatedForm.name;
       }
       FormFields.prototype = dummyObject;
 
       return new FormFields();
     },
+    // client side
     () => {
-      // client side
       const htmlForm = document.querySelector(selector);
 
       if (!htmlForm) {
@@ -38,10 +37,4 @@ export default function ValidationProfile(
       return htmlForm;
     },
   )();
-
-  return {
-    ...anyData,
-    form,
-    [Symbol.toStringTag]: ValidationProfile.name,
-  };
 }
