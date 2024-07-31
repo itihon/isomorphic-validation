@@ -40,9 +40,9 @@
                 Validation(obj, propName, initVal, optinal = true)
         - [ ] taking object's value as initial value when creating a new Validation (may be used for adding the optional constraint feature)
 
-        - [ ] Final decision: 
-            Validation.profile(formSelector, ['formFildNames'], [assossiatedValidations])
-                Maybe it'd be better if ValidationProfile would have validations passed in combained in a grouped validation instead of a collection. Because they have to be grouped later anyway.
+        - [x] Final decision: 
+        - [x] Validation.profile(formSelector, ['formFildNames'], [assossiatedValidations])
+                - [x] Maybe it'd be better if ValidationProfile would have validations passed in combained in a grouped validation instead of a collection. Because they have to be grouped later anyway.
                 - [x] ValidatedForm
                 - [x] getEnv
                 - [x] cloning mechanism
@@ -78,7 +78,7 @@
         - [x] add a test script to package.json to run browser and node environment tests separately
         - [ ] require/import test to check CJS/ESM compatibility
         - [ ] performance: check what is faster new Set([value]) or new Set().add(value)
-        - [ ] grouping.test.js should be in integration tests
+        - [ ] grouping.test.js should be in integration tests ?
 
 
     ## Bugs
@@ -92,9 +92,6 @@
         - Own pgs is always on the second place in containedGroups. This defines the order of validity callback invokations.
 
         - When a predicate added with the keepValid option, on every validation with the invalid result, it notifies subscribers twice: first when changed from valid to invalid and then when restores back to the last valid value. It also calls a predicate function twice. Not sure if this is appropriate. See ObservablePredicate integration tests.
-
-        - Binding Validation with a validated object makes more sense in validation profiles because each profile may have a form with it's own unique selector (e.g. #signin_form, #signup_form). Also having different form objects on the server is nessessary.
-        Consider to add this feature. Validation().bindObj(obj, propName, initVal)
 
         + UPD: removed memoization. On ValidatedItem. After calling setObject on a cloned item, the original item gets erased from the memoize function's registry. Should it be so??? This is a contradiction in logic: on the one hand memoization implies imposibility of existence of two instances of an item constructed with the same parameters, on the other hand in combination with cloning it becomes possible.
 

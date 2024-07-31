@@ -14,6 +14,7 @@
         .changed(cb)
         .validated(cb)
         .constraint(Predicate()|Function.prototype, { next, debounce, keepValid })
+        .bind(obj, propName, initVal)
         .validate(obj)
 
 ### Validation instance properties
@@ -26,6 +27,8 @@
 
     Validation.group([Validation(), Validation()])
     Validation.glue([Validation(), Validation()])
+    Validation.clone(Validation())
+    Validation.profile(selector, [fieldNames], [Validation(), Validation()])
 
 ### Predicate instance properties
     
