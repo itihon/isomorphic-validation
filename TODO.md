@@ -10,7 +10,7 @@
 
     ## Features
 
-        - [ ] accept Event object in Validation().validate(event). In order to form.addEventListener('change', Validation().validate);
+        - [x] accept Event object in Validation().validate(event). In order to form.addEventListener('change', Validation().validate);
                 or maybe Validation().validateForm(form, input|change)
                 or maybe Validation().addForm(form, input|change)
                 or maybe Validation().subscribe(form, input|change)
@@ -20,7 +20,7 @@
                             .firstName.validateOn('input')
                             .email.validateOn('change') to validate different fields on different events
         - [ ] Validation().onServer.{API} Validation().onClient.{API} Validation[onBoth].{API}
-        - [ ] Validation.getForm(selector) or Validation.form(selector)
+        - [x] Validation.getForm(selector) or Validation.form(selector)
         - [ ] Representation -> ConsoleRepresentation, Representation -> DOMRepresentation
         - [x]   !consider adding Validation.from() as an immutable analog of .group()
                 or maybe something like this 

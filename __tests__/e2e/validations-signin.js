@@ -103,9 +103,11 @@ it.skip('', () => {
 
   
   app.post('/', allVp);
+  app.post('/', signUpProfile); // because it contains the form
 
   // signUpForm.form.on('input', allVp, { target: true });
-  signUpForm.form.addEventListener('input', allVp.validate);
+  signUpProfile.form.addEventListener('input', allVp.validate);
+  signUpProfile.form.addEventListener('input', signUpProfile.validate);
 
   {
     validations: [],
