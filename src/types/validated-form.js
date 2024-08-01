@@ -14,11 +14,16 @@ export default function ValidatedForm(selector = '', fieldNames = []) {
       FormField.prototype = dummyObject;
 
       function FormFields() {
-        this.selector = selector;
+        Object.defineProperty(this, 'selector', { value: selector });
         fieldNames.forEach((fieldName) => {
-          this[fieldName] = new FormField(fieldName);
+          Object.defineProperty(this, fieldName, {
+            value: new FormField(fieldName),
+            enumerable: true,
+          });
         });
-        this[Symbol.toStringTag] = ValidatedForm.name;
+        Object.defineProperty(this, Symbol.toStringTag, {
+          value: ValidatedForm.name,
+        });
       }
       FormFields.prototype = dummyObject;
 
