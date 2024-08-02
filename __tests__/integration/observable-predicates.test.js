@@ -1,17 +1,30 @@
 import { expect, it, describe, test, beforeEach, jest } from '@jest/globals';
 import ObservablePredicates from '../../src/types/observable-predicates.js';
 import protocols from '../protocols.js';
-import {
-  op1,
-  op2,
-  op3,
-  op4,
-  obj1,
-  obj2,
-  obj3,
-} from '../integration/observable-predicate.test.js';
 import wait from '../../src/utils/wait.js';
-import { isOnlyLetters } from '../predicates.js';
+import ValidatedItem from '../../src/types/validated-item.js';
+import Predicate from '../../src/types/predicate.js';
+import ObservablePredicate from '../../src/types/observable-predicate.js';
+import { isOnlyLetters, areNotEqual, isGreaterThan } from '../predicates.js';
+
+const obj1 = { value: 'Firstname' };
+const obj2 = { value: 'Lastname' };
+const obj3 = { value: 42 };
+
+const vi1 = ValidatedItem(obj1, 'value');
+const vi2 = ValidatedItem(obj2, 'value');
+const vi3 = ValidatedItem(obj3, 'value');
+
+const p1 = Predicate(isOnlyLetters);
+const p2 = Predicate(isOnlyLetters);
+const p3 = Predicate(isGreaterThan(18));
+const p4 = Predicate(areNotEqual);
+
+const op1 = ObservablePredicate(p1, [vi1], true); // first name, letters
+const op2 = ObservablePredicate(p2, [vi2]); // last name, letters
+const op3 = ObservablePredicate(p3, [vi3]); // age, achived 18
+const op4 = ObservablePredicate(p4, [vi1, vi2]); // firstname !== lastname
+const op5 = ObservablePredicate(p3, [vi3]); // age, achived 18
 
 let ops;
 
@@ -25,10 +38,6 @@ describe('ObservablePredicates - a collection of instances of ObservablePredicat
     ops = ObservablePredicates();
   });
 
-  it.todo(
-    'next with debounce, (.invalid, .invalidate). WRITE IN E2E TESTS, OR IN INTEGRATION TESTS',
-  );
-  it.todo('next with debounce, (.cancel). WRITTEN IN E2E TESTS');
   it.todo('console representation, json representation, run(id)');
 
   it('should be true while no predicates added', () => {
@@ -90,7 +99,7 @@ describe('ObservablePredicates - a collection of instances of ObservablePredicat
     expect(ops.isValid).toBe(false);
 
     obj2.value = 'Lastname';
-    obj3.value = 18;
+    obj3.value = 19;
     ops
       .run()
       .then((res) => expect(res).toStrictEqual([true, true, true, true]));
@@ -116,7 +125,7 @@ describe('ObservablePredicates - a collection of instances of ObservablePredicat
     expect(ops.isValid).toBe(false);
 
     obj2.value = 'Firstname';
-    obj3.value = 18;
+    obj3.value = 19;
     expect(await ops.run()).toStrictEqual([true, true, false]);
     expect(ops.isValid).toBe(false);
 
@@ -132,7 +141,6 @@ describe('ObservablePredicates - a collection of instances of ObservablePredicat
 
     op1.invalidate();
     op2.invalidate();
-    op3.invalidate();
 
     expect(ops1.getValue()).toBe(true); // absense of predicates means valid state
 
@@ -145,17 +153,18 @@ describe('ObservablePredicates - a collection of instances of ObservablePredicat
     expect(onChangedCB1).toHaveBeenCalledTimes(1);
 
     const ops2 = ops1.clone();
-    ops2.onChanged(onChangedCB2).add(op3);
+    ops2.onChanged(onChangedCB2).add(op5);
 
-    // console.log(ops1.getID(), ops1.getAll().map(p => p.getID()), ops2.getID(), ops2.getAll().map(p => p.getID()));
     expect(onChangedCB2).toHaveBeenCalledTimes(0); // CB was added after ops1 state changed
 
     expect(await ops1.run()).toStrictEqual([true, true]);
     expect(ops1.getValue()).toBe(true);
+    expect(ops2.getValue()).toBe(false); // ops2 is not affected
     expect(onChangedCB1).toHaveBeenCalledTimes(2);
-    expect(onChangedCB2).toHaveBeenCalledTimes(0); // ops1 is not affected
+    expect(onChangedCB2).toHaveBeenCalledTimes(0); // ops2 is not affected
 
     expect(await ops2.run()).toStrictEqual([true, true, true]);
+    expect(ops2.getValue()).toBe(true);
     expect(onChangedCB2).toHaveBeenCalledTimes(1);
 
     obj2.value = 'not only letters !@#$%^&*';
@@ -169,10 +178,10 @@ describe('ObservablePredicates - a collection of instances of ObservablePredicat
     expect(await ops2.run()).toStrictEqual([true, true, true]);
     expect(onChangedCB2).toHaveBeenCalledTimes(3);
 
-    op3.invalidate();
+    op5.invalidate();
     expect(ops2.getValue()).toBe(false);
     expect(onChangedCB2).toHaveBeenCalledTimes(4);
-    expect(ops1.getValue()).toBe(true); // ops is not affected
+    expect(ops1.getValue()).toBe(true); // ops1 is not affected
     expect(onChangedCB1).toHaveBeenCalledTimes(2);
 
     expect(await ops2.run()).toStrictEqual([true, true, true]);
@@ -180,7 +189,7 @@ describe('ObservablePredicates - a collection of instances of ObservablePredicat
 
     expect(ops2.getValue()).toBe(true);
     op1.invalidate();
-    expect(ops2.getValue()).toBe(true); // !!! ops1 should not be affected
+    expect(ops2.getValue()).toBe(true); // !!! ops2 should not be affected
     expect(ops1.getValue()).toBe(false);
     expect(onChangedCB1).toHaveBeenCalledTimes(3);
 

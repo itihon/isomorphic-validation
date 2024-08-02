@@ -4,6 +4,7 @@ import ConsoleRepresentation from './console-representation.js';
 import indexedName from '../utils/indexed-name.js';
 import ValidatedItem from './validated-item.js';
 import CloneRegistry from './clone-registry.js';
+import Functions from './functions.js';
 
 export default function ObservablePredicate(
   predicate = Predicate(),
@@ -35,8 +36,15 @@ export default function ObservablePredicate(
   // if (!isFunction(fn)) return null;
 
   const obs = ObserverAnd();
+  const onInvalidCBs = Functions();
+
   const notifySubscribers = obs.update;
-  const setValidity = validityCBs.set;
+  const setValidity = (value, cbArgs) => {
+    if (!value) {
+      onInvalidCBs.run();
+    }
+    return validityCBs.set(value, cbArgs);
+  };
   const fnName = fn.name || indexedName('predicate');
   const representation = ConsoleRepresentation(
     fnName,
@@ -144,7 +152,7 @@ export default function ObservablePredicate(
     getID: { value: obs.getID },
     getValue: { value: obs.getValue },
     onChanged: { value: obs.onChanged },
-    invalid: { value: validityCBs.invalid },
+    onInvalid: { value: onInvalidCBs.push },
     [Symbol.toStringTag]: { value: ObservablePredicate.name },
   });
 }

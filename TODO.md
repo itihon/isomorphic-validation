@@ -9,7 +9,8 @@
 
 
     ## Features
-
+        - [ ] ignoreNext parameter to call a predicate regardles of previously set next parameter
+        - [ ] every validation probably should be a handler/middleware
         - [x] accept Event object in Validation().validate(event). In order to form.addEventListener('change', Validation().validate);
                 or maybe Validation().validateForm(form, input|change)
                 or maybe Validation().addForm(form, input|change)
@@ -83,11 +84,14 @@
 
     ## Bugs
 
+        - [x] next and invalidate doesn't work after cloning
         - [ ] When a Validation is bound to a new object after being grouped into another Validation, the grouping Validation doesn't know about it and the former remains assosiated with the old object.
         - [ ] debounce functionality should not be applied on the server side.
             check it!!!
 
     ## Notes
+
+        - When a validated value is equal to its initial value, instead of validating it, maybe it's better to cancel and invalidate all validations.
 
         - Own pgs is always on the second place in containedGroups. This defines the order of validity callback invokations.
 

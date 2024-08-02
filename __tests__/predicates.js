@@ -31,6 +31,14 @@ export const isGreaterThan = memoize((number) =>
   ),
 );
 
+export const isGreaterOrEqual = memoize((number) =>
+  Object.defineProperty(
+    jest.fn((value) => Number(number) <= Number(value)),
+    'name',
+    { value: isGreaterThan.name },
+  ),
+);
+
 export const isLessThan = memoize((number) =>
   Object.defineProperty(
     jest.fn((value) => Number(number) > Number(value)),
@@ -75,6 +83,8 @@ export const areEqual = jest.fn((...args) =>
   Boolean(args.reduce((acc, v) => (acc === v ? v : false))),
 );
 
+export const areNotEqual = jest.fn((value1, value2) => value1 !== value2);
+
 Object.entries({
   isOnlyLetters,
   isEmail,
@@ -82,6 +92,7 @@ Object.entries({
   isEmailNotBusy,
   isPositiveInt,
   areEqual,
+  areNotEqual,
 }).forEach(([name, predicate]) => {
   Object.defineProperty(predicate, 'name', { value: name });
 });

@@ -75,7 +75,7 @@ describe('ObservablePredicate', () => {
     const onChangedCB = jest.fn();
 
     const obsPredicate = ObservablePredicate(Predicate(() => true));
-    obsPredicate.invalid(invalidCB).onChanged(onChangedCB);
+    obsPredicate.onInvalid(invalidCB).onChanged(onChangedCB);
 
     expect(obsPredicate.getValue()).toBe(false);
     expect(obsPredicate()).toBe(true);
@@ -100,7 +100,7 @@ describe('ObservablePredicate', () => {
           }),
       ),
     );
-    obsPredicate.invalid(invalidCB).onChanged(onChangedCB);
+    obsPredicate.onInvalid(invalidCB).onChanged(onChangedCB);
 
     expect(obsPredicate.getValue()).toBe(false);
     expect(
@@ -131,7 +131,7 @@ describe('ObservablePredicate', () => {
           }),
       ),
     );
-    obsPredicate.invalid(invalidCB).onChanged(onChangedCB);
+    obsPredicate.onInvalid(invalidCB).onChanged(onChangedCB);
 
     expect(obsPredicate.getValue()).toBe(false);
     expect(await obsPredicate()).toBe(true);
