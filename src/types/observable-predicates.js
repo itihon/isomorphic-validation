@@ -60,16 +60,8 @@ export default function ObservablePredicates() {
         return this;
       },
       run(id) {
-        /*
-                    !consider using predicate's validityCBs.valid mechanism
-                    instead of runPredicatesQueue
-                    UPD: Too complicated! validityCBs.set() doesn't wait for
-                    valid/invalid/changed CBs to be done, it doesn't use 
-                    their result.
-                    But we need to wait for all predicates to be done.
-                */
         return withQueueRules
-          ? runPredicatesQueue(predicates, queueRules)
+          ? runPredicatesQueue(predicates, queueRules, [undefined, id])
           : Promise.all(predicates.run(undefined, id));
       },
       clone(registry = CloneRegistry()) {
