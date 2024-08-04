@@ -3,7 +3,7 @@
  */
 import { it, expect, describe } from '@jest/globals';
 import { IS_CLIENT, IS_SERVER } from '../../src/utils/getenv.js';
-import ValidatedForm from '../../src/types/validated-form.js';
+import ValidatableForm from '../../src/types/validatable-form.js';
 
 document.body.innerHTML = `
     <form id="form">
@@ -14,9 +14,9 @@ document.body.innerHTML = `
 `;
 
 const fieldNames = ['firstName', 'lastName', 'email'];
-const form = ValidatedForm('#form', fieldNames);
+const form = ValidatableForm('#form', fieldNames);
 
-describe('ValidatedForm', () => {
+describe('ValidatableForm', () => {
   it('should be client', () => {
     expect(IS_CLIENT).toBe(true);
     expect(IS_SERVER).toBe(false);
@@ -38,6 +38,6 @@ describe('ValidatedForm', () => {
   });
 
   it('should throw an error', () => {
-    expect(() => ValidatedForm('#non existent selector')).toThrowError();
+    expect(() => ValidatableForm('#non existent selector')).toThrowError();
   });
 });

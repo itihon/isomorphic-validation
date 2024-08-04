@@ -1,6 +1,6 @@
 import { GROUPED } from '../constants';
 import CloneRegistry from '../types/clone-registry';
-import ValidatedForm from '../types/validated-form';
+import ValidatableForm from '../types/validatable-form';
 import clone from './clone';
 import makeGroupValidationsFn from './make-group-validations-fn';
 import makeValidationHandlerFn from './make-validation-handler-fn';
@@ -16,11 +16,11 @@ export default function createProfile(
   const bind = (form) => (validation, idx) =>
     validation.bind(form[fieldNames[idx]]);
 
-  const validatedForm = ValidatedForm(selector, fieldNames);
+  const validatableForm = ValidatableForm(selector, fieldNames);
 
   const clonedValidations = validations
     .map(cloneValidation)
-    .map(bind(validatedForm));
+    .map(bind(validatableForm));
 
   const allValidations = Object.create(
     makeGroupValidationsFn(GROUPED)(clonedValidations),
@@ -40,9 +40,9 @@ export default function createProfile(
       return profile;
     },
     Object.defineProperties(
-      makeValidationHandlerFn(allValidations, validatedForm),
+      makeValidationHandlerFn(allValidations, validatableForm),
       {
-        form: { value: validatedForm },
+        form: { value: validatableForm },
         validation: { value: allValidations },
         [Symbol.toStringTag]: { value: 'ValidationProfile' },
       },

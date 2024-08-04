@@ -1,6 +1,6 @@
 import Functions from './functions.js';
 
-ValidatedItem.keepValid = (
+ValidatableItem.keepValid = (
   items = [],
   validationResult = { isValid: false },
 ) => {
@@ -13,7 +13,7 @@ ValidatedItem.keepValid = (
   return !isValid;
 };
 
-function ValidatedItem(
+function ValidatableItem(
   obj = {},
   propName = '',
   initVal = '',
@@ -57,10 +57,10 @@ function ValidatedItem(
       return values.delete(key);
     },
     clone: () =>
-      ValidatedItem(ownObj, ownPropName, ownInitVal, ownOnRestoredCBs),
+      ValidatableItem(ownObj, ownPropName, ownInitVal, ownOnRestoredCBs),
     onRestored: ownOnRestoredCBs.push,
-    [Symbol.toStringTag]: ValidatedItem.name,
+    [Symbol.toStringTag]: ValidatableItem.name,
   };
 }
 
-export default ValidatedItem;
+export default ValidatableItem;

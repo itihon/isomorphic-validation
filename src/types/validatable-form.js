@@ -1,7 +1,7 @@
 import createDummyObj from '../utils/createDummyObj.js';
 import { ifSide } from '../utils/getenv.js';
 
-export default function ValidatedForm(selector = '', fieldNames = []) {
+export default function ValidatableForm(selector = '', fieldNames = []) {
   return ifSide(
     // server side
     () => {
@@ -22,7 +22,7 @@ export default function ValidatedForm(selector = '', fieldNames = []) {
           });
         });
         Object.defineProperty(this, Symbol.toStringTag, {
-          value: ValidatedForm.name,
+          value: ValidatableForm.name,
         });
       }
       FormFields.prototype = dummyObject;

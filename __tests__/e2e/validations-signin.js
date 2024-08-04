@@ -11,7 +11,7 @@ import {
 } from './validations.js';
 
 it.skip('', () => {
-  // const validatedForm = Validation.form('#my-form', [
+  // const validatableForm = Validation.form('#my-form', [
   //     'firstName', 'lastName', 'email', 'age', 'password', 'pwdConfirm'
   // ]);
   //
@@ -21,7 +21,7 @@ it.skip('', () => {
   //     firstNameV, lastNameV, emailV, ageV, passwordV, pwdConfirmV
   // ]);
   //
-  // Validation.bind(validatedForm, [
+  // Validation.bind(validatableForm, [
   //     firstNameVc, lastNameVc, emailVc, ageVc, passwordVc, pwdConfirmVc
   // ]);
 

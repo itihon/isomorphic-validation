@@ -1,15 +1,15 @@
 import { it, expect, describe } from '@jest/globals';
 import { IS_CLIENT, IS_SERVER } from '../../src/utils/getenv.js';
-import ValidatedForm from '../../src/types/validated-form.js';
+import ValidatableForm from '../../src/types/validatable-form.js';
 
 const fieldNames = ['firstName', 'lastName', 'email'];
-const form = ValidatedForm('#form', fieldNames);
+const form = ValidatableForm('#form', fieldNames);
 
 form.firstName.value = 'John';
 form.lastName.value = 'Doe';
 form.email.value = 'q@q.q';
 
-describe('ValidatedForm', () => {
+describe('ValidatableForm', () => {
   it('should be server', () => {
     expect(IS_CLIENT).toBe(false);
     expect(IS_SERVER).toBe(true);

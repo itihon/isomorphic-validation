@@ -3,15 +3,15 @@ import { isOnlyLetters, areNotEqual, isGreaterOrEqual } from '../predicates.js';
 import ObserverAnd from '../../src/types/observer-and.js';
 import ObservablePredicate from '../../src/types/observable-predicate.js';
 import Predicate from '../../src/types/predicate.js';
-import ValidatedItem from '../../src/types/validated-item.js';
+import ValidatableItem from '../../src/types/validatable-item.js';
 
 const obj1 = { value: 'Firstname' };
 const obj2 = { value: 'Lastname' };
 const obj3 = { value: 42 };
 
-const vi1 = ValidatedItem(obj1, 'value');
-const vi2 = ValidatedItem(obj2, 'value');
-const vi3 = ValidatedItem(obj3, 'value');
+const vi1 = ValidatableItem(obj1, 'value');
+const vi2 = ValidatableItem(obj2, 'value');
+const vi3 = ValidatableItem(obj3, 'value');
 
 const validCB1 = jest.fn();
 const invalidCB1 = jest.fn();
@@ -79,7 +79,7 @@ const oa = ObserverAnd()
   .subscribe(op4)
   .onChanged(onChangedCB);
 
-describe('ObservablePredicate, Predicate, ValidatedItem, ObserverAnd', () => {
+describe('ObservablePredicate, Predicate, ValidatableItem, ObserverAnd', () => {
   it('should be true when all predicates are true because subscribed', () => {
     expect(op1()).toBe(true);
     expect(isOnlyLetters).toHaveBeenCalledTimes(1);

@@ -2,7 +2,7 @@ import Predicate from './predicate.js';
 import ObserverAnd from './observer-and.js';
 import ConsoleRepresentation from './console-representation.js';
 import indexedName from '../utils/indexed-name.js';
-import ValidatedItem from './validated-item.js';
+import ValidatableItem from './validatable-item.js';
 import CloneRegistry from './clone-registry.js';
 import Functions from './functions.js';
 
@@ -101,7 +101,7 @@ export default function ObservablePredicate(
       //   items.forEach((item) => item.restoreValue(validationResult));
       //   return obsPredicate(!forbidInvalid);
       // }
-      if (ValidatedItem.keepValid(items, validationResult)) {
+      if (ValidatableItem.keepValid(items, validationResult)) {
         return obsPredicate(!forbidInvalid);
       }
     }

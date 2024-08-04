@@ -5,12 +5,10 @@ import createProfile from './create-profile.js';
 import PredicateGroups from '../types/predicate-groups.js';
 import ManyToManyMap from '../types/many-to-many-map.js';
 import ObservablePredicates from '../types/observable-predicates.js';
-import ValidatedItem from '../types/validated-item.js';
+import ValidatableItem from '../types/validatable-item.js';
 import ValidationBuilder from '../types/validation-builder.js';
 import CloneRegistry from '../types/clone-registry.js';
 
-// !consider memoizing this function instead of ValidatedItem to avoid creation multiple Validation
-// objects of the same obj/propName conjuction
 export default function createValidation(
   obj = { value: 'default' },
   propName = PROPNAME,
@@ -22,16 +20,12 @@ export default function createValidation(
   const TYPE = SINGLE;
 
   pgs.add(obj, ObservablePredicates());
-  items.add(obj, ValidatedItem(obj, propName, initVal));
+  items.add(obj, ValidatableItem(obj, propName, initVal));
   containedGroups.add(obj, pgs);
 
   return ValidationBuilder({ pgs, items, containedGroups, TYPE });
 }
 
-// !consider adding createValidation.from() as an immutable analog of .group()
-// or maybe something like this
-// Validation.group([], {immutable: true})
-// Validation.glue([], {immutable: true}) ??? not sure about necessety of this one
 createValidation.group = makeGroupValidationsFn(GROUPED);
 createValidation.glue = makeGroupValidationsFn(GLUED);
 createValidation.clone = (validation) =>

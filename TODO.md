@@ -42,25 +42,25 @@
         - [x] Final decision: 
         - [x] Validation.profile(formSelector, ['formFildNames'], [assossiatedValidations])
                 - [x] Maybe it'd be better if ValidationProfile would have validations passed in combained in a grouped validation instead of a collection. Because they have to be grouped later anyway.
-                - [x] ValidatedForm
+                - [x] ValidatableForm
                 - [x] getEnv
                 - [x] cloning mechanism
-            Validation().listen(validatedForm|validatedFormField, 'event', { target: true })
+            Validation().listen(validatableForm|validatableFormField, 'event', { target: true })
             - [x] Validation().bind(obj, propName, initVal) // !! can be invoked only on SINGLE validations
-                - [x] ValidatedItem().setObj(obj, propName, initVal)
+                - [x] ValidatableItem().setObj(obj, propName, initVal)
                 - [x] ManyToManyMap().changeKey(oldKey, newKey)
 
 
     ## Refactor
 
-        - [ ] rename entities from Validated* to Validatable*.
+        - [x] rename entities from Validated* to Validatable*.
         - [ ] consider renaming ObserverAnd to something like AndGate
         - [x] Validation.group, Validation.glue to accept validations divided by comma
-        - [x] consider moving out the keepValid functionality from ObservablePredicate to ValidatedItem as a decorator after the according e2e tests are written:
-            ValidatedItem.keepValid(ObservablePredicate()) or
-            ObservablePredicate({decorators: [debounceP, ValidatedItem.keepValid]});
+        - [x] consider moving out the keepValid functionality from ObservablePredicate to ValidatableItem as a decorator after the according e2e tests are written:
+            ValidatableItem.keepValid(ObservablePredicate()) or
+            ObservablePredicate({decorators: [debounceP, ValidatableItem.keepValid]});
 
-        - [x] ValidatedItem.keepValid([...items], validationResult{isValid})
+        - [x] ValidatableItem.keepValid([...items], validationResult{isValid})
         - [x] saveLastValid() and retrieveLastValid() into saveValue() and restoreValue()
         - [x] lastValidCBs -> restoredCBs, onLastValid(), keptValid() -> restored()
         - [x] getObj() -> getObject()
@@ -96,7 +96,7 @@
 
         - When a predicate added with the keepValid option, on every validation with the invalid result, it notifies subscribers twice: first when changed from valid to invalid and then when restores back to the last valid value. It also calls a predicate function twice. Not sure if this is appropriate. See ObservablePredicate integration tests.
 
-        + UPD: removed memoization. On ValidatedItem. After calling setObject on a cloned item, the original item gets erased from the memoize function's registry. Should it be so??? This is a contradiction in logic: on the one hand memoization implies imposibility of existence of two instances of an item constructed with the same parameters, on the other hand in combination with cloning it becomes possible.
+        + UPD: removed memoization. On ValidatableItem. After calling setObject on a cloned item, the original item gets erased from the memoize function's registry. Should it be so??? This is a contradiction in logic: on the one hand memoization implies imposibility of existence of two instances of an item constructed with the same parameters, on the other hand in combination with cloning it becomes possible.
 
         - A predicate added on a glued validation is called twice while validating a group with no object passed in the validate() funciton. Although one call is enough. The second call is unnecessary.
 

@@ -4,7 +4,7 @@
 import { describe, it, expect, jest } from '@jest/globals';
 import wait from '../../src/utils/wait.js';
 import ObservablePredicates from '../../src/types/observable-predicates.js';
-import ValidatedItem from '../../src/types/validated-item.js';
+import ValidatableItem from '../../src/types/validatable-item.js';
 import Predicate from '../../src/types/predicate.js';
 import ObservablePredicate from '../../src/types/observable-predicate.js';
 import { isOnlyLetters, isGreaterThan } from '../predicates.js';
@@ -13,9 +13,9 @@ const obj1 = { value: 'Firstname' };
 const obj2 = { value: 'Lastname' };
 const obj3 = { value: 42 };
 
-const vi1 = ValidatedItem(obj1, 'value');
-const vi2 = ValidatedItem(obj2, 'value');
-const vi3 = ValidatedItem(obj3, 'value');
+const vi1 = ValidatableItem(obj1, 'value');
+const vi2 = ValidatableItem(obj2, 'value');
+const vi3 = ValidatableItem(obj3, 'value');
 
 const p1 = Predicate(isOnlyLetters);
 const p2 = Predicate(isOnlyLetters);

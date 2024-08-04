@@ -67,9 +67,9 @@ export default function ValidationBuilder({
         }
 
         const [oldObj, set] = items.entries().next().value;
-        const validatedItem = [...set][0];
+        const ValidatableItem = [...set][0];
 
-        validatedItem.setObject(newObj, propName, initVal);
+        ValidatableItem.setObject(newObj, propName, initVal);
         items.changeKey(oldObj, newObj);
         pgs.changeKey(oldObj, newObj);
         containedGroups.changeKey(oldObj, newObj);
