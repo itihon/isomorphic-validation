@@ -31,7 +31,8 @@ describe('ObservablePredicate', () => {
     expect(ObservablePredicate(Predicate(() => true))()).toBe(true);
   });
 
-  it('is imposible to start an async predicate unless the previously launched is not finished', (done) => {
+  // this feature is considered for deprication
+  it.skip('is imposible to start an async predicate unless the previously launched is not finished', (done) => {
     const syncPredicate = jest.fn(() => true);
     const asyncPredicate = jest.fn(
       () =>

@@ -88,8 +88,6 @@ export default function ObservablePredicate(
     },
   );
 
-  let previousMicrotask;
-
   items.forEach((item) => item.onRestored(...restoredCBs));
 
   function predicatePostExec(result, forbidInvalid) {
@@ -110,22 +108,13 @@ export default function ObservablePredicate(
     return setValidity(result, validationResult);
   }
 
-  function obsPredicate(forbidInvalid = keepValid, id = undefined) {
-    if (previousMicrotask) {
-      return previousMicrotask;
-    }
-
-    validationResult.target = id;
+  function obsPredicate(forbidInvalid = keepValid, target = undefined) {
+    validationResult.target = target;
 
     const result = fn(...items.map((item) => item.getValue()));
 
     if (result.then) {
-      previousMicrotask = result.then((res) => {
-        previousMicrotask = null;
-        return predicatePostExec(res, forbidInvalid);
-      });
-
-      return previousMicrotask;
+      return result.then((res) => predicatePostExec(res, forbidInvalid));
     }
 
     return predicatePostExec(result, forbidInvalid);

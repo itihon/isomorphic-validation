@@ -39,7 +39,8 @@ describe('e2e', () => {
     'first argument for Validation(), what if it does not contain the specified propName',
   );
 
-  it('is imposible to start an async predicate unless the previously launched is not finished', (done) => {
+  // this feature is considered for deprication
+  it.skip('is imposible to start an async predicate unless the previously launched is not finished', (done) => {
     const testAsyncValidation = Validation(validatedObj);
     testAsyncValidation.constraint(syncPredicate).constraint(asyncPredicate);
 
