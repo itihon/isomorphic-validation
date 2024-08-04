@@ -5,6 +5,7 @@ import ObservablePredicate from './observable-predicate.js';
 import debounceP from '../utils/debounce-p.js';
 import runPredicatesQueue from '../helpers/run-predicates-queue.js';
 import CloneRegistry from './clone-registry.js';
+import { IS_CLIENT } from '../utils/getenv.js';
 
 export default function ObservablePredicates() {
   const obs = ObserverAnd(true); // absense of predicates means valid state of Validation
@@ -41,7 +42,10 @@ export default function ObservablePredicates() {
 
         obs.subscribe(predicate);
 
-        predicates.push(debounce ? debounceP(predicate, debounce) : predicate);
+        predicates.push(
+          debounce && IS_CLIENT ? debounceP(predicate, debounce) : predicate,
+        );
+
         queueRules.push(next);
         withQueueRules = withQueueRules || !next;
         representation.push(predicate.toRepresentation());

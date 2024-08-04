@@ -85,7 +85,7 @@
         - [x] ValidationResult.isValid should not be Validation's state, it should be a result of a particular operation
         - [x] next and invalidate doesn't work after cloning
         - [x] The value from a validatable object should be read immediately after invoking the validate function because when a predicate's execution is deferred the predicate might deal with irrelevant arguments which might be already changed up to the predicate's execution moment. This is crucial especially for the server side execution.
-        - [ ] debounce functionality should not be applied on the server side.
+        - [x] debounce functionality should not be applied on the server side.
             check it!!!
 
     ## Notes
