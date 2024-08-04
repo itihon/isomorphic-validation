@@ -1,8 +1,4 @@
-// import memoize from '../utils/memoize.js';
 import Functions from './functions.js';
-
-// const ValidatedItem = memoize(createValidatedItem, () => [{}, '', '']);
-const ValidatedItem = createValidatedItem;
 
 ValidatedItem.keepValid = (
   items = [],
@@ -17,7 +13,7 @@ ValidatedItem.keepValid = (
   return !isValid;
 };
 
-function createValidatedItem(
+function ValidatedItem(
   obj = {},
   propName = '',
   initVal = '',
@@ -28,34 +24,20 @@ function createValidatedItem(
   let ownPropName = propName;
   let ownInitVal = initVal;
   const ownOnRestoredCBs = Functions(onRestoredCBs);
+  const values = new Map();
 
   return {
-    /*
-              consider adding sanitizing functionality
-              use case: Number.toFixed(), String().trim(),
-              escape characters etc.
-              UPD: this kind of feature may be implemented
-              by adding the started event handler
-          */
     setObject(
       object = ownObj,
       propertyName = ownPropName,
       initialValue = ownInitVal,
     ) {
-      // forget previously memoized instance
-      // ValidatedItem.forget(object, propertyName, initialValue); // in case an instance with the new parameters already exists
-      // ValidatedItem.forget(ownObj, ownPropName, ownInitVal);
-      // ValidatedItem.forget(ownObj, ownPropName, ownInitVal, ownOnRestoredCBs); // in case it was cloned
-
       ownObj = object;
       ownPropName = propertyName;
       ownInitVal = initialValue;
-
-      // register the instance with the new parameters
-      // ValidatedItem.remember(this, ownObj, ownPropName, ownInitVal);
     },
     getObject: () => ownObj,
-    getValue: () => ownObj[ownPropName],
+    getValue: (key) => (key ? values.get(key) : ownObj[ownPropName]),
     saveValue: () => {
       savedValue = ownObj[ownPropName];
     },
@@ -63,12 +45,17 @@ function createValidatedItem(
       if (ownObj[ownPropName] !== ownInitVal) {
         ownObj[ownPropName] = savedValue;
       } else {
-        // obj[propName] = lastValid = initVal;
         savedValue = ownInitVal;
       }
       ownOnRestoredCBs.run(cbArgs);
     },
-    // Since ValidatedItem is memoized, all clones of the same item are the same instance
+    preserveValue(key = Symbol('ValidatableItem.value')) {
+      values.set(key, ownObj[ownPropName]);
+      return key;
+    },
+    clearValue(key) {
+      return values.delete(key);
+    },
     clone: () =>
       ValidatedItem(ownObj, ownPropName, ownInitVal, ownOnRestoredCBs),
     onRestored: ownOnRestoredCBs.push,

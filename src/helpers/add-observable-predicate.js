@@ -34,5 +34,6 @@ export default function addObservablePredicate(
     };
   }
 
+  // eslint consistent-return
   return function nop() {};
 }

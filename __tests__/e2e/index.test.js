@@ -122,6 +122,64 @@ describe('e2e', () => {
     expect(changedCB).toHaveBeenCalledTimes(2);
   });
 
+  describe('next', () => {
+    it.each([
+      {
+        title: 'both the same',
+        clone: false,
+      },
+      {
+        title: 'the second is the clone of the first',
+        clone: true,
+      },
+    ])(
+      '$title: should invoke a deferred predicate with the relevant argument',
+      async ({ clone }) => {
+        const email = { value: '' };
+        const validation1 = Validation(email);
+
+        const testValues = [
+          'a@a.a',
+          'b@bacaki.com', // isNotOneTimeEmail -> false
+          'aa@a.a',
+          'a@a.', // isEmail -> false
+          'q@q.q', // isEmailNotBusy -> false
+          'b@b.b',
+          'b@hellomailo.net', // isNotOneTimeEmail -> false
+        ];
+
+        const allCalls = testValues.map((value) => [value]);
+
+        validation1
+          .constraint(isEmail)
+          .constraint(isEmailNotBusy, { next: false });
+
+        const validation2 = clone ? Validation.clone(validation1) : validation1;
+
+        validation2.constraint(isNotOneTimeEmail); // deferred
+
+        const results = testValues.map((value) => {
+          email.value = value;
+          return validation2.validate();
+        });
+
+        expect(
+          (await Promise.all(results)).map((res) => res.isValid),
+        ).toStrictEqual([true, false, true, false, false, true, false]);
+
+        expect(isEmail.mock.calls).toStrictEqual(allCalls);
+        expect(isEmailNotBusy.mock.calls).toStrictEqual(allCalls);
+
+        expect(isNotOneTimeEmail.mock.calls.flat().sort()).toStrictEqual(
+          allCalls
+            .flat()
+            .filter((value) => value !== 'q@q.q')
+            .sort(),
+        );
+      },
+    );
+  });
+
   describe('debounce', () => {
     it('should delay running a predicate for a specified amount of time', (done) => {
       const validation = Validation(validatedObj);

@@ -35,7 +35,7 @@ const signUpProfile = Validation.profile(
   [emailV, passwordV, pwdconfirmV],
 );
 
-signUpProfile.validation.email.constraint(isEmailNotBusy);
+signUpProfile.validation.email.constraint(isEmailNotBusy, { debounce: 100 });
 signInProfile.validation.password.constraint(isOnlyLetters);
 
 const signInForm = signInProfile.form;

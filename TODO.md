@@ -3,9 +3,7 @@
 
     ## Chores
 
-        - [ ] change double quotes to single quotes in eslint.config.mjs and try to amend the commit in which eslint have been configured
 
-        - [ ] remove test commit
 
 
     ## Features
@@ -55,6 +53,7 @@
 
     ## Refactor
 
+        - [ ] rename entities from Validated* to Validatable*.
         - [ ] consider renaming ObserverAnd to something like AndGate
         - [x] Validation.group, Validation.glue to accept validations divided by comma
         - [x] consider moving out the keepValid functionality from ObservablePredicate to ValidatedItem as a decorator after the according e2e tests are written:
@@ -83,9 +82,9 @@
 
 
     ## Bugs
-
+        - [x] ValidationResult.isValid should not be Validation's state, it should be a result of a particular operation
         - [x] next and invalidate doesn't work after cloning
-        - [ ] When a Validation is bound to a new object after being grouped into another Validation, the grouping Validation doesn't know about it and the former remains assosiated with the old object.
+        - [x] The value from a validatable object should be read immediately after invoking the validate function because when a predicate's execution is deferred the predicate might deal with irrelevant arguments which might be already changed up to the predicate's execution moment. This is crucial especially for the server side execution.
         - [ ] debounce functionality should not be applied on the server side.
             check it!!!
 
@@ -100,3 +99,5 @@
         + UPD: removed memoization. On ValidatedItem. After calling setObject on a cloned item, the original item gets erased from the memoize function's registry. Should it be so??? This is a contradiction in logic: on the one hand memoization implies imposibility of existence of two instances of an item constructed with the same parameters, on the other hand in combination with cloning it becomes possible.
 
         - A predicate added on a glued validation is called twice while validating a group with no object passed in the validate() funciton. Although one call is enough. The second call is unnecessary.
+
+        - When a Validation is bound to a new object after being grouped into another Validation, the grouping Validation doesn't know about it and the former remains assosiated with the old object in the group. Don't bind validations after grouping, do it before!

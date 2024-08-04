@@ -59,10 +59,10 @@ export default function ObservablePredicates() {
 
         return this;
       },
-      run(id) {
+      run(...args) {
         return withQueueRules
-          ? runPredicatesQueue(predicates, queueRules, [undefined, id])
-          : Promise.all(predicates.run(undefined, id));
+          ? runPredicatesQueue(predicates, queueRules, args)
+          : Promise.all(predicates.run(...args));
       },
       clone(registry = CloneRegistry()) {
         return predicates

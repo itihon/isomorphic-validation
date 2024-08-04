@@ -108,10 +108,14 @@ export default function ObservablePredicate(
     return setValidity(result, validationResult);
   }
 
-  function obsPredicate(forbidInvalid = keepValid, target = undefined) {
+  function obsPredicate(
+    forbidInvalid = keepValid,
+    target = undefined,
+    callID = undefined,
+  ) {
     validationResult.target = target;
 
-    const result = fn(...items.map((item) => item.getValue()));
+    const result = fn(...items.map((item) => item.getValue(callID)));
 
     if (result.then) {
       return result.then((res) => predicatePostExec(res, forbidInvalid));

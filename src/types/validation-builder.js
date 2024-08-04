@@ -38,8 +38,15 @@ export default function ValidationBuilder({
         return this;
       },
       validate(target) {
-        return pgs.run(target).then((/* res */) => {
-          // !!! duplicate of logic
+        const validatableItems =
+          target !== undefined ? items.get(target) : items.getAll();
+
+        const callID = Symbol('callID');
+        validatableItems.forEach((item) => item.preserveValue(callID));
+
+        return pgs.run(target, callID).then((res) => {
+          validatableItems.forEach((item) => item.clearValue(callID));
+
           (containedGroups.get(target) || containedGroups.getAll()).forEach(
             (containedPgs) => {
               containedPgs.runCBs(
@@ -49,7 +56,9 @@ export default function ValidationBuilder({
             },
           );
 
-          return pgs.toRepresentation(target);
+          return Object.create(pgs.toRepresentation(target), {
+            isValid: { value: res },
+          });
         });
       },
       bind(newObj = {}, propName = PROPNAME, initVal = INITVAL) {

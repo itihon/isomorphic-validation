@@ -34,7 +34,7 @@ export default function PredicateGroups(
     },
   );
 
-  // bad. hiding unnecessary methods.
+  // ! bad. hiding unnecessary methods.
   const addRepresentation = representation.add;
   const representationChangeKey = representation.changeKey;
   delete representation.add;
@@ -53,17 +53,16 @@ export default function PredicateGroups(
         addRepresentation(key, predicateGroup.toRepresentation());
         return this;
       },
-      run(id) {
+      run(id, callID) {
         // ! fire the started event
-        // !!! duplicate of logic
         const predicateGroups = id !== undefined ? pgs.get(id) : pgs.getAll();
 
         return predicateGroups
           ? Promise.all(
               Array.from(predicateGroups, (predicateGroup) =>
-                predicateGroup.run(id),
+                predicateGroup.run(undefined, id, callID),
               ),
-            )
+            ).then((res) => !res.flat().some((value) => value !== true)) // ! slow
           : Promise.reject(
               new Error(
                 'There are no predicates assosiatied with the passed id:',
@@ -90,9 +89,9 @@ export default function PredicateGroups(
       changeKey(...args) {
         pgs.changeKey(...args);
 
-        representation.add = addRepresentation; // bad
+        representation.add = addRepresentation; // ! bad
         representationChangeKey(...args);
-        delete representation.add; // bad
+        delete representation.add; // ! bad
 
         return this;
       },
