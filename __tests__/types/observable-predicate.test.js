@@ -144,4 +144,52 @@ describe('ObservablePredicate', () => {
     expect(invalidCB).toHaveBeenCalledTimes(1);
     expect(onChangedCB).toHaveBeenCalledTimes(2);
   });
+
+  it('should accept only a Boolean or a Promise of a Boolean as the return value of a predicate', async () => {
+    const error =
+      'The returned value of a predicate must be a Boolean ' +
+      'or a Promise that resolves to a Boolean.';
+
+    expect(ObservablePredicate(Predicate(() => true))).not.toThrow();
+    expect(ObservablePredicate(Predicate(() => false))).not.toThrow();
+    await expect(ObservablePredicate(Predicate(() => Promise.resolve(true)))())
+      .not.rejects;
+    await expect(ObservablePredicate(Predicate(() => Promise.resolve(false)))())
+      .not.rejects;
+
+    expect(ObservablePredicate(Predicate(() => undefined))).toThrow();
+    await expect(
+      ObservablePredicate(Predicate(() => Promise.resolve(undefined)))(),
+    ).rejects.toThrowError(error);
+
+    expect(ObservablePredicate(Predicate(() => null))).toThrow();
+    await expect(
+      ObservablePredicate(Predicate(() => Promise.resolve(null)))(),
+    ).rejects.toThrowError(error);
+
+    expect(ObservablePredicate(Predicate(() => ''))).toThrow();
+    await expect(
+      ObservablePredicate(Predicate(() => Promise.resolve('')))(),
+    ).rejects.toThrowError(error);
+
+    expect(ObservablePredicate(Predicate(() => [true]))).toThrow();
+    await expect(
+      ObservablePredicate(Predicate(() => Promise.resolve([true])))(),
+    ).rejects.toThrowError(error);
+
+    expect(ObservablePredicate(Predicate(() => Object(true)))).toThrow();
+    await expect(
+      ObservablePredicate(Predicate(() => Promise.resolve(Object(true))))(),
+    ).rejects.toThrowError(error);
+
+    expect(ObservablePredicate(Predicate(() => 0))).toThrow();
+    await expect(
+      ObservablePredicate(Predicate(() => Promise.resolve(0)))(),
+    ).rejects.toThrowError(error);
+
+    expect(ObservablePredicate(Predicate(() => 1))).toThrow();
+    await expect(
+      ObservablePredicate(Predicate(() => Promise.resolve(1)))(),
+    ).rejects.toThrowError(error);
+  });
 });

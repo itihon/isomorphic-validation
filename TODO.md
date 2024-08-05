@@ -77,6 +77,7 @@
 
     ## Tests
 
+        - [ ] merge validation.test.js and index.test.js
         - [x] add a test script to package.json to run browser and node environment tests separately
         - [ ] require/import test to check CJS/ESM compatibility
         - [ ] performance: check what is faster new Set([value]) or new Set().add(value)

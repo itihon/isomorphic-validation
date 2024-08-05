@@ -5,6 +5,7 @@ import indexedName from '../utils/indexed-name.js';
 import ValidatableItem from './validatable-item.js';
 import CloneRegistry from './clone-registry.js';
 import Functions from './functions.js';
+import acceptOnlyBoolean from '../helpers/accept-only-boolean.js';
 
 export default function ObservablePredicate(
   predicate = Predicate(),
@@ -76,6 +77,7 @@ export default function ObservablePredicate(
   items.forEach((item) => item.onRestored(...restoredCBs));
 
   function predicatePostExec(result, forbidInvalid) {
+    acceptOnlyBoolean(result);
     notifySubscribers(result);
     if (forbidInvalid) {
       // if (result) {
@@ -112,7 +114,7 @@ export default function ObservablePredicate(
 
     const result = fn(...items.map((item) => item.getValue(callID)));
 
-    if (result.then) {
+    if (result && result.then) {
       return result.then((res) => predicatePostExec(res, forbidInvalid));
     }
 
