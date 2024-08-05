@@ -1,4 +1,11 @@
-import { describe, it, expect, beforeAll, jest } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  jest,
+  beforeEach,
+} from '@jest/globals';
 import { Validation } from '../../src/index.js';
 import { isGreaterThan } from '../predicates';
 
@@ -77,6 +84,81 @@ describe('Validation', () => {
       expect(() => Validation.glue(v1, v2).bind(obj3)).toThrow(
         'Only single validation can be bound',
       );
+    });
+  });
+
+  describe('optional', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should run optional predicates only if the validatable value does not equal the initial value', async () => {
+      const results = [];
+      const validation = Validation(obj1);
+      validation
+        .constraint(isGreaterThan(42), { optional: true })
+        .constraint(isGreaterThan(16))
+        .constraint(isGreaterThan(1), { optional: true });
+
+      obj1.value = 1;
+      results.push(validation.validate()); // false
+      expect(isGreaterThan(42)).toHaveBeenCalledTimes(1);
+      expect(isGreaterThan(16)).toHaveBeenCalledTimes(1);
+      expect(isGreaterThan(1)).toHaveBeenCalledTimes(1);
+
+      obj1.value = 43;
+      results.push(validation.validate()); // true
+      expect(isGreaterThan(42)).toHaveBeenCalledTimes(2);
+      expect(isGreaterThan(16)).toHaveBeenCalledTimes(2);
+      expect(isGreaterThan(1)).toHaveBeenCalledTimes(2);
+
+      obj1.value = ''; // initial value
+      results.push(validation.validate()); // false
+      expect(isGreaterThan(42)).toHaveBeenCalledTimes(2);
+      expect(isGreaterThan(16)).toHaveBeenCalledTimes(3);
+      expect(isGreaterThan(1)).toHaveBeenCalledTimes(2);
+
+      obj1.value = 44;
+      results.push(validation.validate()); // true
+      expect(isGreaterThan(42)).toHaveBeenCalledTimes(3);
+      expect(isGreaterThan(16)).toHaveBeenCalledTimes(4);
+      expect(isGreaterThan(1)).toHaveBeenCalledTimes(3);
+
+      expect(
+        (await Promise.all(results)).map((res) => res.isValid),
+      ).toStrictEqual([false, true, false, true]);
+    });
+
+    it('should be valid when has only optional predicates and the validatable value equals the initial value', async () => {
+      const results = [];
+      const validation = Validation(obj1);
+      validation
+        .constraint(isGreaterThan(42), { optional: true })
+        .constraint(isGreaterThan(1), { optional: true });
+
+      obj1.value = 1;
+      results.push(validation.validate()); // false
+      expect(isGreaterThan(42)).toHaveBeenCalledTimes(1);
+      expect(isGreaterThan(1)).toHaveBeenCalledTimes(1);
+
+      obj1.value = 43;
+      results.push(validation.validate()); // true
+      expect(isGreaterThan(42)).toHaveBeenCalledTimes(2);
+      expect(isGreaterThan(1)).toHaveBeenCalledTimes(2);
+
+      obj1.value = ''; // initial value
+      results.push(validation.validate()); // true
+      expect(isGreaterThan(42)).toHaveBeenCalledTimes(2);
+      expect(isGreaterThan(1)).toHaveBeenCalledTimes(2);
+
+      obj1.value = 44;
+      results.push(validation.validate()); // true
+      expect(isGreaterThan(42)).toHaveBeenCalledTimes(3);
+      expect(isGreaterThan(1)).toHaveBeenCalledTimes(3);
+
+      expect(
+        (await Promise.all(results)).map((res) => res.isValid),
+      ).toStrictEqual([false, true, true, true]);
     });
   });
 });

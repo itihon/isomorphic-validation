@@ -25,6 +25,7 @@ function ValidatableItem(
   let ownInitVal = initVal;
   const ownOnRestoredCBs = Functions(onRestoredCBs);
   const values = new Map();
+  let isInitVal = ownObj[ownPropName] === ownInitVal;
 
   return {
     setObject(
@@ -37,6 +38,8 @@ function ValidatableItem(
       ownInitVal = initialValue;
     },
     getObject: () => ownObj,
+    getPropName: () => ownPropName,
+    getInitValue: () => ownInitVal,
     getValue: (key) => (key ? values.get(key) : ownObj[ownPropName]),
     saveValue: () => {
       savedValue = ownObj[ownPropName];
@@ -50,11 +53,17 @@ function ValidatableItem(
       ownOnRestoredCBs.run(cbArgs);
     },
     preserveValue(key = Symbol('ValidatableItem.value')) {
-      values.set(key, ownObj[ownPropName]);
+      const currValue = ownObj[ownPropName];
+      values.set(key, currValue);
+      isInitVal = currValue === initVal;
       return key;
     },
     clearValue(key) {
+      isInitVal = undefined;
       return values.delete(key);
+    },
+    isInitValue() {
+      return isInitVal;
     },
     clone: () =>
       ValidatableItem(ownObj, ownPropName, ownInitVal, ownOnRestoredCBs),

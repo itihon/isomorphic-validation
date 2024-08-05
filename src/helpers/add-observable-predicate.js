@@ -6,7 +6,14 @@ import ObservablePredicate from '../types/observable-predicate.js';
 export default function addObservablePredicate(
   predicate = Predicate(),
   items = ManyToManyMap(),
-  { TYPE = SINGLE, next = true, debounce = 0, keepValid = false, anyData } = {},
+  {
+    TYPE = SINGLE,
+    next = true,
+    debounce = 0,
+    keepValid = false,
+    optional = false,
+    anyData,
+  } = {},
 ) {
   if (TYPE === SINGLE || TYPE === GROUPED) {
     return function forSingleOrMulti(predicateGroup, key) {
@@ -15,6 +22,7 @@ export default function addObservablePredicate(
           Predicate(predicate),
           [...items.get(key)],
           keepValid,
+          optional,
           anyData,
         ),
         { next, debounce },
@@ -27,6 +35,7 @@ export default function addObservablePredicate(
       predicate,
       [...items.getAll()],
       keepValid,
+      optional,
       anyData,
     );
     return function forGlued(predicateGroup /* key */) {

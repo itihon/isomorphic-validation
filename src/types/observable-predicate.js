@@ -10,21 +10,8 @@ export default function ObservablePredicate(
   predicate = Predicate(),
   items = [],
   keepValid = false,
+  optional = false,
   anyData = {},
-  /*
-        Consider putting the debounce functionality here
-        as a decoratorFn parameter.
-
-        and later:
-        if (typeof decoratorFn === 'function') fn = decoratorFn(fn);
-
-        and in the using function:
-        var decorator;
-        if (debounce) {
-            decorator = fn => debounceP(fn, debounce);
-        }
-        op = ObservablePredicate(p, items, decorator);
-    */
 ) {
   if (!(predicate instanceof Predicate)) return null;
 
@@ -32,8 +19,6 @@ export default function ObservablePredicate(
   let validityCBs;
 
   const fn = ({ restoredCBs, validityCBs } = predicate.valueOf()).valueOf();
-  // const { fn, restoredCBs, validityCBs } = predicate.valueOf();
-  // if (!isFunction(fn)) return null;
 
   const obs = ObserverAnd();
   const onInvalidCBs = Functions();
@@ -115,6 +100,16 @@ export default function ObservablePredicate(
   ) {
     validationResult.target = target;
 
+    if (optional) {
+      const isInitVal = items
+        .map((item) => item.isInitValue())
+        .every((value) => value === true);
+
+      if (isInitVal) {
+        return predicatePostExec(true, forbidInvalid);
+      }
+    }
+
     const result = fn(...items.map((item) => item.getValue(callID)));
 
     if (result.then) {
@@ -139,6 +134,7 @@ export default function ObservablePredicate(
           Predicate(predicate),
           items.map((item) => registry.cloneOnce(item)),
           keepValid,
+          optional,
           anyData,
         ),
     },

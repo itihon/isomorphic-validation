@@ -1,4 +1,4 @@
-import { INITVAL, PROPNAME, SINGLE } from '../constants.js';
+import { SINGLE } from '../constants.js';
 import PredicateGroups from './predicate-groups.js';
 import ManyToManyMap from './many-to-many-map.js';
 import ConsoleRepresentation from './console-representation.js';
@@ -20,8 +20,8 @@ export default function ValidationBuilder({
         {
           next = true,
           debounce = 0,
-          // !! consider moving it out since it is not the library's concern
           keepValid = false,
+          optional = false,
           ...anyData
         } = {},
       ) {
@@ -32,6 +32,7 @@ export default function ValidationBuilder({
             next,
             debounce,
             keepValid,
+            optional,
             anyData,
           }),
         );
@@ -61,15 +62,22 @@ export default function ValidationBuilder({
           });
         });
       },
-      bind(newObj = {}, propName = PROPNAME, initVal = INITVAL) {
+      bind(newObj = {}, propName = undefined, initVal = undefined) {
         if (TYPE !== SINGLE) {
           throw new Error('Only single validation can be bound');
         }
 
         const [oldObj, set] = items.entries().next().value;
-        const ValidatableItem = [...set][0];
+        const validatableItem = [...set][0];
 
-        ValidatableItem.setObject(newObj, propName, initVal);
+        const newPropName =
+          propName !== undefined ? propName : validatableItem.getPropName();
+
+        const newInitVal =
+          initVal !== undefined ? initVal : validatableItem.getInitValue();
+
+        validatableItem.setObject(newObj, newPropName, newInitVal);
+
         items.changeKey(oldObj, newObj);
         pgs.changeKey(oldObj, newObj);
         containedGroups.changeKey(oldObj, newObj);
@@ -79,7 +87,6 @@ export default function ValidationBuilder({
       valueOf() {
         return { pgs, items, containedGroups, TYPE };
       },
-      // constraints: new Map(pgs.toRepresentation()),
       constraints: pgs.toRepresentation(),
       validations,
       valid: pgs.valid,

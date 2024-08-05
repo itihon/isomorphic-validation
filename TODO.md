@@ -27,7 +27,7 @@
                 Validation.glue([], {immutable: true}) or Validation.glue([], {clone: true}) 
                 [x] Validation.clone(Validation()) to clone a single validation object
         - [ ] !consider for adding firing started and canceled??? and deferred (or delayed) events for debounced predicate
-        - [ ] optional constraint (when invalid, does not invalidate the Validation object)
+        - [x] optional constraint (when invalid, does not invalidate the Validation object)
                 Validation().constraint(Predicate, { optional: true })
                     Possible use case:
                     when we are creating a product, the image constraints are required.
@@ -37,7 +37,9 @@
             and runs predicates only when the value differs from initVal
             in other words: the value either should be empty or conform to the added predicates if not empty
                 Validation(obj, propName, initVal, optinal = true)
-        - [ ] taking object's value as initial value when creating a new Validation (may be used for adding the optional constraint feature)
+                    .constraint(predicate1)
+                    .constraint(predicate2, { optional: true })
+                    .constraint(predicate3, { optional: true })
 
         - [x] Final decision: 
         - [x] Validation.profile(formSelector, ['formFildNames'], [assossiatedValidations])
