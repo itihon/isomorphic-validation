@@ -41,9 +41,6 @@ signInProfile.validation.password.constraint(isOnlyLetters);
 const signInForm = signInProfile.form;
 const signUpForm = signUpProfile.form;
 
-// const signInVs = Validation.group(...signInProfile.validations);
-// const signUpVs = Validation.group(...signUpProfile.validations);
-
 const signInVs = signInProfile.validation;
 const signUpVs = signUpProfile.validation;
 
@@ -176,5 +173,84 @@ describe('Validation.profile', () => {
 
     expect(signInVs.isValid).toBe(false);
     expect(signUpVs.isValid).toBe(true);
+  });
+
+  it('should recreate a form fields structure by paths', async () => {
+    const validations = [
+      Validation(),
+      Validation({}, 'value'),
+      Validation({}, 'files.0'),
+      Validation({}, 'files.1.size'),
+    ].map((v) => v.constraint(isLongerThan(1)));
+
+    const { form, validation } = Validation.profile(
+      '#testForm',
+      validations.map((_, idx) => `field${idx}`),
+      validations,
+    );
+
+    expect(Object.hasOwn(form.field0, 'value')).toBe(true);
+    expect(Object.hasOwn(form.field1, 'value')).toBe(true);
+    expect(Object.hasOwn(form.field2.files, '0')).toBe(true);
+    expect(Object.hasOwn(form.field3.files[1], 'size')).toBe(true);
+
+    expect(validations[2].validate).toThrowError(
+      `There is no path 'files.0' in object {}`,
+    );
+
+    expect(validations[3].validate).toThrowError(
+      `There is no path 'files.1.size' in object {}`,
+    );
+
+    expect(
+      (await Promise.all(validation.validations.map((v) => v.validate()))).map(
+        (res) => res.isValid,
+      ),
+    ).toStrictEqual([false, false, false, false]);
+
+    form.field0.value = 42;
+    form.field1.value = 0;
+    form.field2.files[0] = 0;
+    form.field3.files[1].size = 0;
+    expect(
+      (await Promise.all(validation.validations.map((v) => v.validate()))).map(
+        (res) => res.isValid,
+      ),
+    ).toStrictEqual([true, false, false, false]);
+
+    form.field0.value = 0;
+    form.field1.value = 42;
+    form.field2.files[0] = 0;
+    form.field3.files[1].size = 0;
+    expect(
+      (await Promise.all(validation.validations.map((v) => v.validate()))).map(
+        (res) => res.isValid,
+      ),
+    ).toStrictEqual([false, true, false, false]);
+
+    form.field0.value = 0;
+    form.field1.value = 0;
+    form.field2.files[0] = 42;
+    form.field3.files[1].size = 0;
+    expect(
+      (await Promise.all(validation.validations.map((v) => v.validate()))).map(
+        (res) => res.isValid,
+      ),
+    ).toStrictEqual([false, false, true, false]);
+
+    form.field0.value = 0;
+    form.field1.value = 0;
+    form.field2.files[0] = 0;
+    form.field3.files[1].size = 42;
+    expect(
+      (await Promise.all(validation.validations.map((v) => v.validate()))).map(
+        (res) => res.isValid,
+      ),
+    ).toStrictEqual([false, false, false, true]);
+
+    expect((await validation.validate(form.field0)).isValid).toBe(false);
+    expect((await validation.validate(form.field1)).isValid).toBe(false);
+    expect((await validation.validate(form.field2)).isValid).toBe(false);
+    expect((await validation.validate(form.field3)).isValid).toBe(true);
   });
 });

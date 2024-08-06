@@ -5,22 +5,33 @@ import clone from './clone';
 import makeGroupValidationsFn from './make-group-validations-fn';
 import makeValidationHandlerFn from './make-validation-handler-fn';
 
+const cloneValidation = (validation) =>
+  clone({ validation, registry: CloneRegistry() });
+
+const bind = (form, fieldNames) => (validation, idx) =>
+  validation.bind(form[fieldNames[idx]]);
+
+const getItems = (validation) => validation.valueOf().items;
+const getPath = (validatableItem) => validatableItem.getPath();
+const firstEntrie = (items) => items.entries().next().value;
+const firstItemFromEntrie = ([, set]) => [...set][0];
+
 export default function createProfile(
   selector = '',
   fieldNames = [],
   validations = [],
 ) {
-  const cloneValidation = (validation) =>
-    clone({ validation, registry: CloneRegistry() });
+  const paths = validations
+    .map(getItems)
+    .map(firstEntrie)
+    .map(firstItemFromEntrie)
+    .map(getPath);
 
-  const bind = (form) => (validation, idx) =>
-    validation.bind(form[fieldNames[idx]]);
-
-  const validatableForm = ValidatableForm(selector, fieldNames);
+  const validatableForm = ValidatableForm(selector, fieldNames, paths);
 
   const clonedValidations = validations
     .map(cloneValidation)
-    .map(bind(validatableForm));
+    .map(bind(validatableForm, fieldNames));
 
   const allValidations = Object.create(
     makeGroupValidationsFn(GROUPED)(clonedValidations),

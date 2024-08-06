@@ -1,3 +1,5 @@
+import getByPath from '../utils/get-by-path.js';
+import setByPath from '../utils/set-by-path.js';
 import Functions from './functions.js';
 
 ValidatableItem.keepValid = (
@@ -15,47 +17,55 @@ ValidatableItem.keepValid = (
 
 function ValidatableItem(
   obj = {},
-  propName = '',
-  initVal = '',
+  path = '',
+  initVal = undefined,
   onRestoredCBs = Functions(),
 ) {
-  let savedValue = initVal;
-  let ownObj = obj;
-  let ownPropName = propName;
-  let ownInitVal = initVal;
   const ownOnRestoredCBs = Functions(onRestoredCBs);
   const values = new Map();
-  let isInitVal = ownObj[ownPropName] === ownInitVal;
+  const delim = '.';
+
+  let ownObj;
+  let ownPath;
+  let ownInitVal;
+  let isPath;
+  let isInitVal;
+  let savedValue;
+
+  const init = (object = ownObj, pathName = ownPath, initValue = undefined) => {
+    [ownObj, ownPath, ownInitVal, isPath, savedValue] = [
+      object,
+      pathName,
+      initValue,
+      pathName.includes(delim),
+      initValue,
+    ];
+  };
+
+  init(obj, path, initVal);
 
   return {
-    setObject(
-      object = ownObj,
-      propertyName = ownPropName,
-      initialValue = ownInitVal,
-    ) {
-      ownObj = object;
-      ownPropName = propertyName;
-      ownInitVal = initialValue;
-    },
+    setObject: init,
     getObject: () => ownObj,
-    getPropName: () => ownPropName,
+    getPath: () => ownPath,
     getInitValue: () => ownInitVal,
-    getValue: (key) => (key ? values.get(key) : ownObj[ownPropName]),
+    getValue: (key) =>
+      key ? values.get(key) : getByPath(ownObj, ownPath, delim, isPath),
     saveValue: () => {
-      savedValue = ownObj[ownPropName];
+      savedValue = getByPath(ownObj, ownPath, delim, isPath);
     },
     restoreValue: (cbArgs) => {
-      if (ownObj[ownPropName] !== ownInitVal) {
-        ownObj[ownPropName] = savedValue;
+      if (getByPath(ownObj, ownPath, delim, isPath) !== ownInitVal) {
+        setByPath(ownObj, ownPath, savedValue, delim, isPath);
       } else {
         savedValue = ownInitVal;
       }
       ownOnRestoredCBs.run(cbArgs);
     },
     preserveValue(key = Symbol('ValidatableItem.value')) {
-      const currValue = ownObj[ownPropName];
+      const currValue = getByPath(ownObj, ownPath, delim, isPath);
       values.set(key, currValue);
-      isInitVal = currValue === initVal;
+      isInitVal = currValue === ownInitVal || currValue === undefined;
       return key;
     },
     clearValue(key) {
@@ -65,8 +75,7 @@ function ValidatableItem(
     isInitValue() {
       return isInitVal;
     },
-    clone: () =>
-      ValidatableItem(ownObj, ownPropName, ownInitVal, ownOnRestoredCBs),
+    clone: () => ValidatableItem(ownObj, ownPath, ownInitVal, ownOnRestoredCBs),
     onRestored: ownOnRestoredCBs.push,
     [Symbol.toStringTag]: ValidatableItem.name,
   };

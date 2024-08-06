@@ -62,21 +62,20 @@ export default function ValidationBuilder({
           });
         });
       },
-      bind(newObj = {}, propName = undefined, initVal = undefined) {
+      bind(newObj = {}, path = undefined, initVal = undefined) {
         if (TYPE !== SINGLE) {
           throw new Error('Only single validation can be bound');
         }
 
-        const [oldObj, set] = items.entries().next().value;
-        const validatableItem = [...set][0];
+        const [oldObj, set] = items.entries().next().value; // firstEntrie
+        const validatableItem = [...set][0]; // firstItemFromEntrie
 
-        const newPropName =
-          propName !== undefined ? propName : validatableItem.getPropName();
+        const newPath = path !== undefined ? path : validatableItem.getPath();
 
         const newInitVal =
           initVal !== undefined ? initVal : validatableItem.getInitValue();
 
-        validatableItem.setObject(newObj, newPropName, newInitVal);
+        validatableItem.setObject(newObj, newPath, newInitVal);
 
         items.changeKey(oldObj, newObj);
         pgs.changeKey(oldObj, newObj);

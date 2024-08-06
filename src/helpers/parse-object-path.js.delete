@@ -1,0 +1,13 @@
+/*
+    (obj, 'prop1') => [obj, 'prop1'];
+    (obj, 'prop1.prop2') => [obj.prop1, 'prop2'];
+    (obj, 'prop1.prop2.prop3') => [obj.prop1.prop2, 'prop3'];
+*/
+export default function parseObjectPath(obj = {}, path = '') {
+    const tokens = path.split('.');
+
+    return tokens.reduce(
+        ([lastObj, currProp], nextProp) => [lastObj[currProp], nextProp],
+        [{ [tokens[0]]: obj }, tokens[0]]
+    );
+}

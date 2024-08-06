@@ -5,8 +5,12 @@
 
 
 
-
     ## Features
+        - [x] recreate the form structure on the server side with regard of path. 
+        - [ ] data-mappers:
+            make-validation-handler.js shouldn't be bound to 'value', but rather to path 
+                body-parser-mapper
+                multer-mapper
         - [ ] ignoreNext parameter to call a predicate regardles of previously set next parameter
         - [ ] every validation probably should be a handler/middleware
         - [x] accept Event object in Validation().validate(event). In order to form.addEventListener('change', Validation().validate);

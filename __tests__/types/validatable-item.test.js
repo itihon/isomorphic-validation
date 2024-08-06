@@ -185,7 +185,7 @@ describe('ValidatableItem', () => {
   });
 
   it('should clone an instance', () => {
-    const vi1 = ValidatableItem(obj1, 'value');
+    const vi1 = ValidatableItem(obj1, 'value', '');
     vi1.onRestored(onRestoredCB1);
 
     const vi2 = vi1.clone();

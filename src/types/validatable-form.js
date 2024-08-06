@@ -1,26 +1,45 @@
+import { PROPNAME } from '../constants.js';
 import createDummyObj from '../utils/createDummyObj.js';
 import { ifSide } from '../utils/getenv.js';
 
-export default function ValidatableForm(selector = '', fieldNames = []) {
+const dummyObject = createDummyObj();
+
+function FormField(fieldName = '', propChain = []) {
+  this.name = fieldName;
+
+  propChain.reduce((acc, propName, idx) => {
+    const isLast = idx === propChain.length - 1;
+
+    return Object.defineProperty(acc, propName, {
+      value: isLast ? '' : {},
+      writable: isLast,
+    })[propName];
+  }, this);
+}
+FormField.prototype = dummyObject;
+
+export default function ValidatableForm(
+  selector = '',
+  fieldNames = [],
+  paths = [],
+  delim = '.',
+) {
   return ifSide(
     // server side
     () => {
-      const dummyObject = createDummyObj();
-
-      function FormField(name) {
-        this.name = name;
-        this.value = `${selector}.${name} 42`;
-      }
-      FormField.prototype = dummyObject;
-
       function FormFields() {
         Object.defineProperty(this, 'selector', { value: selector });
-        fieldNames.forEach((fieldName) => {
+
+        fieldNames.forEach((fieldName, idx) => {
+          const path = paths[idx];
+          const propChain = path ? path.split(delim) : [PROPNAME];
+
           Object.defineProperty(this, fieldName, {
-            value: new FormField(fieldName),
+            value: new FormField(fieldName, propChain),
             enumerable: true,
           });
         });
+
         Object.defineProperty(this, Symbol.toStringTag, {
           value: ValidatableForm.name,
         });
