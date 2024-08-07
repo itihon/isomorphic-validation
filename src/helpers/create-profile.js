@@ -16,6 +16,26 @@ const getPath = (validatableItem) => validatableItem.getPath();
 const firstEntrie = (items) => items.entries().next().value;
 const firstItemFromEntrie = ([, set]) => [...set][0];
 
+const assignValidations = (validations) => (profile, fieldName, idx) => {
+  const validation = validations[idx];
+
+  if (validation) {
+    Object.defineProperty(profile.validation, fieldName, {
+      value: validation,
+      enumerable: true,
+    });
+  }
+
+  return profile;
+};
+
+const profile = (form, validation) =>
+  Object.defineProperties(makeValidationHandlerFn(validation, form), {
+    form: { value: form },
+    validation: { value: validation },
+    [Symbol.toStringTag]: { value: 'ValidationProfile' },
+  });
+
 export default function createProfile(
   selector = '',
   fieldNames = [],
@@ -33,30 +53,12 @@ export default function createProfile(
     .map(cloneValidation)
     .map(bind(validatableForm, fieldNames));
 
-  const allValidations = Object.create(
+  const groupedValidations = Object.create(
     makeGroupValidationsFn(GROUPED)(clonedValidations),
   );
 
   return fieldNames.reduce(
-    (profile, fieldName, idx) => {
-      const validation = clonedValidations[idx];
-
-      if (validation) {
-        Object.defineProperty(profile.validation, fieldName, {
-          value: validation,
-          enumerable: true,
-        });
-      }
-
-      return profile;
-    },
-    Object.defineProperties(
-      makeValidationHandlerFn(allValidations, validatableForm),
-      {
-        form: { value: validatableForm },
-        validation: { value: allValidations },
-        [Symbol.toStringTag]: { value: 'ValidationProfile' },
-      },
-    ),
+    assignValidations(clonedValidations),
+    profile(validatableForm, groupedValidations),
   );
 }
