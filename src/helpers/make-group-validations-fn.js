@@ -31,9 +31,15 @@ export default function makeGroupValidationsFn(TYPE = GROUPED) {
       })
       .forEach((vItems) => {
         if (TYPE === GLUED) {
-          vItems.mergeWith(items);
+          vItems.mergeWith(items); // !!! this shouldn't be merging
         }
       });
+    /*
+        if (TYPE === GLUED) {
+          const [obj, set] = firstEntry(vItems);
+          items.forEach(item => vItems.add(obj, item));
+        }
+      */
 
     return ValidationBuilder({
       pgs,

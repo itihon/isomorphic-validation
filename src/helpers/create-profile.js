@@ -29,12 +29,17 @@ const assignValidations = (validations) => (profile, fieldName, idx) => {
   return profile;
 };
 
-const profile = (form, validation) =>
-  Object.defineProperties(makeValidationHandlerFn(validation, form), {
-    form: { value: form },
-    validation: { value: validation },
-    [Symbol.toStringTag]: { value: 'ValidationProfile' },
-  });
+const profile = (form, validation) => ({
+  form,
+  validation,
+  [Symbol.toStringTag]: 'ValidationProfile',
+});
+
+const turnIntoHandler = (form) => (validation) => {
+  const middleware = makeValidationHandlerFn(form, validation);
+  Reflect.setPrototypeOf(middleware, validation);
+  return middleware;
+};
 
 export default function createProfile(
   selector = '',
@@ -51,9 +56,10 @@ export default function createProfile(
 
   const clonedValidations = validations
     .map(cloneValidation)
-    .map(bind(validatableForm, fieldNames));
+    .map(bind(validatableForm, fieldNames))
+    .map(turnIntoHandler(validatableForm));
 
-  const groupedValidations = Object.create(
+  const groupedValidations = turnIntoHandler(validatableForm)(
     makeGroupValidationsFn(GROUPED)(clonedValidations),
   );
 

@@ -6,13 +6,14 @@
 
 
     ## Features
+        - [ ] clearing a form field on the server side after the value has been preserved 
         - [x] recreate the form structure on the server side with regard of path. 
         - [ ] data-mappers:
             make-validation-handler.js shouldn't be bound to 'value', but rather to path 
                 body-parser-mapper
                 multer-mapper
         - [ ] ignoreNext parameter to call a predicate regardles of previously set next parameter
-        - [ ] every validation probably should be a handler/middleware
+        - [x] every validation probably should be a handler/middleware
         - [x] accept Event object in Validation().validate(event). In order to form.addEventListener('change', Validation().validate);
                 or maybe Validation().validateForm(form, input|change)
                 or maybe Validation().addForm(form, input|change)
@@ -89,6 +90,8 @@
 
 
     ## Bugs
+        - [ ] validations which are glued after creating a profile. Their grouping validation doesn't know about them being glued.
+        - [ ] see make-group-validations-fn.js
         - [x] ValidationResult.isValid should not be Validation's state, it should be a result of a particular operation
         - [x] next and invalidate doesn't work after cloning
         - [x] The value from a validatable object should be read immediately after invoking the validate function because when a predicate's execution is deferred the predicate might deal with irrelevant arguments which might be already changed up to the predicate's execution moment. This is crucial especially for the server side execution.

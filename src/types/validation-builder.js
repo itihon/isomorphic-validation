@@ -42,6 +42,14 @@ export default function ValidationBuilder({
         const validatableItems =
           target !== undefined ? items.get(target) : items.getAll();
 
+        if (!validatableItems) {
+          return Promise.reject(
+            new Error(
+              `There are no items associated with ${JSON.stringify(target)}`,
+            ),
+          );
+        }
+
         const callID = Symbol('callID');
         validatableItems.forEach((item) => item.preserveValue(callID));
 

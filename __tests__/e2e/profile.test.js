@@ -175,6 +175,91 @@ describe('Validation.profile', () => {
     expect(signUpVs.isValid).toBe(true);
   });
 
+  it('should validate through the middleware', async () => {
+    const req = { body: undefined };
+
+    expect(signInVs.isValid).toBe(false);
+    expect(signUpVs.isValid).toBe(false);
+
+    req.body = { email: 'a@a.a', password: 'asdfg', pwdconfirm: '' };
+
+    await signInVs(req, {}, () => {});
+    await signUpVs(req, {}, () => {});
+    expect(signInVs.isValid).toBe(true);
+    expect(signUpVs.isValid).toBe(false);
+
+    req.body = { email: 'a@a.a', password: 'asdfg123', pwdconfirm: 'asdfg123' };
+
+    await signInVs(req, {}, () => {});
+    await signUpVs(req, {}, () => {});
+    expect(signInVs.isValid).toBe(false);
+    expect(signUpVs.isValid).toBe(true);
+
+    req.body = { email: 'a@a.a', password: 'asdfg', pwdconfirm: 'asdfg' };
+
+    await signInVs(req, {}, () => {});
+    await signUpVs(req, {}, () => {});
+    expect(signInVs.isValid).toBe(true);
+    expect(signUpVs.isValid).toBe(true);
+
+    req.body = { email: 'q@q.q', password: 'asdfg1', pwdconfirm: 'asdfg1' };
+
+    await signInVs.email(req, {}, () => {});
+    await signInVs.password(req, {}, () => {});
+
+    await signUpVs.email(req, {}, () => {});
+    await signUpVs.password(req, {}, () => {});
+    await signUpVs.pwdconfirm(req, {}, () => {});
+
+    expect(signInVs.email.isValid).toBe(true);
+    expect(signInVs.password.isValid).toBe(false);
+
+    expect(signUpVs.email.isValid).toBe(false);
+    expect(signUpVs.password.isValid).toBe(true);
+    expect(signUpVs.pwdconfirm.isValid).toBe(true);
+
+    expect(signInVs.isValid).toBe(false);
+    expect(signUpVs.isValid).toBe(false);
+
+    req.body = { email: 'b@b.b', password: 'asdfg', pwdconfirm: 'asdfg1' };
+
+    await signInVs.email(req, {}, () => {});
+    await signInVs.password(req, {}, () => {});
+
+    await signUpVs.email(req, {}, () => {});
+    await signUpVs.password(req, {}, () => {});
+    await signUpVs.pwdconfirm(req, {}, () => {});
+
+    expect(signInVs.email.isValid).toBe(true);
+    expect(signInVs.password.isValid).toBe(true);
+
+    expect(signUpVs.email.isValid).toBe(true);
+    expect(signUpVs.password.isValid).toBe(false);
+    expect(signUpVs.pwdconfirm.isValid).toBe(false);
+
+    expect(signInVs.isValid).toBe(true);
+    expect(signUpVs.isValid).toBe(false);
+
+    req.body = { email: 'b@b.b', password: 'asdfg1', pwdconfirm: 'asdfg1' };
+
+    await signInVs.email(req, {}, () => {});
+    await signInVs.password(req, {}, () => {});
+
+    await signUpVs.email(req, {}, () => {});
+    await signUpVs.password(req, {}, () => {});
+    await signUpVs.pwdconfirm(req, {}, () => {});
+
+    expect(signInVs.email.isValid).toBe(true);
+    expect(signInVs.password.isValid).toBe(false);
+
+    expect(signUpVs.email.isValid).toBe(true);
+    expect(signUpVs.password.isValid).toBe(true);
+    expect(signUpVs.pwdconfirm.isValid).toBe(true);
+
+    expect(signInVs.isValid).toBe(false);
+    expect(signUpVs.isValid).toBe(true);
+  });
+
   it('should recreate a form fields structure by paths', async () => {
     const validations = [
       Validation(),
