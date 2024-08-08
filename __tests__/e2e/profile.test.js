@@ -260,6 +260,79 @@ describe('Validation.profile', () => {
     expect(signUpVs.isValid).toBe(true);
   });
 
+  it('should validate by target', async () => {
+    signInForm.email.value = 'a@a.a';
+    signInForm.password.value = 'asdfg';
+
+    signUpForm.email.value = 'b@b.b';
+    signUpForm.password.value = 'asdfg1';
+    signUpForm.pwdconfirm.value = 'asdfg1';
+
+    expect((await signInVs.validate(signInForm.email)).isValid).toBe(true);
+    expect(isEmail.mock.calls).toStrictEqual([['a@a.a']]);
+    expect((await signInVs.validate(signInForm.password)).isValid).toBe(true);
+    expect(isLongerThan(4).mock.calls).toStrictEqual([['a@a.a'], ['asdfg']]);
+    expect(signInVs.isValid).toBe(true);
+
+    expect((await signUpVs.validate(signUpForm.email)).isValid).toBe(true);
+    expect(isEmail.mock.calls).toStrictEqual([['a@a.a'], ['b@b.b']]);
+    expect((await signUpVs.validate(signUpForm.password)).isValid).toBe(true);
+    expect(areEqual.mock.calls).toStrictEqual([['asdfg1', 'asdfg1']]);
+    expect((await signUpVs.validate(signUpForm.pwdconfirm)).isValid).toBe(true);
+    expect(areEqual.mock.calls).toStrictEqual([
+      ['asdfg1', 'asdfg1'],
+      ['asdfg1', 'asdfg1'],
+    ]);
+    expect(signUpVs.isValid).toBe(true);
+
+    signInForm.email.value = 'c@c.c';
+    signInForm.password.value = 'asdfg#';
+
+    signUpForm.email.value = 'q@q.q';
+    signUpForm.password.value = 'asdfg2';
+    signUpForm.pwdconfirm.value = 'asdfg2';
+
+    expect((await signInVs.validate(signInForm.email)).isValid).toBe(true);
+    expect(isEmail.mock.calls).toStrictEqual([['a@a.a'], ['b@b.b'], ['c@c.c']]);
+    expect((await signInVs.validate(signInForm.password)).isValid).toBe(false);
+    expect(isLongerThan(4).mock.calls).toStrictEqual([
+      ['a@a.a'],
+      ['asdfg'],
+      ['b@b.b'],
+      ['asdfg1'],
+      ['asdfg1'],
+      ['c@c.c'],
+      ['asdfg#'],
+    ]);
+    expect(signInVs.isValid).toBe(false);
+
+    expect((await signUpVs.validate(signUpForm.email)).isValid).toBe(false);
+    expect(isEmail.mock.calls).toStrictEqual([
+      ['a@a.a'],
+      ['b@b.b'],
+      ['c@c.c'],
+      ['q@q.q'],
+    ]);
+    expect((await signUpVs.validate(signUpForm.password)).isValid).toBe(true);
+    expect(areEqual.mock.calls).toStrictEqual([
+      ['asdfg1', 'asdfg1'],
+      ['asdfg1', 'asdfg1'],
+      ['asdfg2', 'asdfg2'],
+    ]);
+    expect((await signUpVs.validate(signUpForm.pwdconfirm)).isValid).toBe(true);
+    expect(areEqual.mock.calls).toStrictEqual([
+      ['asdfg1', 'asdfg1'],
+      ['asdfg1', 'asdfg1'],
+      ['asdfg2', 'asdfg2'],
+      ['asdfg2', 'asdfg2'],
+    ]);
+    expect(signUpVs.isValid).toBe(false);
+
+    // wrong target
+    await expect(signUpVs.validate(signInForm.password)).rejects.toThrow();
+    await expect(signInVs.validate(signUpForm.email)).rejects.toThrow();
+  });
+
   it('should recreate a form fields structure by paths', async () => {
     const validations = [
       Validation(),

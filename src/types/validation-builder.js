@@ -4,6 +4,7 @@ import ManyToManyMap from './many-to-many-map.js';
 import ConsoleRepresentation from './console-representation.js';
 import Predicate from './predicate.js';
 import addObservablePredicate from '../helpers/add-observable-predicate.js';
+import firstEntry from '../utils/firstEntry.js';
 
 export default function ValidationBuilder({
   pgs = PredicateGroups(),
@@ -39,18 +40,14 @@ export default function ValidationBuilder({
         return this;
       },
       validate(target) {
-        const validatableItems =
-          target !== undefined ? items.get(target) : items.getAll();
-
-        if (!validatableItems) {
-          return Promise.reject(
-            new Error(
-              `There are no items associated with ${JSON.stringify(target)}`,
-            ),
-          );
-        }
+        // all items will be preserved regardless of the target
+        // not the most optimal way, but fixes the bug with validating a glued validation
+        // by target through a grouping validation
+        const validatableItems = items.getAll();
+        // target !== undefined ? items.get(target) : items.getAll();
 
         const callID = Symbol('callID');
+
         validatableItems.forEach((item) => item.preserveValue(callID));
 
         return pgs.run(target, callID).then((res) => {
@@ -75,7 +72,7 @@ export default function ValidationBuilder({
           throw new Error('Only single validation can be bound');
         }
 
-        const [oldObj, set] = items.entries().next().value; // firstEntrie
+        const [oldObj, set] = firstEntry(items);
         const validatableItem = [...set][0]; // firstItemFromEntrie
 
         const newPath = path !== undefined ? path : validatableItem.getPath();

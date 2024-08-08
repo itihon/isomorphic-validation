@@ -4,6 +4,7 @@ import ValidatableForm from '../types/validatable-form';
 import clone from './clone';
 import makeGroupValidationsFn from './make-group-validations-fn';
 import makeValidationHandlerFn from './make-validation-handler-fn';
+import firstEntry from '../utils/firstEntry.js';
 
 const cloneValidation = (validation) =>
   clone({ validation, registry: CloneRegistry() });
@@ -13,7 +14,6 @@ const bind = (form, fieldNames) => (validation, idx) =>
 
 const getItems = (validation) => validation.valueOf().items;
 const getPath = (validatableItem) => validatableItem.getPath();
-const firstEntrie = (items) => items.entries().next().value;
 const firstItemFromEntrie = ([, set]) => [...set][0];
 
 const assignValidations = (validations) => (profile, fieldName, idx) => {
@@ -48,7 +48,7 @@ export default function createProfile(
 ) {
   const paths = validations
     .map(getItems)
-    .map(firstEntrie)
+    .map(firstEntry)
     .map(firstItemFromEntrie)
     .map(getPath);
 
