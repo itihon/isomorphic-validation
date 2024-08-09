@@ -16,6 +16,7 @@
         .constraint(Predicate()|Function.prototype, { next, debounce, keepValid })
         .bind(obj, propName, initVal)
         .validate(obj)
+        .dataMapper((req, form) => {}) // available after creating a profile
 
 ### Validation instance properties
 

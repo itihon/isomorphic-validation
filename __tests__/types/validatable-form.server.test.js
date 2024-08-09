@@ -49,14 +49,16 @@ describe('ValidatableForm', () => {
   });
 
   it('should not throw an error', () => {
-    expect(form1.elements.firstName.value).not.toThrowError();
+    expect(() => form1.elements.firstName.value).not.toThrowError();
 
-    expect(form1.elements.lastName.value).not.toThrowError();
+    expect(() => form1.elements.lastName.value).not.toThrowError();
 
-    expect(form1.elements.email.value).not.toThrowError();
+    expect(() => form1.elements.email.value).not.toThrowError();
 
-    expect(form1.addEventListener()).not.toThrowError();
+    expect(() => form1.addEventListener()).not.toThrowError();
 
-    expect(form1.firstName.addEventListener()).not.toThrowError();
+    expect(() => form1.firstName.addEventListener()).not.toThrowError();
+
+    expect(() => form1.elements.lastName.addEventListener()).not.toThrowError();
   });
 });

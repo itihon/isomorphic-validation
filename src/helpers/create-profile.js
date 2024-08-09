@@ -10,7 +10,7 @@ const cloneValidation = (validation) =>
   clone({ validation, registry: CloneRegistry() });
 
 const bind = (form, fieldNames) => (validation, idx) =>
-  validation.bind(form[fieldNames[idx]]);
+  validation.bind(form.elements[fieldNames[idx]]);
 
 const getItems = (validation) => validation.valueOf().items;
 const getPath = (validatableItem) => validatableItem.getPath();

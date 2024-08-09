@@ -6,12 +6,11 @@
 
 
     ## Features
+        - [ ] access to a current validatable value through the validation result
+        - [ ] the feature that allows to distinguish whether an optional validation is valid because the values were validated or because they are init values or undefined. May be unnecessary in case the above feature is implemented.
         - [ ] clearing a form field on the server side after the value has been preserved 
         - [x] recreate the form structure on the server side with regard of path. 
-        - [ ] data-mappers:
-            make-validation-handler.js shouldn't be bound to 'value', but rather to path 
-                body-parser-mapper
-                multer-mapper
+        - [x] data-mappers: .dataMapper
         - [ ] ignoreNext parameter to call a predicate regardles of previously set next parameter
         - [x] every validation probably should be a handler/middleware
         - [x] accept Event object in Validation().validate(event). In order to form.addEventListener('change', Validation().validate);
@@ -81,7 +80,6 @@
         - [x] Debounce should be unpacked in the same fashion as Predicate (i.e. two calls of valueOf())
 
     ## Tests
-
         - [ ] merge validation.test.js and index.test.js
         - [x] add a test script to package.json to run browser and node environment tests separately
         - [ ] require/import test to check CJS/ESM compatibility
@@ -110,3 +108,5 @@
         - A predicate added on a glued validation is called twice while validating a group with no object passed in the validate() funciton. Although one call is enough. The second call is unnecessary.
 
         - When a Validation is bound to a new object after being grouped into another Validation, the grouping Validation doesn't know about it and the former remains assosiated with the old object in the group. Don't bind validations after grouping, do it before!
+
+        - Because of the asyncronous nature of predicates execution and middlewares, the validatable form may be overwritten between predicate or middleware calls. Do not rely on the validatable form's data in middlewares.

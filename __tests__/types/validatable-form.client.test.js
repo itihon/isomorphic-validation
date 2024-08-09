@@ -17,7 +17,7 @@ const fieldNames = ['firstName', 'lastName', 'email'];
 const form = ValidatableForm('#form', fieldNames);
 
 describe('ValidatableForm', () => {
-  it('should be client', () => {
+  it('should be a client', () => {
     expect(IS_CLIENT).toBe(true);
     expect(IS_SERVER).toBe(false);
   });

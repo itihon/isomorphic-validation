@@ -175,7 +175,7 @@ describe('Validation.profile', () => {
     expect(signUpVs.isValid).toBe(true);
   });
 
-  it('should validate through the middleware', async () => {
+  it('should validate via the middleware', async () => {
     const req = { body: undefined };
 
     expect(signInVs.isValid).toBe(false);
@@ -258,6 +258,49 @@ describe('Validation.profile', () => {
 
     expect(signInVs.isValid).toBe(false);
     expect(signUpVs.isValid).toBe(true);
+  });
+
+  it('should validate using a data mapper', async () => {
+    const signInMapper = (req, form) => {
+      form.email.value = req.body.signin.login;
+      form.password.value = req.body.signin.pwd;
+    };
+
+    const emailMapper = (req, form) => {
+      form.email.value = req.body.login;
+    };
+
+    signInVs.email.dataMapper(emailMapper);
+    signInVs.dataMapper(signInMapper);
+
+    let req = { body: { signin: { login: 'q@q.', pwd: 'zxcvb' } } };
+    await signInVs(req, {}, () => {});
+    expect(isEmail.mock.calls).toStrictEqual([['q@q.']]);
+    expect(isLongerThan(4).mock.calls).toStrictEqual([['q@q.'], ['zxcvb']]);
+    expect(signInVs.isValid).toBe(false);
+
+    req = { body: { signin: { login: 'q@q.q', pwd: 'zxcvb' } } };
+    await signInVs(req, {}, () => {});
+    expect(isEmail.mock.calls).toStrictEqual([['q@q.'], ['q@q.q']]);
+    expect(isLongerThan(4).mock.calls).toStrictEqual([
+      ['q@q.'],
+      ['zxcvb'],
+      ['q@q.q'],
+      ['zxcvb'],
+    ]);
+    expect(signInVs.isValid).toBe(true);
+
+    req = { body: { login: 'q@q.q.', pwd: 'zxcvbx' } };
+    await signInVs.email(req, {}, () => {});
+    expect(isEmail.mock.calls).toStrictEqual([['q@q.'], ['q@q.q'], ['q@q.q.']]);
+    expect(isLongerThan(4).mock.calls).toStrictEqual([
+      ['q@q.'],
+      ['zxcvb'],
+      ['q@q.q'],
+      ['zxcvb'],
+      ['q@q.q.'],
+    ]);
+    expect(signInVs.isValid).toBe(false);
   });
 
   it('should validate by target', async () => {

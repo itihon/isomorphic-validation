@@ -18,6 +18,48 @@ function FormField(fieldName = '', propChain = []) {
 }
 FormField.prototype = dummyObject;
 
+function FormFields(fieldNames, paths, delim) {
+  fieldNames.forEach((fieldName, idx) => {
+    const path = paths[idx];
+    const propChain = path ? path.split(delim) : [PROPNAME];
+    const formField = new FormField(fieldName, propChain);
+
+    Object.defineProperty(this, fieldName, {
+      value: formField,
+      enumerable: true,
+    });
+  });
+}
+FormFields.prototype = dummyObject;
+
+const createValidatableFormFn = (selector, fieldNames, paths, delim) => () => {
+  const fieldsCollection = new FormFields(fieldNames, paths, delim);
+  const form = Object.create(
+    dummyObject,
+    Object.getOwnPropertyDescriptors(fieldsCollection),
+  );
+
+  Object.defineProperty(form, 'selector', { value: selector });
+  Object.defineProperty(form, 'elements', { value: fieldsCollection });
+  Object.defineProperty(form, Symbol.toStringTag, {
+    value: ValidatableForm.name,
+  });
+
+  return form;
+};
+
+const getFormBySelectorFn = (selector) => () => {
+  const htmlForm = document.querySelector(selector);
+
+  if (!htmlForm) {
+    throw new Error(
+      `Cannot find a form with the specified selector: ${selector}`,
+    );
+  }
+
+  return htmlForm;
+};
+
 export default function ValidatableForm(
   selector = '',
   fieldNames = [],
@@ -26,39 +68,9 @@ export default function ValidatableForm(
 ) {
   return ifSide(
     // server side
-    () => {
-      function FormFields() {
-        Object.defineProperty(this, 'selector', { value: selector });
+    createValidatableFormFn(selector, fieldNames, paths, delim),
 
-        fieldNames.forEach((fieldName, idx) => {
-          const path = paths[idx];
-          const propChain = path ? path.split(delim) : [PROPNAME];
-
-          Object.defineProperty(this, fieldName, {
-            value: new FormField(fieldName, propChain),
-            enumerable: true,
-          });
-        });
-
-        Object.defineProperty(this, Symbol.toStringTag, {
-          value: ValidatableForm.name,
-        });
-      }
-      FormFields.prototype = dummyObject;
-
-      return new FormFields();
-    },
     // client side
-    () => {
-      const htmlForm = document.querySelector(selector);
-
-      if (!htmlForm) {
-        throw new Error(
-          `Cannot find a form with the specified selector: ${selector}`,
-        );
-      }
-
-      return htmlForm;
-    },
+    getFormBySelectorFn(selector),
   )();
 }
