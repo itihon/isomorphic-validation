@@ -6,6 +6,7 @@
 
 
     ## Features
+        - [ ] .error() or .catch() for error handling
         - [ ] access to a current validatable value through the validation result
         - [ ] the feature that allows to distinguish whether an optional validation is valid because the values were validated or because they are init values or undefined. May be unnecessary in case the above feature is implemented.
         - [ ] clearing a form field on the server side after the value has been preserved 
@@ -22,7 +23,7 @@
                 or maybe Validation.form(selector)
                             .firstName.validateOn('input')
                             .email.validateOn('change') to validate different fields on different events
-        - [ ] Validation().onServer.{API} Validation().onClient.{API} Validation[onBoth].{API}
+        - [x] Validation().server.{API} Validation().client.{API} Validation[onBoth].{API}
         - [x] Validation.getForm(selector) or Validation.form(selector)
         - [ ] Representation -> ConsoleRepresentation, Representation -> DOMRepresentation
         - [x]   !consider adding Validation.from() as an immutable analog of .group()
@@ -59,6 +60,7 @@
 
     ## Refactor
 
+        - [ ] think through if it is possible to completely get rid of memoization of ValidationBuilder in the clone function and use CloneRegestry instead
         - [x] rename entities from Validated* to Validatable*.
         - [ ] consider renaming ObserverAnd to something like AndGate
         - [x] Validation.group, Validation.glue to accept validations divided by comma
@@ -80,6 +82,11 @@
         - [x] Debounce should be unpacked in the same fashion as Predicate (i.e. two calls of valueOf())
 
     ## Tests
+
+        - [ ] calling the .dataMapper method before creating a profile
+        - [ ] validating via middleware/eventHandler before creating a profile
+        - [ ] performance: makeIsomorphicAPI current version vs proxying the whole API object 
+        - [ ] performance: Validation() with and without makeIsomorphicAPI()
         - [ ] merge validation.test.js and index.test.js
         - [x] add a test script to package.json to run browser and node environment tests separately
         - [ ] require/import test to check CJS/ESM compatibility
@@ -110,3 +117,5 @@
         - When a Validation is bound to a new object after being grouped into another Validation, the grouping Validation doesn't know about it and the former remains assosiated with the old object in the group. Don't bind validations after grouping, do it before!
 
         - Because of the asyncronous nature of predicates execution and middlewares, the validatable form may be overwritten between predicate or middleware calls. Do not rely on the validatable form's data in middlewares.
+
+        - The returned value of the isomorphic protocol properties (.client/.server) and ignored functions shouldn't be assigned and used anywhere but in the libriry's methods since the library knows how to deal with this protocol. Use the original object or .isomorphic property instead.

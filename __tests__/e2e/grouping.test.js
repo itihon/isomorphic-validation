@@ -213,6 +213,21 @@ const dataTable = [
     VF: Validation.clone(Validation.clone(origVF)),
     VI: Validation.clone(Validation.clone(origVI)),
   },
+  {
+    dataName: 'Cloned with regard to isomorphic API',
+    Va: Validation.clone(origVa.client),
+    Vb: Validation.clone(origVb.client),
+    Vd1: Validation.clone(origVd1.client),
+    Vd2: Validation.clone(origVd2).client,
+    Ve: Validation.clone(origVe.client),
+    Vg: Validation.clone(origVg.client),
+    Vh: Validation.clone(origVh.client),
+    VC: Validation.group([origVa.client, origVb.client]),
+    VJ: Validation.group([origVb.client, origVd1.client, origVd2.client]),
+    VK: Validation.glue([origVe.client, origVg.client]),
+    VF: Validation.group([origVC.client, origVJ.client, origVe.client, origVh]),
+    VI: Validation.group([origVF.client, origVK.client, origVh.client]),
+  },
 ];
 
 const iteratorOrderCmp = [];

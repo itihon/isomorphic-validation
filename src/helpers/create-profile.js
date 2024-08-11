@@ -16,18 +16,20 @@ const getItems = (validation) => validation.valueOf().items;
 const getPath = (validatableItem) => validatableItem.getPath();
 const firstItemFromEntrie = ([, set]) => [...set][0];
 
-const assignValidations = (validations) => (profile, fieldName, idx) => {
-  const validation = validations[idx];
+const assignValidations =
+  (validations) => (validationGroup, fieldName, idx) => {
+    const validation = validations[idx];
 
-  if (validation) {
-    Object.defineProperty(profile.validation, fieldName, {
-      value: validation,
-      enumerable: true,
-    });
-  }
+    if (validation) {
+      Object.defineProperty(validationGroup, fieldName, {
+        get: () => validation,
+        enumerable: true,
+        configurable: true, // to work with Proxy in makeIsomorphicAPI
+      });
+    }
 
-  return profile;
-};
+    return validationGroup;
+  };
 
 const profile = (form, validation) => ({
   form,
@@ -59,12 +61,23 @@ export default function createProfile(
     .map(bind(validatableForm, fieldNames))
     .map(turnIntoHandler(validatableForm));
 
-  const groupedValidations = turnIntoHandler(validatableForm)(
+  // const groupedValidations = turnIntoHandler(validatableForm)(
+  //   makeGroupValidationsFn(GROUPED)(clonedValidations),
+  // );
+
+  // return fieldNames.reduce(
+  //   assignValidations(clonedValidations),
+  //   profile(validatableForm, groupedValidations),
+  // );
+
+  // it should be so in order to work with makeIsomorphicAPI
+  const groupedValidations = fieldNames.reduce(
+    assignValidations(clonedValidations),
     makeGroupValidationsFn(GROUPED)(clonedValidations),
   );
 
-  return fieldNames.reduce(
-    assignValidations(clonedValidations),
-    profile(validatableForm, groupedValidations),
+  return profile(
+    validatableForm,
+    turnIntoHandler(validatableForm)(groupedValidations),
   );
 }

@@ -10,7 +10,7 @@ const paths2 = ['files.0.size', 'files.1.type'];
 const form2 = ValidatableForm('#form', fieldNames2, paths2);
 
 describe('ValidatableForm', () => {
-  it('should be server', () => {
+  it('should be a server', () => {
     expect(IS_CLIENT).toBe(false);
     expect(IS_SERVER).toBe(true);
   });

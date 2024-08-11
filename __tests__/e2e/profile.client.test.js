@@ -201,4 +201,132 @@ describe('Validation.profile', () => {
       ['asdfg', 'asdfg'],
     ]);
   });
+
+  it('should call only client side methods and ignore server side', async () => {
+    const cb1 = jest.fn();
+    const cb2 = jest.fn();
+    const cb3 = jest.fn();
+    const cb4 = jest.fn();
+    const cb5 = jest.fn();
+    const cb6 = jest.fn();
+    const cb7 = jest.fn();
+    const cb8 = jest.fn();
+
+    const predicate1 = jest.fn(() => true);
+    const predicate2 = jest.fn(() => true);
+    const predicate3 = jest.fn(() => true);
+    const predicate4 = jest.fn(() => true);
+    const predicate5 = jest.fn(() => true);
+    const predicate6 = jest.fn(() => true);
+    const predicate7 = jest.fn(() => true);
+    const predicate8 = jest.fn(() => true);
+
+    Object.entries({
+      predicate1,
+      predicate2,
+      predicate3,
+      predicate4,
+      predicate5,
+      predicate6,
+      predicate7,
+      predicate8,
+    }).forEach(([key, value]) =>
+      Object.defineProperty(value, 'name', { value: key }),
+    );
+
+    const [emailValidation] = signUpVs.validations;
+
+    const getConstraintNames = (validation) =>
+      [...validation.constraints.values()]
+        .map((set) => [...set])
+        .flat(3)
+        .map((constraint) => constraint[Symbol.toStringTag]);
+
+    let constraints = getConstraintNames(signUpVs);
+
+    expect(constraints).toHaveLength(4);
+
+    signUpVs
+      .constraint(predicate1)
+      .validated(cb1)
+      .client.constraint(predicate2)
+      .validated(cb2)
+      .server.constraint(predicate3) // ignored
+      .validated(cb3); // ignored
+
+    signUpVs.client
+      .constraint(predicate1)
+      .validated(cb1)
+      .constraint(predicate3)
+      .validated(cb3)
+      .server.constraint(predicate4) // ignored
+      .validated(cb4); // ignored
+
+    constraints = getConstraintNames(signUpVs);
+
+    expect(constraints).toHaveLength(16);
+    expect(constraints).toContain(predicate1.name);
+    expect(constraints).toContain(predicate2.name);
+    expect(constraints).toContain(predicate3.name);
+    expect(constraints).not.toContain(predicate4.name);
+
+    signUpForm.elements.email.value = 'a@a.a';
+    await signUpVs.validate();
+
+    expect(predicate1).toHaveBeenCalledTimes(6);
+    expect(predicate2).toHaveBeenCalledTimes(3);
+    expect(predicate3).toHaveBeenCalledTimes(3);
+    expect(predicate4).toHaveBeenCalledTimes(0);
+
+    expect(cb1).toHaveBeenCalledTimes(2);
+    expect(cb2).toHaveBeenCalledTimes(1);
+    expect(cb3).toHaveBeenCalledTimes(1);
+    expect(cb4).toHaveBeenCalledTimes(0);
+
+    signUpVs.email
+      .constraint(predicate5)
+      .validated(cb5)
+      .client.constraint(predicate6)
+      .validated(cb6)
+      .server.constraint(predicate7) // ignored
+      .validated(cb7) // ignored
+      .client.constraint(predicate7)
+      .validated(cb7);
+
+    signUpVs.email.client
+      .constraint(predicate6)
+      .validated(cb6)
+      .server.constraint(predicate5) // ignored
+      .validated(cb5); // ignored
+
+    emailValidation.client
+      .constraint(predicate6)
+      .validated(cb6)
+      .server.constraint(predicate8) // ignored
+      .validated(cb8) // ignored
+      .client.constraint(predicate7)
+      .validated(cb7)
+      .client.constraint(predicate7)
+      .validated(cb7);
+
+    constraints = getConstraintNames(signUpVs);
+
+    expect(constraints).toHaveLength(23);
+    expect(constraints).toContain(predicate5.name);
+    expect(constraints).toContain(predicate6.name);
+    expect(constraints).toContain(predicate7.name);
+    expect(constraints).not.toContain(predicate8.name);
+
+    await signUpVs.validate();
+
+    expect(predicate5).toHaveBeenCalledTimes(1);
+    expect(predicate6).toHaveBeenCalledTimes(3);
+    expect(predicate7).toHaveBeenCalledTimes(3);
+    expect(predicate8).toHaveBeenCalledTimes(0);
+
+    expect(cb5).toHaveBeenCalledTimes(1);
+    expect(cb6).toHaveBeenCalledTimes(3);
+    expect(cb7).toHaveBeenCalledTimes(3);
+    expect(cb8).toHaveBeenCalledTimes(0);
+  });
 });

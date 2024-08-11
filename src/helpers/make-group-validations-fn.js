@@ -9,11 +9,12 @@ export default function makeGroupValidationsFn(TYPE = GROUPED) {
     const pgs = PredicateGroups();
     const items = ManyToManyMap();
     const containedGroups = ManyToManyMap();
-    const validations = [...new Set([Validations].concat(rest).flat(Infinity))];
+    const validations = [...new Set([Validations].concat(rest).flat(Infinity))]
+      .map(accepOnlyValidation)
+      .map((validation) => validation.isomorphic); // validation...client... or /validation...server... might have been passed in
 
     validations
       .map((validation) => {
-        accepOnlyValidation(validation);
         const {
           pgs: vPgs,
           items: vItems,

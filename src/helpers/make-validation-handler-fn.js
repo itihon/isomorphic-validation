@@ -11,17 +11,20 @@ const defaultMapper = (req, form) => {
 const createMiddlewareFn = (form, validation, dataMapper) => () => {
   let mapper = dataMapper;
 
-  const middleware = async (req, res, next) => {
+  // defined on a validation for working with makeIsomorphicAPI
+  Object.defineProperty(validation, 'dataMapper', {
+    value(Mapper) {
+      mapper = Mapper;
+      return this;
+    },
+    configurable: true, // to work with Proxy in makeIsomorphicAPI
+  });
+
+  return async (req, res, next) => {
     mapper(req, form);
     req.validationResult = await validation.validate();
     next();
   };
-
-  return Object.defineProperty(middleware, 'dataMapper', {
-    value: (Mapper) => {
-      mapper = Mapper;
-    },
-  });
 };
 
 const createEventHandlerFn = (validation) => () => (event) =>

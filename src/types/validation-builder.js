@@ -5,6 +5,7 @@ import ConsoleRepresentation from './console-representation.js';
 import Predicate from './predicate.js';
 import addObservablePredicate from '../helpers/add-observable-predicate.js';
 import firstEntry from '../utils/firstEntry.js';
+import makeIsomorphicAPI from '../utils/make-isomorphic-api.js';
 
 export default function ValidationBuilder({
   pgs = PredicateGroups(),
@@ -104,5 +105,5 @@ export default function ValidationBuilder({
     },
   );
 
-  return Object.freeze(representation);
+  return makeIsomorphicAPI(representation);
 }

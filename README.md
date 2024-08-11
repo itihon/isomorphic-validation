@@ -2,7 +2,7 @@
 
 ## An isomorphic data and form validation javascript library which runs the same code both client and server side
 
-## being developed
+## developing
 
 ## This is a brief outline of the whole library's API
 
@@ -23,6 +23,9 @@
     Validation().constraints
     Validation().validations
     Validation().isValid
+    Validation().server // isomorphic API
+    Validation().client // isomorphic API
+    Validation().isomorphic // isomorphic API
 
 ### Validation static methods
 

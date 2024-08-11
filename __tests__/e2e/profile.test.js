@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
-import { Validation } from '../../src/index.js';
+import { Predicate, Validation } from '../../src/index.js';
 import {
   isEmail,
   isLongerThan,
@@ -301,6 +301,169 @@ describe('Validation.profile', () => {
       ['q@q.q.'],
     ]);
     expect(signInVs.isValid).toBe(false);
+  });
+
+  it.todo('calling the .dataMapper method before creating a profile');
+  it.todo('validating via middleware/eventHandler before creating a profile');
+
+  it('should call only server side methods and ignore client side', async () => {
+    const cb1 = jest.fn();
+    const cb2 = jest.fn();
+    const cb3 = jest.fn();
+    const cb4 = jest.fn();
+    const cb5 = jest.fn();
+    const cb6 = jest.fn();
+    const cb7 = jest.fn();
+    const cb8 = jest.fn();
+    const cb9 = jest.fn();
+
+    const predicate1 = jest.fn(() => true);
+    const predicate2 = jest.fn(() => true);
+    const predicate3 = jest.fn(() => true);
+    const predicate4 = jest.fn(() => true);
+    const predicate5 = jest.fn(() => true);
+    const predicate6 = jest.fn(() => true);
+    const predicate7 = jest.fn(() => true);
+    const predicate8 = jest.fn(() => true);
+    const predicate9 = jest.fn(() => true);
+
+    const mapper1 = jest.fn();
+    const mapper2 = jest.fn();
+
+    Object.entries({
+      predicate1,
+      predicate2,
+      predicate3,
+      predicate4,
+      predicate5,
+      predicate6,
+      predicate7,
+      predicate8,
+      predicate9,
+    }).forEach(([key, value]) =>
+      Object.defineProperty(value, 'name', { value: key }),
+    );
+
+    const [emailValidation] = signInVs.validations;
+
+    const getConstraintNames = (validation) =>
+      [...validation.constraints.values()]
+        .map((set) => [...set])
+        .flat(3)
+        .map((constraint) => constraint[Symbol.toStringTag]);
+
+    let constraints = getConstraintNames(signInVs);
+
+    expect(constraints).toHaveLength(6);
+
+    emailValidation.constraint(Predicate(predicate9).client.validated(cb9));
+
+    signInVs
+      .constraint(predicate1)
+      .validated(cb1)
+      .client.constraint(predicate2) // ignored
+      .validated(cb2) // ignored
+      .server.constraint(predicate3)
+      .validated(cb3);
+
+    signInVs.client
+      .constraint(predicate1) // ignored
+      .validated(cb1) // ignored
+      .constraint(predicate3) // ignored
+      .validated(cb3) // ignored
+      .server.constraint(predicate4)
+      .validated(cb4);
+
+    constraints = getConstraintNames(signInVs);
+
+    expect(constraints).toHaveLength(13);
+    expect(constraints).toContain(predicate1.name);
+    expect(constraints).toContain(predicate3.name);
+    expect(constraints).toContain(predicate4.name);
+    expect(constraints).not.toContain(predicate2.name);
+
+    await signInVs.validate();
+
+    expect(predicate1).toHaveBeenCalledTimes(2);
+    expect(predicate3).toHaveBeenCalledTimes(2);
+    expect(predicate4).toHaveBeenCalledTimes(2);
+    expect(predicate2).toHaveBeenCalledTimes(0);
+
+    expect(cb1).toHaveBeenCalledTimes(1);
+    expect(cb3).toHaveBeenCalledTimes(1);
+    expect(cb4).toHaveBeenCalledTimes(1);
+    expect(cb2).toHaveBeenCalledTimes(0);
+
+    signInVs.email
+      .constraint(predicate5)
+      .validated(cb5)
+      .client.constraint(predicate6) // ignored
+      .validated(cb6) // ignored
+      .server.constraint(predicate7)
+      .validated(cb7)
+      .client.constraint(predicate7) // ignored
+      .validated(cb7); // ignored
+
+    signInVs.email.client
+      .constraint(predicate6) // ignored
+      .validated(cb6) // ignored
+      .server.constraint(predicate5)
+      .validated(cb5);
+
+    emailValidation.client
+      .constraint(predicate6) // ignored
+      .validated(cb6) // ignored
+      .server.constraint(predicate8)
+      .validated(cb8)
+      .client.constraint(predicate7) // ignored
+      .validated(cb7) // ignored
+      .client.constraint(predicate7) // ignored
+      .validated(cb7); // ignored
+
+    constraints = getConstraintNames(signInVs);
+
+    expect(constraints).toHaveLength(17);
+    expect(constraints).toContain(predicate5.name);
+    expect(constraints).toContain(predicate7.name);
+    expect(constraints).toContain(predicate8.name);
+    expect(constraints).toContain(predicate9.name);
+    expect(constraints).not.toContain(predicate6.name);
+
+    await signInVs.validate();
+
+    expect(predicate5).toHaveBeenCalledTimes(2);
+    expect(predicate7).toHaveBeenCalledTimes(1);
+    expect(predicate8).toHaveBeenCalledTimes(1);
+    expect(predicate9).toHaveBeenCalledTimes(2);
+    expect(predicate6).toHaveBeenCalledTimes(0);
+
+    expect(cb5).toHaveBeenCalledTimes(2);
+    expect(cb7).toHaveBeenCalledTimes(1);
+    expect(cb8).toHaveBeenCalledTimes(1);
+    expect(cb6).toHaveBeenCalledTimes(0);
+
+    // addressing .dataMapper and calling middleware
+    signInVs.client
+      .dataMapper(mapper1) // ignored
+      .server.dataMapper(mapper2);
+
+    signInVs.server({ body: { email: {}, password: {} } }, {}, () => {});
+    expect(mapper1).toBeCalledTimes(0);
+    expect(mapper2).toBeCalledTimes(1);
+
+    signInVs.email.server.dataMapper(mapper1).client.dataMapper(mapper2); // ignored
+
+    signInVs.server.email({ body: { email: {}, password: {} } }, {}, () => {});
+    expect(mapper1).toBeCalledTimes(1);
+    expect(mapper2).toBeCalledTimes(1);
+
+    signInVs.email.isomorphic(
+      { body: { email: {}, password: {} } },
+      {},
+      () => {},
+    );
+    expect(mapper1).toBeCalledTimes(2);
+    expect(mapper2).toBeCalledTimes(1);
   });
 
   it('should validate by target', async () => {

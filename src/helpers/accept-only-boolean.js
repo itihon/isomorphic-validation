@@ -5,4 +5,6 @@ export default function acceptOnlyBoolean(value) {
         'or a Promise that resolves to a Boolean.',
     );
   }
+
+  return value;
 }
