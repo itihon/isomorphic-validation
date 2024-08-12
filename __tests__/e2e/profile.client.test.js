@@ -16,6 +16,11 @@ document.body.innerHTML = `
 
 const e = { target: null };
 
+const emailChangedCB = jest.fn();
+const paswordChangedCB = jest.fn();
+const pwdconfirmChangedCB = jest.fn();
+const signupvsChangedCB = jest.fn();
+
 const emailV = Validation();
 const passwordV = Validation();
 const pwdconfirmV = Validation();
@@ -37,6 +42,14 @@ Validation.glue(
   signUpProfile.validation.password,
   signUpProfile.validation.pwdconfirm,
 ).constraint(areEqual);
+
+[...signUpVs.validations].forEach((validation, idx) => {
+  validation.client.changed(
+    [emailChangedCB, paswordChangedCB, pwdconfirmChangedCB][idx],
+  );
+});
+
+signUpVs.client.changed(signupvsChangedCB);
 
 describe('Validation.profile', () => {
   beforeEach(async () => {
@@ -66,6 +79,10 @@ describe('Validation.profile', () => {
     expect(isEmail.mock.calls).toStrictEqual([['q.']]);
     expect(isEmailNotBusy.mock.calls).toStrictEqual([]);
     expect(areEqual.mock.calls).toStrictEqual([]);
+    expect(emailChangedCB).toBeCalledTimes(0);
+    expect(paswordChangedCB).toBeCalledTimes(0);
+    expect(pwdconfirmChangedCB).toBeCalledTimes(0);
+    expect(signupvsChangedCB).toBeCalledTimes(0);
 
     signUpForm.elements.email.value = 'q@q.q';
     signUpForm.elements.password.value = '';
@@ -80,6 +97,10 @@ describe('Validation.profile', () => {
     expect(isEmail.mock.calls).toStrictEqual([['q.'], ['q@q.q']]);
     expect(isEmailNotBusy.mock.calls).toStrictEqual([['q@q.q']]);
     expect(areEqual.mock.calls).toStrictEqual([]);
+    expect(emailChangedCB).toBeCalledTimes(0);
+    expect(paswordChangedCB).toBeCalledTimes(0);
+    expect(pwdconfirmChangedCB).toBeCalledTimes(0);
+    expect(signupvsChangedCB).toBeCalledTimes(0);
 
     signUpForm.elements.email.value = 'a@a.a';
     signUpForm.elements.password.value = '';
@@ -94,6 +115,10 @@ describe('Validation.profile', () => {
     expect(isEmail.mock.calls).toStrictEqual([['q.'], ['q@q.q'], ['a@a.a']]);
     expect(isEmailNotBusy.mock.calls).toStrictEqual([['q@q.q'], ['a@a.a']]);
     expect(areEqual.mock.calls).toStrictEqual([]);
+    expect(emailChangedCB).toBeCalledTimes(1);
+    expect(paswordChangedCB).toBeCalledTimes(0);
+    expect(pwdconfirmChangedCB).toBeCalledTimes(0);
+    expect(signupvsChangedCB).toBeCalledTimes(0);
 
     signUpForm.elements.email.value = 'a@a.a';
     signUpForm.elements.password.value = 'asdfg';
@@ -108,6 +133,10 @@ describe('Validation.profile', () => {
     expect(isEmail.mock.calls).toStrictEqual([['q.'], ['q@q.q'], ['a@a.a']]);
     expect(isEmailNotBusy.mock.calls).toStrictEqual([['q@q.q'], ['a@a.a']]);
     expect(areEqual.mock.calls).toStrictEqual([['asdfg', '']]);
+    expect(emailChangedCB).toBeCalledTimes(1);
+    expect(paswordChangedCB).toBeCalledTimes(0);
+    expect(pwdconfirmChangedCB).toBeCalledTimes(0);
+    expect(signupvsChangedCB).toBeCalledTimes(0);
 
     signUpForm.elements.email.value = 'a@a.a';
     signUpForm.elements.password.value = 'asdfg';
@@ -125,6 +154,10 @@ describe('Validation.profile', () => {
       ['asdfg', ''],
       ['asdfg', 'asdfg'],
     ]);
+    expect(emailChangedCB).toBeCalledTimes(1);
+    expect(paswordChangedCB).toBeCalledTimes(1);
+    expect(pwdconfirmChangedCB).toBeCalledTimes(1); // !!! should be 1
+    expect(signupvsChangedCB).toBeCalledTimes(1);
   });
 
   it('should validate the grouped validations via the event handler', async () => {

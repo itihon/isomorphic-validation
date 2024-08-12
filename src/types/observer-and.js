@@ -13,6 +13,7 @@ export default function ObserverAnd(initVal = false) {
   let sum = initVal ? ID : 0;
   let depSum = ID;
   let ownValue = sum === depSum;
+  let oldValue = initVal;
 
   return {
     subscribe(subject = ObserverAnd()) {
@@ -46,11 +47,12 @@ export default function ObserverAnd(initVal = false) {
         slots.set(id, value);
       }
 
-      if (ownValue !== (sum === depSum)) {
+      oldValue = ownValue;
+      ownValue = sum === depSum;
+
+      if (ownValue !== oldValue) {
         onChangedCBs.run(value, args, ID);
       }
-
-      ownValue = sum === depSum;
 
       return ownValue;
     },

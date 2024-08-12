@@ -63,6 +63,7 @@
         - [ ] think through if it is possible to completely get rid of memoization of ValidationBuilder in the clone function and use CloneRegestry instead
         - [x] rename entities from Validated* to Validatable*.
         - [ ] consider renaming ObserverAnd to something like AndGate
+        - [ ] consider renaming ValidityCallbacks to ValidityEvents
         - [x] Validation.group, Validation.glue to accept validations divided by comma
         - [x] consider moving out the keepValid functionality from ObservablePredicate to ValidatableItem as a decorator after the according e2e tests are written:
             ValidatableItem.keepValid(ObservablePredicate()) or
@@ -83,6 +84,7 @@
 
     ## Tests
 
+        - [ ] validation.isValid must be updated before running callbacks (esp. changed)
         - [ ] calling the .dataMapper method before creating a profile
         - [ ] validating via middleware/eventHandler before creating a profile
         - [ ] performance: makeIsomorphicAPI current version vs proxying the whole API object 
@@ -95,6 +97,7 @@
 
 
     ## Bugs
+        - [ ] missed argument that should be passed to changed cbs
         - [x] validations which are glued after creating a profile. Their grouping validation doesn't know about them being glued.
         - [x] ValidationResult.isValid should not be Validation's state, it should be a result of a particular operation
         - [x] next and invalidate doesn't work after cloning

@@ -34,6 +34,7 @@ describe('ValidityCallbacks', () => {
     expect(validatedCB).toHaveBeenCalledTimes(2);
 
     expect(CBs.set(false)).toBe(false);
+    expect(CBs.change(false)).toBe(false);
     expect(validCB).toHaveBeenCalledTimes(2);
     expect(invalidCB).toHaveBeenCalledTimes(1);
     expect(changedCB).toHaveBeenCalledTimes(1);
@@ -46,6 +47,7 @@ describe('ValidityCallbacks', () => {
       .validated(validatedCB);
 
     expect(CBs.set(true)).toBe(true);
+    expect(CBs.change(true)).toBe(true);
     expect(validCB).toHaveBeenCalledTimes(3);
     expect(invalidCB).toHaveBeenCalledTimes(1);
     expect(changedCB).toHaveBeenCalledTimes(2);
@@ -58,6 +60,7 @@ describe('ValidityCallbacks', () => {
     expect(validatedCB).toHaveBeenCalledTimes(5);
 
     expect(CBs.set(false)).toBe(false);
+    expect(CBs.change(false)).toBe(false);
     expect(validCB).toHaveBeenCalledTimes(4);
     expect(invalidCB).toHaveBeenCalledTimes(2);
     expect(changedCB).toHaveBeenCalledTimes(3);
@@ -90,7 +93,11 @@ describe('ValidityCallbacks', () => {
           .changed(changedCB)
           .validated(validatedCB),
       )
-      .map((CBs) => ValidityCallbacks(false, CBs).set(true));
+      .map((CBs) => {
+        const CBsCloned = ValidityCallbacks(false, CBs);
+        CBsCloned.set(true);
+        return CBsCloned.change(true);
+      });
 
     expect(results).toStrictEqual(
       Array.from({ length: results.length }, () => true),
@@ -129,12 +136,14 @@ describe('ValidityCallbacks', () => {
       .validated(validatedCB);
 
     CBs.set(true, args1);
+    CBs.change(true, args1);
     expect(validCB.mock.calls).toStrictEqual([[args1]]);
     expect(invalidCB.mock.calls).toStrictEqual([]);
     expect(changedCB.mock.calls).toStrictEqual([[args1]]);
     expect(validatedCB.mock.calls).toStrictEqual([[args1]]);
 
     CBs.set(false, args2);
+    CBs.change(false, args2);
     expect(validCB.mock.calls).toStrictEqual([[args1]]);
     expect(invalidCB.mock.calls).toStrictEqual([[args2]]);
     expect(changedCB.mock.calls).toStrictEqual([[args1], [args2]]);
@@ -167,6 +176,7 @@ describe('ValidityCallbacks', () => {
       .validated(validatedCB2);
 
     CBs1.set(true);
+    CBs1.change(true);
 
     expect(validCB1).toHaveBeenCalledTimes(1);
     expect(invalidCB1).toHaveBeenCalledTimes(0);
@@ -179,6 +189,7 @@ describe('ValidityCallbacks', () => {
     expect(validatedCB2).toHaveBeenCalledTimes(0);
 
     CBs2.set(true);
+    CBs2.change(true);
 
     expect(validCB1).toHaveBeenCalledTimes(2);
     expect(invalidCB1).toHaveBeenCalledTimes(0);

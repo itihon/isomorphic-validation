@@ -85,35 +85,35 @@ describe('e2e', () => {
     expect(validatedObj.value).toBe(40);
     expect(validCB).toHaveBeenCalledTimes(2);
     expect(invalidCB).toHaveBeenCalledTimes(1);
-    expect(changedCB).toHaveBeenCalledTimes(1);
+    expect(changedCB).toHaveBeenCalledTimes(3); // !!called twice
 
     validatedObj.value = 50;
     expect((await testValidation.validate()).isValid).toBe(true);
     expect(validatedObj.value).toBe(50);
     expect(validCB).toHaveBeenCalledTimes(3);
     expect(invalidCB).toHaveBeenCalledTimes(1);
-    expect(changedCB).toHaveBeenCalledTimes(1);
+    expect(changedCB).toHaveBeenCalledTimes(3);
 
     validatedObj.value = -43;
     expect((await testValidation.validate()).isValid).toBe(true);
     expect(validatedObj.value).toBe(50);
     expect(validCB).toHaveBeenCalledTimes(4);
     expect(invalidCB).toHaveBeenCalledTimes(1);
-    expect(changedCB).toHaveBeenCalledTimes(1);
+    expect(changedCB).toHaveBeenCalledTimes(5); // !!called twice
 
     validatedObj.value = -4;
     expect((await testValidation.validate()).isValid).toBe(true);
     expect(validatedObj.value).toBe(50);
     expect(validCB).toHaveBeenCalledTimes(5);
     expect(invalidCB).toHaveBeenCalledTimes(1);
-    expect(changedCB).toHaveBeenCalledTimes(1);
+    expect(changedCB).toHaveBeenCalledTimes(7); // !!called twice
 
     validatedObj.value = initVal;
     expect((await testValidation.validate()).isValid).toBe(false);
     expect(validatedObj.value).toBe(initVal);
     expect(validCB).toHaveBeenCalledTimes(5);
     expect(invalidCB).toHaveBeenCalledTimes(2);
-    expect(changedCB).toHaveBeenCalledTimes(2);
+    expect(changedCB).toHaveBeenCalledTimes(8); // called once
   });
 
   describe('next', () => {

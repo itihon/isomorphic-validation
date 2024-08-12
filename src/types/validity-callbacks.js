@@ -24,13 +24,18 @@ export default function ValidityCallbacks(
         invalidCBs.run(cbArgs);
       }
 
-      if (isValid !== value) {
-        isValid = value;
-        changedCBs.run(cbArgs);
-      }
+      // if (isValid !== value) {
+      isValid = value;
+      //   changedCBs.run(cbArgs);
+      // }
 
       validatedCBs.run(cbArgs);
 
+      return isValid;
+    },
+    change(value = false, cbArgs = undefined) {
+      isValid = value;
+      changedCBs.run(cbArgs);
       return isValid;
     },
     valueOf() {

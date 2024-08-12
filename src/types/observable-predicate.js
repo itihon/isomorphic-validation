@@ -74,6 +74,8 @@ export default function ObservablePredicate(
     },
   );
 
+  obs.onChanged(validityCBs.change);
+
   items.forEach((item) => item.onRestored(...restoredCBs));
 
   function predicatePostExec(result, forbidInvalid) {

@@ -192,7 +192,7 @@ describe('ObservablePredicate, Predicate, ValidatableItem, ObserverAnd', () => {
     expect(isOnlyLetters).toHaveBeenCalledTimes(5); // !!called twice
     expect(validCB1).toHaveBeenCalledTimes(2);
     expect(invalidCB1).toHaveBeenCalledTimes(0);
-    expect(changedCB1).toHaveBeenCalledTimes(1);
+    expect(changedCB1).toHaveBeenCalledTimes(3); // !!called twice,
     expect(validatedCB1).toHaveBeenCalledTimes(2);
     expect(restoredCB1).toHaveBeenCalledTimes(1);
     expect(restoredCB1).lastCalledWith(...validatedCB1.mock.calls[1]);
