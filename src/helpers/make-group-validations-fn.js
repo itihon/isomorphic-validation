@@ -23,10 +23,7 @@ export default function makeGroupValidationsFn(TYPE = GROUPED) {
 
         pgs.mergeWith(vPgs);
         items.mergeWith(vItems);
-
-        containedGroups.mergeWith(vContainedGroups).forEach((_, key) => {
-          containedGroups.add(key, pgs);
-        });
+        containedGroups.mergeWith(vContainedGroups);
 
         return vItems;
       })
@@ -35,6 +32,10 @@ export default function makeGroupValidationsFn(TYPE = GROUPED) {
           vItems.mergeWith(items);
         }
       });
+
+    containedGroups.forEach((_, key) => {
+      containedGroups.add(key, pgs);
+    });
 
     return ValidationBuilder({
       pgs,

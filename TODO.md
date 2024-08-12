@@ -109,8 +109,6 @@
 
         - When a validated value is equal to its initial value, instead of validating it, maybe it's better to cancel and invalidate all validations.
 
-        - Own pgs is always on the second place in containedGroups. This defines the order of validity callback invokations.
-
         - When a predicate added with the keepValid option, on every validation with the invalid result, it notifies subscribers twice: first when changed from valid to invalid and then when restores back to the last valid value. It also calls a predicate function twice. Not sure if this is appropriate. See ObservablePredicate integration tests.
 
         + UPD: removed memoization. On ValidatableItem. After calling setObject on a cloned item, the original item gets erased from the memoize function's registry. Should it be so??? This is a contradiction in logic: on the one hand memoization implies imposibility of existence of two instances of an item constructed with the same parameters, on the other hand in combination with cloning it becomes possible.

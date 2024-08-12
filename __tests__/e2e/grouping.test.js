@@ -585,38 +585,38 @@ describe('group with clone', () => {
       expect([...cgVg.getAll()]).toStrictEqual([pgsVg]);
       expect([...cgVhi.getAll()]).toStrictEqual([pgsVhf]);
       expect([...cgVhf.getAll()]).toStrictEqual([pgsVhi]);
-      // note: own pgs is always on the second place
-      expect([...cgVC.getAll()]).toStrictEqual([pgsVa, pgsVC, pgsVbc]);
+      // own pgs is always on the last place
+      expect([...cgVC.getAll()]).toStrictEqual([pgsVa, pgsVbc, pgsVC]);
 
-      expect([...cgVJ.getAll()]).toStrictEqual([pgsVbj, pgsVJ, pgsVd1, pgsVd2]);
+      expect([...cgVJ.getAll()]).toStrictEqual([pgsVbj, pgsVd1, pgsVd2, pgsVJ]);
 
-      expect([...cgVK.getAll()]).toStrictEqual([pgsVek, pgsVK, pgsVg]);
+      expect([...cgVK.getAll()]).toStrictEqual([pgsVek, pgsVg, pgsVK]);
 
       expect([...cgVF.getAll()]).toStrictEqual([
         pgsVa,
-        pgsVC,
         pgsVbc,
-        pgsVF,
-        pgsVJ,
+        pgsVC,
         pgsVd1,
         pgsVd2,
+        pgsVJ,
         pgsVef,
         pgsVhf,
+        pgsVF,
       ]);
 
       expect([...cgVI.getAll()]).toStrictEqual([
         pgsVa,
-        pgsVC,
         pgsVbc,
-        pgsVF,
-        pgsVJ,
+        pgsVC,
         pgsVd1,
         pgsVd2,
+        pgsVJ,
         pgsVef,
         pgsVhf,
-        pgsVI,
-        pgsVK,
+        pgsVF,
         pgsVg,
+        pgsVK,
+        pgsVI,
       ]);
 
       // console.log([...cgVI.getAll()].map(pgs => pgs.name));
