@@ -75,7 +75,7 @@ function ValidatableItem(
     isInitValue() {
       return isInitVal;
     },
-    clone: () => ValidatableItem(ownObj, ownPath, ownInitVal, ownOnRestoredCBs),
+    clone: () => ValidatableItem(ownObj, ownPath, ownInitVal),
     onRestored: ownOnRestoredCBs.push,
     [Symbol.toStringTag]: ValidatableItem.name,
   };

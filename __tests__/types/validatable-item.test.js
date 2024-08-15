@@ -208,15 +208,24 @@ describe('ValidatableItem', () => {
     obj1.value = 42;
     ValidatableItem.keepValid([vi2]);
     expect(obj1.value).toBe('');
-    expect(onRestoredCB1).toHaveBeenCalledTimes(2);
+    // onRestoredCBs should not be cloned via ValidatableItem,
+    // they are cloned via ObservablePredicate().clone() -> Predicate().clone()
+    // expect(onRestoredCB1).toHaveBeenCalledTimes(2);
+    expect(onRestoredCB1).toHaveBeenCalledTimes(1);
     expect(onRestoredCB2).toHaveBeenCalledTimes(1);
     expect(onRestoredCB3).toHaveBeenCalledTimes(0);
 
     obj1.value = 42;
     ValidatableItem.keepValid([vi3]);
     expect(obj1.value).toBe('');
-    expect(onRestoredCB1).toHaveBeenCalledTimes(3);
-    expect(onRestoredCB2).toHaveBeenCalledTimes(2);
+    // onRestoredCBs should not be cloned via ValidatableItem,
+    // they are cloned via ObservablePredicate().clone() -> Predicate().clone()
+    // expect(onRestoredCB1).toHaveBeenCalledTimes(3);
+    expect(onRestoredCB1).toHaveBeenCalledTimes(1);
+    // onRestoredCBs should not be cloned via ValidatableItem,
+    // they are cloned via ObservablePredicate().clone() -> Predicate().clone()
+    // expect(onRestoredCB2).toHaveBeenCalledTimes(2);
+    expect(onRestoredCB2).toHaveBeenCalledTimes(1);
     expect(onRestoredCB3).toHaveBeenCalledTimes(1);
 
     expect(vi1.clone()).not.toBe(vi1);
