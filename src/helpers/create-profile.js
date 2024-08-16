@@ -61,16 +61,6 @@ export default function createProfile(
     .map(bind(validatableForm, fieldNames))
     .map(turnIntoHandler(validatableForm));
 
-  // const groupedValidations = turnIntoHandler(validatableForm)(
-  //   makeGroupValidationsFn(GROUPED)(clonedValidations),
-  // );
-
-  // return fieldNames.reduce(
-  //   assignValidations(clonedValidations),
-  //   profile(validatableForm, groupedValidations),
-  // );
-
-  // it should be so in order to work with makeIsomorphicAPI
   const groupedValidations = fieldNames.reduce(
     assignValidations(clonedValidations),
     makeGroupValidationsFn(GROUPED)(clonedValidations),
