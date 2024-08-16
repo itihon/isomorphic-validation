@@ -34,7 +34,7 @@ export default function PredicateGroups(
     },
   );
 
-  obs.onChanged(validityCBs.change);
+  obs.onChanged((result) => validityCBs.change(result, representation));
 
   // ! bad. hiding unnecessary methods.
   const addRepresentation = representation.add;

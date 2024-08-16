@@ -74,7 +74,7 @@ export default function ObservablePredicate(
     },
   );
 
-  obs.onChanged(validityCBs.change);
+  obs.onChanged((result) => validityCBs.change(result, validationResult));
 
   items.forEach((item) => item.onRestored(...restoredCBs));
 

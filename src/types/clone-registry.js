@@ -12,10 +12,5 @@ export default function CloneRegistry() {
         items.map((item) => registry.cloneOnce(item, registry)),
       );
     },
-    // cloneMap(items = [], registry = undefined) {
-    //   return retrieveIfHas(items, () =>
-    //     items.map((item) => item.clone(registry)),
-    //   );
-    // },
   };
 }

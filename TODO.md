@@ -84,7 +84,7 @@
 
     ## Tests
 
-        - [ ] validation.isValid must be updated before running callbacks (esp. changed)
+        - [ ] validationResult.target must be the same for all invoked callbacks
         - [ ] calling the .dataMapper method before creating a profile
         - [ ] validating via middleware/eventHandler before creating a profile
         - [ ] performance: makeIsomorphicAPI current version vs proxying the whole API object 
@@ -97,7 +97,7 @@
 
 
     ## Bugs
-        - [ ] missed argument that should be passed to changed cbs
+        - [x] missed argument that should be passed to changed cbs for Validation and Predicate
         - [x] validations which are glued after creating a profile. Their grouping validation doesn't know about them being glued.
         - [x] ValidationResult.isValid should not be Validation's state, it should be a result of a particular operation
         - [x] next and invalidate doesn't work after cloning
@@ -106,6 +106,8 @@
             check it!!!
 
     ## Notes
+
+        - changed callback invokations have a slightly different order for original validation group and its clone. See grouping.test.js
 
         - When a validated value is equal to its initial value, instead of validating it, maybe it's better to cancel and invalidate all validations.
 

@@ -1,5 +1,12 @@
-import { it, describe, jest, expect, beforeEach } from '@jest/globals';
-import { Validation } from '../../src/index.js';
+import {
+  it,
+  describe,
+  jest,
+  expect,
+  beforeEach,
+  beforeAll,
+} from '@jest/globals';
+import { Validation, Predicate } from '../../src/index.js';
 
 const a = { value: 'obj a' };
 const b = { value: 'obj b' };
@@ -44,20 +51,20 @@ const predicates = {
   P1h: jest.fn(() => true),
   P2h: jest.fn(() => true),
 
-  P1c: jest.fn(() => true),
-  P2c: jest.fn(() => true),
+  P1C: jest.fn(() => true),
+  P2C: jest.fn(() => true),
 
-  P1j: jest.fn(() => true),
-  P2j: jest.fn(() => true),
+  P1J: jest.fn(() => true),
+  P2J: jest.fn(() => true),
 
-  P1k: jest.fn(() => true),
-  P2k: jest.fn(() => true),
+  P1K: jest.fn(() => true),
+  P2K: jest.fn(() => true),
 
-  P1f: jest.fn(() => true),
-  P2f: jest.fn(() => true),
+  P1F: jest.fn(() => true),
+  P2F: jest.fn(() => true),
 
-  P1i: jest.fn(() => true),
-  P2i: jest.fn(() => true),
+  P1I: jest.fn(() => true),
+  P2I: jest.fn(() => true),
 };
 
 (function addFnName() {
@@ -73,11 +80,11 @@ origVd2.constraint(predicates.P1d2).constraint(predicates.P2d2);
 origVe.constraint(predicates.P1e).constraint(predicates.P2e);
 origVg.constraint(predicates.P1g).constraint(predicates.P2g);
 origVh.constraint(predicates.P1h).constraint(predicates.P2h);
-origVC.constraint(predicates.P1c).constraint(predicates.P2c);
-origVJ.constraint(predicates.P1j).constraint(predicates.P2j);
-origVK.constraint(predicates.P1k).constraint(predicates.P2k);
-origVF.constraint(predicates.P1f).constraint(predicates.P2f);
-origVI.constraint(predicates.P1i).constraint(predicates.P2i);
+origVC.constraint(predicates.P1C).constraint(predicates.P2C);
+origVJ.constraint(predicates.P1J).constraint(predicates.P2J);
+origVK.constraint(predicates.P1K).constraint(predicates.P2K);
+origVF.constraint(predicates.P1F).constraint(predicates.P2F);
+origVI.constraint(predicates.P1I).constraint(predicates.P2I);
 
 function predicateNames(validation, obj) {
   return [
@@ -95,76 +102,76 @@ function fnNames(fns = []) {
 const predicateNamesVa = fnNames([
   predicates.P1a,
   predicates.P2a,
-  predicates.P1c,
-  predicates.P2c,
-  predicates.P1f,
-  predicates.P2f,
-  predicates.P1i,
-  predicates.P2i,
+  predicates.P1C,
+  predicates.P2C,
+  predicates.P1F,
+  predicates.P2F,
+  predicates.P1I,
+  predicates.P2I,
 ]);
 
 const predicateNamesVb = fnNames([
   predicates.P1b,
   predicates.P2b,
-  predicates.P1c,
-  predicates.P2c,
-  predicates.P1j,
-  predicates.P2j,
-  predicates.P1f,
-  predicates.P2f,
-  predicates.P1i,
-  predicates.P2i,
+  predicates.P1C,
+  predicates.P2C,
+  predicates.P1J,
+  predicates.P2J,
+  predicates.P1F,
+  predicates.P2F,
+  predicates.P1I,
+  predicates.P2I,
 ]);
 
 const predicateNamesVd1 = fnNames([
   predicates.P1d1,
   predicates.P2d1,
-  predicates.P1j,
-  predicates.P2j,
-  predicates.P1f,
-  predicates.P2f,
-  predicates.P1i,
-  predicates.P2i,
+  predicates.P1J,
+  predicates.P2J,
+  predicates.P1F,
+  predicates.P2F,
+  predicates.P1I,
+  predicates.P2I,
 ]);
 
 const predicateNamesVd2 = fnNames([
   predicates.P1d2,
   predicates.P2d2,
-  predicates.P1j,
-  predicates.P2j,
-  predicates.P1f,
-  predicates.P2f,
-  predicates.P1i,
-  predicates.P2i,
+  predicates.P1J,
+  predicates.P2J,
+  predicates.P1F,
+  predicates.P2F,
+  predicates.P1I,
+  predicates.P2I,
 ]);
 
 const predicateNamesVe = fnNames([
   predicates.P1e,
   predicates.P2e,
-  predicates.P1k,
-  predicates.P2k,
-  predicates.P1f,
-  predicates.P2f,
-  predicates.P1i,
-  predicates.P2i,
+  predicates.P1K,
+  predicates.P2K,
+  predicates.P1F,
+  predicates.P2F,
+  predicates.P1I,
+  predicates.P2I,
 ]);
 
 const predicateNamesVg = fnNames([
   predicates.P1g,
   predicates.P2g,
-  predicates.P1k,
-  predicates.P2k,
-  predicates.P1i,
-  predicates.P2i,
+  predicates.P1K,
+  predicates.P2K,
+  predicates.P1I,
+  predicates.P2I,
 ]);
 
 const predicateNamesVh = fnNames([
   predicates.P1h,
   predicates.P2h,
-  predicates.P1f,
-  predicates.P2f,
-  predicates.P1i,
-  predicates.P2i,
+  predicates.P1F,
+  predicates.P2F,
+  predicates.P1I,
+  predicates.P2I,
 ]);
 
 const dataTable = [
@@ -421,29 +428,29 @@ describe('group with clone', () => {
     it('should be predicate calls with glued validated values passed in', () => {
       Ve.validate();
       // glued
-      expect(predicates.P1k.mock.calls).toStrictEqual([[e.value, g.value]]);
-      expect(predicates.P2k.mock.calls).toStrictEqual([[e.value, g.value]]);
+      expect(predicates.P1K.mock.calls).toStrictEqual([[e.value, g.value]]);
+      expect(predicates.P2K.mock.calls).toStrictEqual([[e.value, g.value]]);
 
       // not glued
-      expect(predicates.P1i.mock.calls).toStrictEqual([[e.value]]);
-      expect(predicates.P2i.mock.calls).toStrictEqual([[e.value]]);
-      expect(predicates.P1f.mock.calls).toStrictEqual([[e.value]]);
-      expect(predicates.P2f.mock.calls).toStrictEqual([[e.value]]);
+      expect(predicates.P1I.mock.calls).toStrictEqual([[e.value]]);
+      expect(predicates.P2I.mock.calls).toStrictEqual([[e.value]]);
+      expect(predicates.P1F.mock.calls).toStrictEqual([[e.value]]);
+      expect(predicates.P2F.mock.calls).toStrictEqual([[e.value]]);
 
       Vg.validate();
       // glued
-      expect(predicates.P1k.mock.calls).toStrictEqual([
+      expect(predicates.P1K.mock.calls).toStrictEqual([
         [e.value, g.value],
         [e.value, g.value],
       ]);
-      expect(predicates.P2k.mock.calls).toStrictEqual([
+      expect(predicates.P2K.mock.calls).toStrictEqual([
         [e.value, g.value],
         [e.value, g.value],
       ]);
 
       // not glued
-      expect(predicates.P1i.mock.calls).toStrictEqual([[e.value], [g.value]]);
-      expect(predicates.P2i.mock.calls).toStrictEqual([[e.value], [g.value]]);
+      expect(predicates.P1I.mock.calls).toStrictEqual([[e.value], [g.value]]);
+      expect(predicates.P2I.mock.calls).toStrictEqual([[e.value], [g.value]]);
     });
 
     it('should validate/invalidate another validation it is glued to', () => {
@@ -454,7 +461,7 @@ describe('group with clone', () => {
       expect(Vg1.isValid).toBe(true);
 
       // predicate added on glued validation
-      predicates.P1k.mockImplementationOnce(() => false);
+      predicates.P1K.mockImplementationOnce(() => false);
 
       Ve1.validate();
       expect(Ve1.isValid).toBe(false);
@@ -465,7 +472,7 @@ describe('group with clone', () => {
       expect(Vg1.isValid).toBe(true);
 
       // predicate added on non glued validation
-      predicates.P1i.mockImplementationOnce(() => false);
+      predicates.P1I.mockImplementationOnce(() => false);
 
       Ve1.validate();
       expect(Ve1.isValid).toBe(false);
@@ -644,16 +651,546 @@ describe('group with clone', () => {
   });
 });
 
+describe('callbacks', () => {
+  const cbsOrder = {
+    all: [],
+    valid: [],
+    invalid: [],
+    changed: [],
+    validated: [],
+  };
+
+  const reinitCbsOrder = () =>
+    Object.keys(cbsOrder).forEach((key) => {
+      cbsOrder[key] = [];
+    });
+
+  let cbs;
+
+  const createCbImpl = (operation, cbName) => () => {
+    cbsOrder.all.push(cbName);
+    cbsOrder[operation].push(cbName);
+  };
+
+  const assignCBs = () =>
+    Object.entries({
+      origVa,
+      origVb,
+      origVd1,
+      origVd2,
+      origVe,
+      origVg,
+      origVh,
+      origVC,
+      origVJ,
+      origVK,
+      origVF,
+      origVI,
+    })
+      .map(([vName, validation]) => [vName.slice(4), validation])
+      .map(([vName, validation]) => [
+        {
+          [`valid_${vName}`]: (op, cbName) => jest.fn(createCbImpl(op, cbName)),
+          [`invalid_${vName}`]: (op, cbName) =>
+            jest.fn(createCbImpl(op, cbName)),
+          [`changed_${vName}`]: (op, cbName) =>
+            jest.fn(createCbImpl(op, cbName)),
+          [`validated_${vName}`]: (op, cbName) =>
+            jest.fn(createCbImpl(op, cbName)),
+        },
+        validation,
+      ])
+      .map(([CBs, validation]) => {
+        Object.keys(CBs)
+          .map((cbName) => [cbName.split('_')[0], cbName])
+          .map(([operation, cbName]) => [
+            operation,
+            Object.assign(CBs, { [cbName]: CBs[cbName](operation, cbName) })[
+              cbName
+            ],
+          ])
+          .map(([operation, cb]) => validation[operation](cb));
+
+        return CBs;
+      })
+      .reduce((acc, CBs) => Object.assign(acc, CBs), {});
+
+  const invalidate = async (validation) => {
+    Object.values(predicates).forEach((predicate) =>
+      predicate.mockImplementation(() => false),
+    );
+
+    await validation.validate();
+
+    Object.values(predicates).forEach((predicate) =>
+      predicate.mockImplementation(() => true),
+    );
+  };
+
+  beforeAll(async () => {
+    cbs = assignCBs();
+  });
+
+  it.each([{ title: 'original' }, { title: 'cloned' }])(
+    '$title: should be invoked in the right order right amount of times',
+    async ({ title }) => {
+      const isCloned = title === 'cloned';
+
+      const validation1 = isCloned ? Validation.clone(origVI) : origVI;
+
+      await invalidate(validation1);
+      jest.clearAllMocks();
+      reinitCbsOrder();
+
+      await validation1.validate();
+
+      // ! changed callback invocations have a sligtly different order
+      // for original validation group and its clone
+      expect(cbsOrder.changed.sort()).toStrictEqual(
+        [
+          'changed_Va',
+          'changed_Vb',
+          'changed_VC',
+          'changed_Vd1',
+          'changed_Vd2',
+          'changed_VJ',
+          'changed_Ve',
+          'changed_Vh',
+          'changed_VF',
+          'changed_Vg',
+          'changed_VK',
+          'changed_VI',
+        ].sort(),
+      );
+
+      expect(cbsOrder.valid).toStrictEqual([
+        'valid_Va',
+        'valid_Vb',
+        'valid_VC',
+        'valid_Vd1',
+        'valid_Vd2',
+        'valid_VJ',
+        'valid_Ve',
+        'valid_Vh',
+        'valid_VF',
+        'valid_Vg',
+        'valid_VK',
+        'valid_VI',
+      ]);
+
+      expect(cbsOrder.invalid).toStrictEqual([]);
+
+      expect(cbsOrder.validated).toStrictEqual([
+        'validated_Va',
+        'validated_Vb',
+        'validated_VC',
+        'validated_Vd1',
+        'validated_Vd2',
+        'validated_VJ',
+        'validated_Ve',
+        'validated_Vh',
+        'validated_VF',
+        'validated_Vg',
+        'validated_VK',
+        'validated_VI',
+      ]);
+
+      // has been called one time each
+      expect(new Set(cbsOrder.changed).size).toBe(12);
+      expect(new Set(cbsOrder.valid).size).toBe(12);
+      expect(new Set(cbsOrder.validated).size).toBe(12);
+
+      // callbacks have been invoked with the same argument
+      cbsOrder.validated.forEach((cbName) => {
+        const [, vName] = cbName.split('_');
+        const validCalls = cbs[`valid_${vName}`].mock.calls;
+        const validatedCalls = cbs[`validated_${vName}`].mock.calls;
+        const changedCalls = cbs[`changed_${vName}`].mock.calls;
+
+        expect(validCalls).toStrictEqual(validatedCalls);
+        expect(validatedCalls).toStrictEqual(changedCalls);
+      });
+
+      const validation2 = isCloned ? Validation.clone(origVF) : origVF;
+
+      await invalidate(validation2);
+      jest.clearAllMocks();
+      reinitCbsOrder();
+
+      predicates.P1b.mockImplementationOnce(() => false);
+      await validation2.validate();
+
+      expect(cbsOrder.changed).toStrictEqual(
+        isCloned
+          ? [
+              'changed_Va',
+              'changed_Vd1',
+              'changed_Vd2',
+              'changed_Ve',
+              'changed_Vh',
+            ]
+          : [
+              'changed_Va',
+              'changed_Vd1',
+              'changed_Vd2',
+              'changed_Vg',
+              'changed_Ve',
+              'changed_VK',
+              'changed_Vh',
+            ],
+      );
+
+      expect(cbsOrder.valid).toStrictEqual([
+        'valid_Va',
+        'valid_Vd1',
+        'valid_Vd2',
+        'valid_Ve',
+        'valid_Vh',
+      ]);
+
+      expect(cbsOrder.invalid).toStrictEqual([
+        'invalid_Vb',
+        'invalid_VC',
+        'invalid_VJ',
+        'invalid_VF',
+      ]);
+
+      expect(cbsOrder.validated).toStrictEqual([
+        'validated_Va',
+        'validated_Vb',
+        'validated_VC',
+        'validated_Vd1',
+        'validated_Vd2',
+        'validated_VJ',
+        'validated_Ve',
+        'validated_Vh',
+        'validated_VF',
+      ]);
+
+      // callbacks have been invoked with the same argument
+      cbsOrder.invalid.forEach((cbName) => {
+        const [, vName] = cbName.split('_');
+        const invalidCalls = cbs[`invalid_${vName}`].mock.calls;
+        const validatedCalls = cbs[`validated_${vName}`].mock.calls;
+
+        expect(invalidCalls).toStrictEqual(validatedCalls);
+      });
+    },
+  );
+
+  it.each([{ title: 'original' }, { title: 'cloned' }])(
+    '$title: should be called when validated by the associated object',
+    async ({ title }) => {
+      const isCloned = title === 'cloned';
+      const validation = isCloned ? Validation.clone(origVF) : origVF;
+
+      await invalidate(validation);
+      jest.clearAllMocks();
+      await validation.validate();
+      reinitCbsOrder();
+
+      predicates.P1b.mockImplementationOnce(() => false);
+      await validation.validate(b);
+
+      // ! changed callback invocations have a sligtly different order
+      // for original validation group and its clone
+      expect(cbsOrder.changed).toStrictEqual(
+        isCloned
+          ? ['changed_VF', 'changed_Vb', 'changed_VC', 'changed_VJ']
+          : [
+              'changed_Vb',
+              'changed_VC',
+              'changed_VJ',
+              'changed_VF',
+              'changed_VI',
+            ],
+      );
+
+      expect(cbsOrder.valid).toStrictEqual([]);
+
+      expect(cbsOrder.invalid).toStrictEqual([
+        'invalid_Vb',
+        'invalid_VC',
+        'invalid_VJ',
+        'invalid_VF',
+      ]);
+
+      expect(cbsOrder.validated).toStrictEqual([
+        'validated_Vb',
+        'validated_VC',
+        'validated_VJ',
+        'validated_VF',
+      ]);
+
+      reinitCbsOrder();
+      await validation.validate(b);
+
+      // ! changed callback invocations have a sligtly different order
+      // for original validation group and its clone
+      expect(cbsOrder.changed).toStrictEqual(
+        isCloned
+          ? ['changed_VF', 'changed_Vb', 'changed_VC', 'changed_VJ']
+          : [
+              'changed_Vb',
+              'changed_VC',
+              'changed_VJ',
+              'changed_VF',
+              'changed_VI',
+            ],
+      );
+
+      expect(cbsOrder.valid).toStrictEqual([
+        'valid_Vb',
+        'valid_VC',
+        'valid_VJ',
+        'valid_VF',
+      ]);
+
+      expect(cbsOrder.invalid).toStrictEqual([]);
+
+      expect(cbsOrder.validated).toStrictEqual([
+        'validated_Vb',
+        'validated_VC',
+        'validated_VJ',
+        'validated_VF',
+      ]);
+    },
+  );
+
+  it.each([{ title: 'original' }, { title: 'cloned' }, { title: 'added' }])(
+    "$title: should call corresponding predicate's callbacks with the right argument",
+    async ({ title }) => {
+      await invalidate(origVF);
+      jest.clearAllMocks();
+
+      const validCB1 = jest.fn(({ isValid }) => expect(isValid).toBe(true));
+      const invalidCB1 = jest.fn(({ isValid }) => expect(isValid).toBe(false));
+      const changedCB1 = jest.fn();
+      const validatedCB1 = jest.fn();
+      const restoredCB1 = jest.fn();
+      const predicateFn1 = jest.fn(() => true);
+
+      const validCB2 = jest.fn(({ isValid }) => expect(isValid).toBe(true));
+      const invalidCB2 = jest.fn(({ isValid }) => expect(isValid).toBe(false));
+      const changedCB2 = jest.fn();
+      const validatedCB2 = jest.fn();
+      const restoredCB2 = jest.fn();
+      const predicateFn2 = jest.fn(() => false);
+
+      const predicate = Predicate(predicateFn1)
+        .valid(validCB1)
+        .invalid(invalidCB1)
+        .changed(changedCB1)
+        .validated(validatedCB1)
+        .restored(restoredCB1);
+
+      const x = { value: 'object x' };
+
+      const isCloned = title === 'cloned';
+      const isAdded = title === 'added';
+
+      origVF.constraint(predicate, { keepValid: true });
+
+      const validation = isCloned
+        ? Validation.clone(origVF)
+        : isAdded
+          ? Validation.group(origVF, Validation(x)).constraint(predicate, {
+              keepValid: true,
+            })
+          : origVF;
+
+      if (isAdded) {
+        await validation.validate(x);
+      } else {
+        await validation.validate(b);
+      }
+
+      expect(predicateFn1).toHaveBeenCalledTimes(1);
+      expect(validCB1).toHaveBeenCalledTimes(1);
+      expect(invalidCB1).toHaveBeenCalledTimes(0);
+      expect(changedCB1).toHaveBeenCalledTimes(1);
+      expect(validatedCB1).toHaveBeenCalledTimes(1);
+      expect(restoredCB1).toHaveBeenCalledTimes(0);
+
+      // callbacks have been invoked with the same argument
+      expect(validCB1.mock.calls).toStrictEqual(validatedCB1.mock.calls);
+      expect(validatedCB1.mock.calls).toStrictEqual(changedCB1.mock.calls);
+
+      jest.clearAllMocks();
+      predicateFn1.mockImplementationOnce(() => false);
+
+      if (isAdded) {
+        await validation.validate(x);
+      } else {
+        await validation.validate(b);
+      }
+
+      expect(predicateFn1).toHaveBeenCalledTimes(2); // called twice because keepValid=true
+      expect(validCB1).toHaveBeenCalledTimes(1);
+      expect(invalidCB1).toHaveBeenCalledTimes(0);
+      expect(changedCB1).toHaveBeenCalledTimes(2); // changed twice because keepValid=true
+      expect(validatedCB1).toHaveBeenCalledTimes(1);
+      expect(restoredCB1).toHaveBeenCalledTimes(1);
+
+      // callbacks have been invoked with the same argument
+      expect(validCB1.mock.calls).toStrictEqual(validatedCB1.mock.calls);
+      expect(validatedCB1.mock.calls).toStrictEqual(restoredCB1.mock.calls);
+
+      jest.clearAllMocks();
+
+      validation.constraint(
+        Predicate(predicateFn2)
+          .valid(validCB2)
+          .invalid(invalidCB2)
+          .changed(changedCB2)
+          .validated(validatedCB2)
+          .restored(restoredCB2),
+      );
+
+      await validation.validate(a);
+
+      expect(predicateFn2).toHaveBeenCalledTimes(1);
+      expect(validCB2).toHaveBeenCalledTimes(0);
+      expect(invalidCB2).toHaveBeenCalledTimes(1);
+      expect(changedCB2).toHaveBeenCalledTimes(0);
+      expect(validatedCB2).toHaveBeenCalledTimes(1);
+      expect(restoredCB2).toHaveBeenCalledTimes(0);
+
+      // callbacks have been invoked with the same argument
+      expect(validatedCB2.mock.calls).toStrictEqual(invalidCB2.mock.calls);
+
+      predicateFn2.mockImplementation(() => true); // needed for the following tests
+    },
+  );
+
+  const currVs = { h: null, group: null };
+  it.each([
+    { title: 'original', validations: currVs },
+    { title: 'cloned', validations: currVs },
+  ])(
+    '$title: should update isValid before running callbacks',
+    async ({ title, validations }) => {
+      await invalidate(origVF);
+      jest.clearAllMocks();
+
+      const lastOf = (arr = []) => arr[arr.length - 1];
+      const lastResultOf = (mockFn = jest.fn()) =>
+        lastOf(mockFn.mock.results).value;
+
+      const predicateFn = jest.fn(() => true);
+
+      const pValidCB = jest.fn(({ isValid }) => expect(isValid).toBe(true));
+      const pInvalidCB = jest.fn(({ isValid }) => expect(isValid).toBe(false));
+      const pChangedCB = jest.fn(({ isValid }) =>
+        expect(lastResultOf(predicateFn)).toBe(isValid),
+      );
+      const pValidatedCB = jest.fn(({ isValid }) =>
+        expect(lastResultOf(predicateFn)).toBe(isValid),
+      );
+
+      const vValidCB = jest.fn(({ isValid }) => expect(isValid).toBe(true));
+      const vInvalidCB = jest.fn(({ isValid }) => expect(isValid).toBe(false));
+      const vChangedCB = jest.fn(({ isValid }) =>
+        expect(isValid).toBe(validations.h.isValid),
+      );
+      const vValidatedCB = jest.fn(({ isValid }) =>
+        expect(isValid).toBe(validations.h.isValid),
+      );
+
+      const grValidCB = jest.fn(({ isValid }) => expect(isValid).toBe(true));
+      const grInvalidCB = jest.fn(({ isValid }) => expect(isValid).toBe(false));
+      const grChangedCB = jest.fn(({ isValid }) =>
+        expect(isValid).toBe(validations.group.isValid),
+      );
+      const grValidatedCB = jest.fn(({ isValid }) =>
+        expect(isValid).toBe(validations.group.isValid),
+      );
+
+      const predicate = Predicate(predicateFn)
+        .valid(pValidCB)
+        .invalid(pInvalidCB)
+        .changed(pChangedCB)
+        .validated(pValidatedCB);
+
+      const isCloned = title === 'cloned';
+
+      origVh.constraint(predicate);
+
+      origVh
+        .valid(vValidCB)
+        .invalid(vInvalidCB)
+        .changed(vChangedCB)
+        .validated(vValidatedCB);
+
+      const validation = isCloned ? Validation.clone(origVF) : origVF;
+      validations.group = validation;
+      [, , , validations.h] = [...validation.validations];
+
+      validation
+        .valid(grValidCB)
+        .invalid(grInvalidCB)
+        .changed(grChangedCB)
+        .validated(grValidatedCB);
+
+      await validation.validate(h);
+
+      expect(predicateFn).toHaveBeenCalledTimes(1);
+      expect(pValidCB).toBeCalledTimes(1);
+      expect(pInvalidCB).toBeCalledTimes(0);
+      expect(pChangedCB).toBeCalledTimes(1);
+      expect(pValidatedCB).toBeCalledTimes(1);
+
+      expect(vValidCB).toBeCalledTimes(1);
+      expect(vInvalidCB).toBeCalledTimes(0);
+      expect(vChangedCB).toBeCalledTimes(1);
+      expect(vValidatedCB).toBeCalledTimes(1);
+
+      expect(grValidCB).toBeCalledTimes(0);
+      expect(grInvalidCB).toBeCalledTimes(1);
+      expect(grChangedCB).toBeCalledTimes(0);
+      expect(grValidatedCB).toBeCalledTimes(1);
+
+      await validation.validate();
+
+      expect(predicateFn).toHaveBeenCalledTimes(2);
+      expect(pValidCB).toBeCalledTimes(2);
+      expect(pInvalidCB).toBeCalledTimes(0);
+      expect(pChangedCB).toBeCalledTimes(1);
+      expect(pValidatedCB).toBeCalledTimes(2);
+
+      expect(vValidCB).toBeCalledTimes(2);
+      expect(vInvalidCB).toBeCalledTimes(0);
+      expect(vChangedCB).toBeCalledTimes(1);
+      expect(vValidatedCB).toBeCalledTimes(2);
+
+      expect(grValidCB).toBeCalledTimes(1);
+      expect(grInvalidCB).toBeCalledTimes(1);
+      expect(grChangedCB).toBeCalledTimes(1);
+      expect(grValidatedCB).toBeCalledTimes(2);
+
+      predicateFn.mockImplementationOnce(() => false);
+      await validation.validate();
+
+      expect(predicateFn).toHaveBeenCalledTimes(3);
+      expect(pValidCB).toBeCalledTimes(2);
+      expect(pInvalidCB).toBeCalledTimes(1);
+      expect(pChangedCB).toBeCalledTimes(2);
+      expect(pValidatedCB).toBeCalledTimes(3);
+
+      expect(vValidCB).toBeCalledTimes(2);
+      expect(vInvalidCB).toBeCalledTimes(1);
+      expect(vChangedCB).toBeCalledTimes(2);
+      expect(vValidatedCB).toBeCalledTimes(3);
+
+      expect(grValidCB).toBeCalledTimes(1);
+      expect(grInvalidCB).toBeCalledTimes(2);
+      expect(grChangedCB).toBeCalledTimes(2);
+      expect(grValidatedCB).toBeCalledTimes(3);
+    },
+  );
+});
+
 describe('cloned object and its origin should not affect each other', () => {
-  it.todo(
-    'adding predicates to original and cloned objects. PARTLY WRITTEN IN validation.test.js',
-  );
-  it.todo(
-    'adding callbacks to original and cloned objects. PARTLY WRITTEN IN validation.test.js',
-  );
-  it.todo(
-    'validating with/without id original and cloned objects. PARTLY WRITTEN IN validation.test.js',
-  );
   it.todo('grouping original objects with cloned objects');
   it.todo('cloning glued debounced predicates');
   it.todo('grouping duplicated validations');
