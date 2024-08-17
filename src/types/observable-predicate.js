@@ -40,8 +40,9 @@ export default function ObservablePredicate(
       invalid: validityCBs.invalid,
       changed: validityCBs.changed,
       validated: validityCBs.validated,
+      started: validityCBs.started,
       restored: restoredCBs.push,
-      // !consider for adding: started, deferred (or delayed), canceled???
+      // !consider for adding: deferred (or delayed), canceled???
     },
     {
       isValid: { get: obs.getValue },
@@ -103,6 +104,8 @@ export default function ObservablePredicate(
     callID = undefined,
   ) {
     validationResult.target = target;
+
+    validityCBs.start(validationResult);
 
     if (optional) {
       const isInitVal = items

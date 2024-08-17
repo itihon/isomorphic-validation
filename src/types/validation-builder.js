@@ -98,7 +98,7 @@ export default function ValidationBuilder({
       invalid: pgs.invalid,
       changed: pgs.changed,
       validated: pgs.validated,
-      // !consider for adding: started
+      started: pgs.started,
     },
     {
       isValid: Object.getOwnPropertyDescriptor(pgs, 'isValid'),

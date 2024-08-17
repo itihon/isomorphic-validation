@@ -22,8 +22,9 @@ export default function Predicate(fnOrPred) {
     invalid: validityCBs.invalid,
     changed: validityCBs.changed,
     validated: validityCBs.validated,
+    started: validityCBs.started,
     restored: restoredCBs.push,
-    // !consider for adding: started, deferred (or delayed), canceled???
+    // !consider for adding: deferred (or delayed), canceled???
     [Symbol.toStringTag]: Predicate.name,
   };
 

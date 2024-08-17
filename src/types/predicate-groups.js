@@ -56,7 +56,8 @@ export default function PredicateGroups(
         return this;
       },
       run(id, callID) {
-        // ! fire the started event
+        validityCBs.start(representation);
+
         const predicateGroups = id !== undefined ? pgs.get(id) : pgs.getAll();
 
         return predicateGroups
@@ -99,12 +100,11 @@ export default function PredicateGroups(
 
         return this;
       },
-      // onChanged: obs.onChanged,
       valid: validityCBs.valid,
       invalid: validityCBs.invalid,
       changed: validityCBs.changed,
       validated: validityCBs.validated,
-      // !consider for adding: started
+      started: validityCBs.started,
       runCBs: validityCBs.set,
       map: pgs.map,
       forEach: pgs.forEach,
