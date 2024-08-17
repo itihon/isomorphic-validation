@@ -22,7 +22,7 @@ const p2 = Predicate(isOnlyLetters);
 const p3 = Predicate(isGreaterThan(18));
 
 const op1 = ObservablePredicate(p1, [vi1], true); // first name, letters
-const op2 = ObservablePredicate(p2, [vi2]); // last name, letters
+const op2 = ObservablePredicate(p2, [vi2], false, false, 300); // last name, letters
 const op5 = ObservablePredicate(p3, [vi3]); // age, achived 18
 
 describe('ObservablePredicates', () => {
@@ -39,7 +39,7 @@ describe('ObservablePredicates', () => {
     ops1
       .onChanged(onChangedCB1)
       .add(op1, { next: false })
-      .add(op2, { debounce: 300, next: false });
+      .add(op2, { next: false });
 
     expect(ops1.getValue()).toBe(false); // becomes invalid after adding predicates before running them
     expect(onChangedCB1).toHaveBeenCalledTimes(1);

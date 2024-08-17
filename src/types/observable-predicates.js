@@ -2,19 +2,16 @@ import ObserverAnd from './observer-and.js';
 import Functions from './functions.js';
 import ConsoleRepresentation from './console-representation.js';
 import ObservablePredicate from './observable-predicate.js';
-import debounceP from '../utils/debounce-p.js';
 import runPredicatesQueue from '../helpers/run-predicates-queue.js';
 import CloneRegistry from './clone-registry.js';
-import { IS_CLIENT } from '../utils/getenv.js';
 
 export default function ObservablePredicates() {
   const obs = ObserverAnd(true); // absense of predicates means valid state of Validation
   const predicates = Functions();
-  const currOf = (arr = []) => arr[arr.length - 1];
-  // const prevOf = (arr = []) => arr[arr.length - 2];
   const queueRules = [];
   let withQueueRules = false;
   let lastStopPredicate;
+
   const representation = ConsoleRepresentation('Predicates', [], {
     isValid: {
       get: obs.getValue,
@@ -34,27 +31,17 @@ export default function ObservablePredicates() {
 
   return Object.defineProperties(
     {
-      add(
-        predicate = ObservablePredicate(),
-        { next = true, debounce = 0 } = {},
-      ) {
+      add(predicate = ObservablePredicate(), { next = true } = {}) {
         if (!(predicate instanceof ObservablePredicate)) return this;
 
         obs.subscribe(predicate);
-
-        predicates.push(
-          debounce && IS_CLIENT ? debounceP(predicate, debounce) : predicate,
-        );
-
+        predicates.push(predicate);
         queueRules.push(next);
         withQueueRules = withQueueRules || !next;
         representation.push(predicate.toRepresentation());
 
         if (lastStopPredicate) {
-          lastStopPredicate.onInvalid(
-            currOf(predicates).cancel,
-            predicate.invalidate,
-          );
+          lastStopPredicate.onInvalid(predicate.invalidate);
         }
 
         if (!next) {
@@ -71,13 +58,8 @@ export default function ObservablePredicates() {
       clone(registry = CloneRegistry()) {
         return predicates
           .map((predicate, idx) => {
-            let debounce;
-            const obsPredicate = ({ delay: debounce } =
-              predicate.valueOf()).valueOf();
-
-            const clonedPredicate = registry.cloneOnce(obsPredicate, registry);
-
-            return [clonedPredicate, { next: queueRules[idx], debounce }];
+            const clonedPredicate = registry.cloneOnce(predicate, registry);
+            return [clonedPredicate, { next: queueRules[idx] }];
           })
           .reduce(
             (ops, predWithParams) => ops.add(...predWithParams),

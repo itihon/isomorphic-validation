@@ -9,9 +9,9 @@ export default function addObservablePredicate(
   {
     TYPE = SINGLE,
     next = true,
-    debounce = 0,
     keepValid = false,
     optional = false,
+    debounce = 0,
     anyData,
   } = {},
 ) {
@@ -21,11 +21,12 @@ export default function addObservablePredicate(
       [...items.getAll()],
       keepValid,
       optional,
+      debounce,
       anyData,
     );
 
     return function forGlued(predicateGroup /* key */) {
-      predicateGroup.add(op, { next, debounce });
+      predicateGroup.add(op, { next });
     };
   }
 
@@ -36,9 +37,10 @@ export default function addObservablePredicate(
         [...items.get(key)],
         keepValid,
         optional,
+        debounce,
         anyData,
       ),
-      { next, debounce },
+      { next },
     );
   };
 }

@@ -31,7 +31,7 @@
                 Validation.group([], {immutable: true}) or Validation.group([], {clone: true})
                 Validation.glue([], {immutable: true}) or Validation.glue([], {clone: true}) 
                 [x] Validation.clone(Validation()) to clone a single validation object
-        - [ ] !consider for adding firing started and canceled??? and deferred (or delayed) events for debounced predicate
+        - [ ] !consider for adding firing canceled??? and deferred (or delayed) events for debounced predicate
         - [x] optional constraint (when invalid, does not invalidate the Validation object)
                 Validation().constraint(Predicate, { optional: true })
                     Possible use case:
@@ -60,6 +60,7 @@
 
     ## Refactor
 
+        - [ ] since Validation instance is a middleware/event handler, it is better to rename its .bind method to something else to avoid conflicting with Function.prototype.bind
         - [ ] think through if it is possible to completely get rid of memoization of ValidationBuilder in the clone function and use CloneRegestry instead
         - [x] rename entities from Validated* to Validatable*.
         - [ ] consider renaming ObserverAnd to something like AndGate

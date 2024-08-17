@@ -6,12 +6,15 @@ import ValidatableItem from './validatable-item.js';
 import CloneRegistry from './clone-registry.js';
 import Functions from './functions.js';
 import acceptOnlyBoolean from '../helpers/accept-only-boolean.js';
+import { IS_CLIENT } from '../utils/getenv.js';
+import debounceP from '../utils/debounce-p.js';
 
 export default function ObservablePredicate(
   predicate = Predicate(),
   items = [],
   keepValid = false,
   optional = false,
+  debounce = 0,
   anyData = {},
 ) {
   if (!(predicate instanceof Predicate)) return null;
@@ -75,22 +78,15 @@ export default function ObservablePredicate(
     },
   );
 
-  obs.onChanged((result) => validityCBs.change(result, validationResult));
+  const predicateFn = debounce && IS_CLIENT ? debounceP(fn, debounce) : fn;
 
+  obs.onChanged((result) => validityCBs.change(result, validationResult));
   items.forEach((item) => item.onRestored(...restoredCBs));
 
   function predicatePostExec(result, forbidInvalid) {
     acceptOnlyBoolean(result);
     notifySubscribers(result);
     if (forbidInvalid) {
-      // if (result) {
-      //   items.forEach((item) => item.saveValue());
-      // } else {
-      // !!! At this point validationResult is not determined.
-      // !!! this is the result of the previous validation
-      //   items.forEach((item) => item.restoreValue(validationResult));
-      //   return obsPredicate(!forbidInvalid);
-      // }
       if (ValidatableItem.keepValid(items, validationResult)) {
         return obsPredicate(!forbidInvalid);
       }
@@ -117,7 +113,7 @@ export default function ObservablePredicate(
       }
     }
 
-    const result = fn(...items.map((item) => item.getValue(callID)));
+    const result = predicateFn(...items.map((item) => item.getValue(callID)));
 
     if (result && result.then) {
       return result.then((res) => predicatePostExec(res, forbidInvalid));
@@ -126,14 +122,15 @@ export default function ObservablePredicate(
     return predicatePostExec(result, forbidInvalid);
   }
 
-  Object.defineProperty(obsPredicate, 'name', { value: `${fnName}_OP` });
-
   Reflect.setPrototypeOf(obsPredicate, ObservablePredicate.prototype);
 
   return Object.defineProperties(obsPredicate, {
     toRepresentation: { value: () => representation },
     invalidate: {
-      value: () => setValidity(notifySubscribers(false), validationResult),
+      value: () => {
+        if (debounce) predicateFn.cancel(false);
+        return setValidity(notifySubscribers(false), validationResult);
+      },
     },
     clone: {
       value: (registry = CloneRegistry()) =>
@@ -142,6 +139,7 @@ export default function ObservablePredicate(
           items.map((item) => registry.cloneOnce(item)),
           keepValid,
           optional,
+          debounce,
           anyData,
         ),
     },
@@ -149,6 +147,7 @@ export default function ObservablePredicate(
     getValue: { value: obs.getValue },
     onChanged: { value: obs.onChanged },
     onInvalid: { value: onInvalidCBs.push },
+    name: { value: `${fnName}_OP` },
     [Symbol.toStringTag]: { value: ObservablePredicate.name },
   });
 }

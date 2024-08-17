@@ -25,9 +25,9 @@ export default function debounceP(fn = Function.prototype, delay = 0) {
     },
   }[debouncedFnName];
 
-  debouncedFn.cancel = () => {
+  debouncedFn.cancel = (retVal) => {
     clearTimeout(timeout);
-    resolver();
+    resolver(retVal);
     promise = null;
   };
 
