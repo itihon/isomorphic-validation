@@ -56,7 +56,7 @@ export default function PredicateGroups(
         return this;
       },
       run(id, callID) {
-        validityCBs.start(representation);
+        // validityCBs.start(representation);
 
         const predicateGroups = id !== undefined ? pgs.get(id) : pgs.getAll();
 
@@ -104,7 +104,7 @@ export default function PredicateGroups(
       invalid: validityCBs.invalid,
       changed: validityCBs.changed,
       validated: validityCBs.validated,
-      started: validityCBs.started,
+      // started: validityCBs.started,
       runCBs: validityCBs.set,
       map: pgs.map,
       forEach: pgs.forEach,

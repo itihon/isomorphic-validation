@@ -1075,7 +1075,7 @@ describe('callbacks', () => {
 
       const lastOf = (arr = []) => arr[arr.length - 1];
       const lastResultOf = (mockFn = jest.fn()) =>
-        lastOf(mockFn.mock.results).value;
+        lastOf(mockFn.mock.results)?.value;
 
       const predicateFn = jest.fn(() => true);
 
@@ -1087,6 +1087,9 @@ describe('callbacks', () => {
       const pValidatedCB = jest.fn(({ isValid }) =>
         expect(lastResultOf(predicateFn)).toBe(isValid),
       );
+      const pStartedCB = jest.fn(({ isValid }) =>
+        expect(lastResultOf(predicateFn) || false).toBe(isValid),
+      );
 
       const vValidCB = jest.fn(({ isValid }) => expect(isValid).toBe(true));
       const vInvalidCB = jest.fn(({ isValid }) => expect(isValid).toBe(false));
@@ -1096,6 +1099,10 @@ describe('callbacks', () => {
       const vValidatedCB = jest.fn(({ isValid }) =>
         expect(isValid).toBe(validations.h.isValid),
       );
+      // not implemented
+      // const vStartedCB = jest.fn(({ isValid }) =>
+      //   expect(isValid).toBe(validations.h.isValid),
+      // );
 
       const grValidCB = jest.fn(({ isValid }) => expect(isValid).toBe(true));
       const grInvalidCB = jest.fn(({ isValid }) => expect(isValid).toBe(false));
@@ -1105,8 +1112,13 @@ describe('callbacks', () => {
       const grValidatedCB = jest.fn(({ isValid }) =>
         expect(isValid).toBe(validations.group.isValid),
       );
+      // not implemented
+      // const grStartedCB = jest.fn(({ isValid }) =>
+      //   expect(isValid).toBe(validations.group.isValid),
+      // );
 
       const predicate = Predicate(predicateFn)
+        .started(pStartedCB)
         .valid(pValidCB)
         .invalid(pInvalidCB)
         .changed(pChangedCB)
@@ -1117,6 +1129,7 @@ describe('callbacks', () => {
       origVh.constraint(predicate);
 
       origVh
+        // .started(vStartedCB) // not implemented
         .valid(vValidCB)
         .invalid(vInvalidCB)
         .changed(vChangedCB)
@@ -1127,6 +1140,7 @@ describe('callbacks', () => {
       [, , , validations.h] = [...validation.validations];
 
       validation
+        // .started(grStartedCB) // not implemented
         .valid(grValidCB)
         .invalid(grInvalidCB)
         .changed(grChangedCB)
@@ -1135,16 +1149,19 @@ describe('callbacks', () => {
       await validation.validate(h);
 
       expect(predicateFn).toHaveBeenCalledTimes(1);
+      expect(pStartedCB).toBeCalledTimes(1);
       expect(pValidCB).toBeCalledTimes(1);
       expect(pInvalidCB).toBeCalledTimes(0);
       expect(pChangedCB).toBeCalledTimes(1);
       expect(pValidatedCB).toBeCalledTimes(1);
 
+      // expect(vStartedCB).toBeCalledTimes(0); // !? // not implemented
       expect(vValidCB).toBeCalledTimes(1);
       expect(vInvalidCB).toBeCalledTimes(0);
       expect(vChangedCB).toBeCalledTimes(1);
       expect(vValidatedCB).toBeCalledTimes(1);
 
+      // expect(grStartedCB).toBeCalledTimes(1); // not implemented
       expect(grValidCB).toBeCalledTimes(0);
       expect(grInvalidCB).toBeCalledTimes(1);
       expect(grChangedCB).toBeCalledTimes(0);
@@ -1153,16 +1170,19 @@ describe('callbacks', () => {
       await validation.validate();
 
       expect(predicateFn).toHaveBeenCalledTimes(2);
+      expect(pStartedCB).toBeCalledTimes(2);
       expect(pValidCB).toBeCalledTimes(2);
       expect(pInvalidCB).toBeCalledTimes(0);
       expect(pChangedCB).toBeCalledTimes(1);
       expect(pValidatedCB).toBeCalledTimes(2);
 
+      // expect(vStartedCB).toBeCalledTimes(0); // !? // not implemented
       expect(vValidCB).toBeCalledTimes(2);
       expect(vInvalidCB).toBeCalledTimes(0);
       expect(vChangedCB).toBeCalledTimes(1);
       expect(vValidatedCB).toBeCalledTimes(2);
 
+      // expect(grStartedCB).toBeCalledTimes(2); // not implemented
       expect(grValidCB).toBeCalledTimes(1);
       expect(grInvalidCB).toBeCalledTimes(1);
       expect(grChangedCB).toBeCalledTimes(1);
@@ -1172,16 +1192,19 @@ describe('callbacks', () => {
       await validation.validate();
 
       expect(predicateFn).toHaveBeenCalledTimes(3);
+      expect(pStartedCB).toBeCalledTimes(3);
       expect(pValidCB).toBeCalledTimes(2);
       expect(pInvalidCB).toBeCalledTimes(1);
       expect(pChangedCB).toBeCalledTimes(2);
       expect(pValidatedCB).toBeCalledTimes(3);
 
+      // expect(vStartedCB).toBeCalledTimes(0); // !? // not implemented
       expect(vValidCB).toBeCalledTimes(2);
       expect(vInvalidCB).toBeCalledTimes(1);
       expect(vChangedCB).toBeCalledTimes(2);
       expect(vValidatedCB).toBeCalledTimes(3);
 
+      // expect(grStartedCB).toBeCalledTimes(3); // not implemented
       expect(grValidCB).toBeCalledTimes(1);
       expect(grInvalidCB).toBeCalledTimes(2);
       expect(grChangedCB).toBeCalledTimes(2);

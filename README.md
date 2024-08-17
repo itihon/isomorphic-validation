@@ -37,6 +37,7 @@
 ### Predicate instance properties
     
     Predicate(() => true|false|Promise{true|false})
+        .started(cb)
         .valid(cb)
         .invalid(cb)
         .changed(cb)
