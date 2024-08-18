@@ -88,8 +88,8 @@ origVI.constraint(predicates.P1I).constraint(predicates.P2I);
 
 function predicateNames(validation, obj) {
   return [
-    ...(validation.constraints.get(obj) ||
-      [...validation.constraints.values()].map((set) => [...set])),
+    ...(validation.isomorphic.constraints.get(obj) ||
+      [...validation.isomorphic.constraints.values()].map((set) => [...set])),
   ]
     .flat(2)
     .map((p) => p[Symbol.toStringTag]);

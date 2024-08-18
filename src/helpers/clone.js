@@ -17,9 +17,9 @@ const buildValidation = memoize(
 );
 
 export default function clone({ validation, registry = CloneRegistry() }) {
-  accepOnlyValidation(validation);
-  const { pgs, items, containedGroups, TYPE } = validation.valueOf();
-  const { validations } = validation; // Set()
+  const isomorphicValidation = accepOnlyValidation(validation);
+  const { pgs, items, containedGroups, TYPE } = isomorphicValidation.valueOf();
+  const { validations } = isomorphicValidation; // Set()
 
   const clonedPgs = registry.cloneOnce(pgs, registry);
 

@@ -330,6 +330,8 @@ describe('Validation.profile', () => {
     const mapper1 = jest.fn();
     const mapper2 = jest.fn();
 
+    const cb = jest.fn();
+
     Object.entries({
       predicate1,
       predicate2,
@@ -374,8 +376,11 @@ describe('Validation.profile', () => {
       .server.constraint(predicate4)
       .validated(cb4);
 
+    signInVs.client.validations.forEach(cb); // ignored
+
     constraints = getConstraintNames(signInVs);
 
+    expect(cb).toHaveBeenCalledTimes(0);
     expect(constraints).toHaveLength(13);
     expect(constraints).toContain(predicate1.name);
     expect(constraints).toContain(predicate3.name);

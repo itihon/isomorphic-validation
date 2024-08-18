@@ -31,27 +31,13 @@ export default function makeIsomorphicAPI(
 
   let originalAPI = api;
 
-  const wrappingAPI = new Proxy(api, {
-    get(target, propName, receiver) {
-      if (!exclude.has(propName)) {
-        const prop = target[propName];
-
-        if (prop instanceof Function) {
-          return ignored;
-        }
-      }
-
-      return Reflect.get(target, propName, receiver);
-    },
-  });
-
   function ignored() {
-    if (this !== wrappingAPI) originalAPI = this;
-    return wrappingAPI;
+    if (this !== ignored) originalAPI = this;
+    return ignored;
   }
 
   function original() {
-    if (this !== wrappingAPI) originalAPI = this;
+    if (this !== ignored) originalAPI = this;
     return originalAPI;
   }
 
@@ -59,6 +45,19 @@ export default function makeIsomorphicAPI(
     get: isInExecEnv ? original : ignored,
     configurable: true,
   });
+
+  Reflect.setPrototypeOf(
+    ignored,
+    new Proxy(api, {
+      get(target, propName, receiver) {
+        if (!exclude.has(propName)) {
+          return ignored;
+        }
+
+        return Reflect.get(target, propName, receiver);
+      },
+    }),
+  );
 
   return Object.defineProperties(api, {
     [serverPropName]: makePropDescrForExecEnv(IS_SERVER),

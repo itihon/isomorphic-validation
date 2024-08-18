@@ -10,6 +10,7 @@ const method5 = jest.fn();
 const method6 = jest.fn();
 const method7 = jest.fn();
 const method8 = jest.fn();
+const excludedMethod = jest.fn();
 
 let api = {};
 
@@ -40,7 +41,12 @@ describe('makeIsomorphicAPI', () => {
       method8() {
         return method8.mockImplementation(() => this).call(this);
       },
+      excludedMethod() {
+        return excludedMethod.mockImplementation(() => this).call(this);
+      },
     };
+
+    jest.clearAllMocks();
   });
 
   it('should be a server', () => {
@@ -50,6 +56,35 @@ describe('makeIsomorphicAPI', () => {
 
   it('should call only both or server side methods and ignore client side', () => {
     const isomorphicAPI = makeIsomorphicAPI(api);
+
+    const obj = {
+      arr: [42],
+      method(cb) {
+        cb(43);
+        return this;
+      },
+    };
+    const callback = jest.fn();
+    const isomorphicObj = makeIsomorphicAPI(obj);
+
+    isomorphicObj
+      .method(callback) // called
+      .client.method(callback) // ignored
+      .arr.map(callback) // ignored
+      .forEach(callback) // ignored
+      .isomorphic.arr.forEach(callback); // called
+
+    isomorphicObj.client.arr
+      .map(callback) // ignored
+      .forEach(callback); // ignored
+
+    isomorphicObj.arr.forEach(callback); // called
+
+    expect(callback.mock.calls).toStrictEqual([
+      [43],
+      [42, 0, [42]],
+      [42, 0, [42]],
+    ]);
 
     isomorphicAPI
       .method1() // called
@@ -80,13 +115,6 @@ describe('makeIsomorphicAPI', () => {
       .method1() // called
       .method2(); // called
 
-    // [
-    //   isomorphicAPI.client.method3,
-    //   isomorphicAPI.client.method4,
-    //   isomorphicAPI.server.method5,
-    //   isomorphicAPI.server.method6,
-    // ].map(fn => fn()).map(console.log); // !!! all ignored
-
     isomorphicAPI.server //
       .method5() // called
       .method6(); // called
@@ -106,6 +134,28 @@ describe('makeIsomorphicAPI', () => {
     expect(method6.mock.contexts).toStrictEqual([api, api]);
     expect(method7.mock.contexts).toStrictEqual([api]);
     expect(method8.mock.contexts).toStrictEqual([api]);
+  });
+
+  it('should exclude the specified method', () => {
+    const isomorphicAPI = makeIsomorphicAPI(api, {
+      excludeFunctions: ['excludedMethod'],
+    });
+
+    isomorphicAPI.client //
+      .method3() // ignored
+      .method4() // ignored
+      .excludedMethod() // called
+      .server //
+      .method1() // called
+      .excludedMethod() // called
+      .method2()
+      .client.excludedMethod(); // called
+
+    expect(method1).toHaveBeenCalledTimes(1);
+    expect(method2).toHaveBeenCalledTimes(1);
+    expect(method3).toHaveBeenCalledTimes(0);
+    expect(method4).toHaveBeenCalledTimes(0);
+    expect(excludedMethod).toHaveBeenCalledTimes(3);
   });
 
   it('should return the original api if server and before the first addressing to the .client prop', () => {
