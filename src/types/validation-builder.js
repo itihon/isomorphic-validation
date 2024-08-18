@@ -6,6 +6,7 @@ import Predicate from './predicate.js';
 import addObservablePredicate from '../helpers/add-observable-predicate.js';
 import firstEntry from '../utils/firstEntry.js';
 import makeIsomorphicAPI from '../utils/make-isomorphic-api.js';
+import makeValidationHandlerFn from '../helpers/make-validation-handler-fn.js';
 
 export default function ValidationBuilder({
   pgs = PredicateGroups(),
@@ -16,7 +17,7 @@ export default function ValidationBuilder({
 } = {}) {
   const representation = ConsoleRepresentation(
     'Validation',
-    {
+    makeValidationHandlerFn(null)({
       constraint(
         validator = Predicate(),
         {
@@ -99,7 +100,7 @@ export default function ValidationBuilder({
       changed: pgs.changed,
       validated: pgs.validated,
       // started: pgs.started,
-    },
+    }),
     {
       isValid: Object.getOwnPropertyDescriptor(pgs, 'isValid'),
     },

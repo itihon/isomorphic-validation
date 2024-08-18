@@ -25,6 +25,7 @@
                             .email.validateOn('change') to validate different fields on different events
         - [x] Validation().server.{API} Validation().client.{API} Validation[onBoth].{API}
         - [x] Validation.getForm(selector) or Validation.form(selector)
+        - [ ] isomorphic API in Predicate's representation
         - [ ] Representation -> ConsoleRepresentation, Representation -> DOMRepresentation
         - [x]   !consider adding Validation.from() as an immutable analog of .group()
                 or maybe something like this 
@@ -60,6 +61,8 @@
 
     ## Refactor
 
+        - [ ] makeValidationHandlerFn wraps validations twice: first in ValidationBuilder, second in createProfile(). Rewrite so that it happens once.
+        Probably, it would be needed to add a method to ValidationBuilder for adding a form.
         - [ ] since Validation instance is a middleware/event handler, it is better to rename its .bind method to something else to avoid conflicting with Function.prototype.bind
         - [ ] think through if it is possible to completely get rid of memoization of ValidationBuilder in the clone function and use CloneRegestry instead
         - [x] rename entities from Validated* to Validatable*.
@@ -77,6 +80,8 @@
         
         - [ ] when two or more validation assosiated with one object grouped into another validation, consider the possibility of merging collections of predicates into one instead of keeping them all in a set.
 
+        - [ ] consider using containedPgs for validation instead of ownPgs, this will allow to implement .started method in Validation.
+
         - [x] ObservablePredicate should unpack Predicate with valueOf() the same way Predicate does it inside itself while constructing an instance (from the consistency point of view).
 
         - [x] Remove ValidationBuilder.registry with valueOf() mechanism (for consistency) as it does exactly the same.
@@ -86,8 +91,6 @@
     ## Tests
 
         - [ ] validationResult.target must be the same for all invoked callbacks
-        - [ ] calling the .dataMapper method before creating a profile
-        - [ ] validating via middleware/eventHandler before creating a profile
         - [ ] performance: makeIsomorphicAPI current version vs proxying the whole API object 
         - [ ] performance: Validation() with and without makeIsomorphicAPI()
         - [ ] merge validation.test.js and index.test.js

@@ -37,12 +37,6 @@ const profile = (form, validation) => ({
   [Symbol.toStringTag]: 'ValidationProfile',
 });
 
-const turnIntoHandler = (form) => (validation) => {
-  const middleware = makeValidationHandlerFn(form, validation);
-  Reflect.setPrototypeOf(middleware, validation);
-  return middleware;
-};
-
 export default function createProfile(
   selector = '',
   fieldNames = [],
@@ -59,7 +53,7 @@ export default function createProfile(
   const clonedValidations = validations
     .map(cloneValidation)
     .map(bind(validatableForm, fieldNames))
-    .map(turnIntoHandler(validatableForm));
+    .map(makeValidationHandlerFn(validatableForm));
 
   const groupedValidations = fieldNames.reduce(
     assignValidations(clonedValidations),
@@ -68,6 +62,6 @@ export default function createProfile(
 
   return profile(
     validatableForm,
-    turnIntoHandler(validatableForm)(groupedValidations),
+    makeValidationHandlerFn(validatableForm)(groupedValidations),
   );
 }

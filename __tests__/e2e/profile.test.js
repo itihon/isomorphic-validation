@@ -303,8 +303,18 @@ describe('Validation.profile', () => {
     expect(signInVs.isValid).toBe(false);
   });
 
-  it.todo('calling the .dataMapper method before creating a profile');
-  it.todo('validating via middleware/eventHandler before creating a profile');
+  it('should throw an error for calling the .dataMapper method before creating a profile', () => {
+    expect(emailV.dataMapper).toThrow();
+  });
+
+  it('should throw an error for passing not a function to the .dataMapper method', () => {
+    expect(signInVs.dataMapper).toThrow();
+  });
+
+  it('should throw and error for using a validation as a middleware before creating a profile', () => {
+    const req = { body: { login: 'q@q.q.', pwd: 'zxcvbx' } };
+    expect(() => emailV(req, {}, () => {})).toThrow();
+  });
 
   it('should call only server side methods and ignore client side', async () => {
     const cb1 = jest.fn();

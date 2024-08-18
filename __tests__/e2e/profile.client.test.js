@@ -362,4 +362,38 @@ describe('Validation.profile', () => {
     expect(cb7).toHaveBeenCalledTimes(3);
     expect(cb8).toHaveBeenCalledTimes(0);
   });
+
+  it('should print a warning for calling the .dataMapper method on the client side', () => {
+    const spyWarn = jest
+      .spyOn(global.console, 'warn')
+      .mockImplementation(() => {});
+
+    emailV.dataMapper();
+
+    expect(spyWarn.mock.calls).toStrictEqual([
+      ['The dataMapper method does nothing on the client side'],
+    ]);
+
+    signUpVs.dataMapper();
+
+    expect(spyWarn.mock.calls).toStrictEqual([
+      ['The dataMapper method does nothing on the client side'],
+      ['The dataMapper method does nothing on the client side'],
+    ]);
+
+    spyWarn.mockRestore();
+  });
+
+  it('should validate via eventHandler before creating a profile', async () => {
+    e.target = signUpForm.elements.email;
+
+    await expect(emailV(e)).rejects.toThrow();
+    expect((await emailV()).isValid).toBe(false);
+
+    emailV.bind(signUpForm.elements.email);
+    signUpForm.elements.email.value = 'q@q.q';
+
+    await emailV(e);
+    expect(emailV.isValid).toBe(true);
+  });
 });
