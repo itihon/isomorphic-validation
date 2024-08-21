@@ -31,11 +31,17 @@ const assignValidations =
     return validationGroup;
   };
 
-const profile = (form, validation) => ({
-  form,
-  validation,
-  [Symbol.toStringTag]: 'ValidationProfile',
-});
+const profile = (form, validation) =>
+  Object.defineProperties(
+    { form, validation },
+    {
+      0: { value: form },
+      1: { value: validation },
+      length: { value: 2 },
+      [Symbol.iterator]: { value: Array.prototype[Symbol.iterator] },
+      [Symbol.toStringTag]: { value: 'ValidationProfile' },
+    },
+  );
 
 export default function createProfile(
   selector = '',

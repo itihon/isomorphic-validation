@@ -67,6 +67,22 @@ describe('Validation.profile', () => {
     jest.clearAllMocks();
   });
 
+  it('should implement iterator protocol', () => {
+    const [signInF, signInV] = Validation.profile(
+      '#signin',
+      ['email', 'password'],
+      [emailV, passwordV],
+    );
+
+    expect(Object.hasOwn({ ...signInF }, 'email')).toBe(true);
+    expect(Object.hasOwn({ ...signInF }, 'password')).toBe(true);
+    expect(Object.hasOwn({ ...signInF }, 'passwordX')).toBe(false);
+
+    expect(signInV).toHaveProperty('email');
+    expect(signInV).toHaveProperty('password');
+    expect(signInV).not.toHaveProperty('passwordX');
+  });
+
   it('should validate signin validations and leave signup untouched', async () => {
     email = 'a@a.a';
     password = 'asdfg';
