@@ -1,0 +1,72 @@
+import { expect, it, describe } from "@jest/globals";
+import parseObjectPath from "../../src/helpers/parse-object-path.js";
+
+const obj = {
+    prop1: {
+        prop11: {
+            prop111: [
+                [
+                    42,
+                    'meaning of life' 
+                ],
+                {
+                    prop1111: 'end'
+                },
+            ],
+        },
+        prop12: [
+            'foo',
+            'bar'
+        ],
+    },
+
+};
+
+const testData = [
+    {
+        path: 'prop1',
+        lastObj: obj,
+        lastProp: 'prop1',
+        value: obj.prop1,
+    },
+    {
+        path: 'prop1.prop11',
+        lastObj: obj.prop1,
+        lastProp: 'prop11',
+        value: obj.prop1.prop11,
+    },
+    {
+        path: 'prop1.prop12',
+        lastObj: obj.prop1,
+        lastProp: 'prop12',
+        value: obj.prop1.prop12,
+    },
+    {
+        path: 'prop1.prop12.0',
+        lastObj: obj.prop1.prop12,
+        lastProp: '0',
+        value: obj.prop1.prop12[0],
+    },
+    {
+        path: 'prop1.prop11.prop111',
+        lastObj: obj.prop1.prop11,
+        lastProp: 'prop111',
+        value: obj.prop1.prop11.prop111,
+    },
+    {
+        path: 'prop1.prop11.prop111.1.prop1111',
+        lastObj: obj.prop1.prop11.prop111[1],
+        lastProp: 'prop1111',
+        value: obj.prop1.prop11.prop111[1].prop1111,
+    },
+];
+
+describe('parseObjectPath', () => {
+    it.each(testData)('$path: should parse object path', ({path, lastObj, lastProp, value}) => {
+        const [lastObject, lastPropName] = parseObjectPath(obj, path);
+
+        expect(lastObject).toBe(lastObj);
+        expect(lastPropName).toBe(lastProp);
+        expect(value).toBe(lastObject[lastPropName]);
+    });
+});

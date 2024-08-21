@@ -14,6 +14,12 @@ const keyObj3 = { prop: 3 };
 const keyObj4 = { prop: 4 };
 const keyObj5 = { prop: 5 };
 
+const newKeyObj1 = { prop: 1 };
+const newKeyObj2 = { prop: 2 };
+const newKeyObj3 = { prop: 3 };
+const newKeyObj4 = { prop: 4 };
+const newKeyObj5 = { prop: 5 };
+
 const valueObj1 = { v: 1 };
 const valueObj2 = { v: 2 };
 const valueObj3 = { v: 3 };
@@ -163,8 +169,8 @@ describe('ManyToManyMap', () => {
         .add(keyObj2, 6)
         .add(keyObj2, 7)
         .add(keyObj3, 8)
-        .add(keyObj3, 9)
-        .add(keyObj4, 10)
+        .add(keyObj4, 9)
+        .add(keyObj3, 10)
         .add(keyObj4, 11);
 
       const pairIds = mtmm2.map(getPairID);
@@ -191,5 +197,64 @@ describe('ManyToManyMap', () => {
 
       expect(mtmmArr).toStrictEqual(mtmmArrMapped);
     });
+  });
+
+  it('should change a key', () => {
+    const noKeyMsg = 'There is no such old key';
+    const noSameKeysMsg = 'Old key must not be the same as new key';
+    const mtmm = ManyToManyMap();
+    const before = [];
+    const after = [];
+
+    mtmm
+      .add(keyObj1, valueObj1)
+      .add(keyObj1, valueObj5)
+      .add(keyObj2, valueObj2)
+      .add(keyObj2, valueObj4)
+      .add(keyObj3, valueObj1)
+      .add(keyObj3, valueObj3)
+      .add(keyObj3, valueObj5)
+      .add(keyObj4, valueObj4)
+      .add(keyObj5, valueObj5);
+
+    before.push(...mtmm.getAll());
+    mtmm.forEach((value) => before.push(value));
+
+    expect(mtmm.getAll()).toStrictEqual(
+      new Set([valueObj1, valueObj5, valueObj2, valueObj4, valueObj3]),
+    );
+    expect(mtmm.get(keyObj1)).toStrictEqual(new Set([valueObj1, valueObj5]));
+    expect(mtmm.get(keyObj2)).toStrictEqual(new Set([valueObj2, valueObj4]));
+    expect(mtmm.get(keyObj3)).toStrictEqual(
+      new Set([valueObj1, valueObj3, valueObj5]),
+    );
+
+    mtmm.changeKey(keyObj1, newKeyObj1);
+
+    expect(mtmm.get(newKeyObj1)).toStrictEqual(new Set([valueObj1, valueObj5]));
+
+    mtmm.changeKey(keyObj2, newKeyObj2);
+
+    expect(mtmm.get(newKeyObj2)).toStrictEqual(new Set([valueObj2, valueObj4]));
+
+    mtmm.changeKey(keyObj3, newKeyObj3);
+
+    expect(mtmm.get(newKeyObj3)).toStrictEqual(
+      new Set([valueObj1, valueObj3, valueObj5]),
+    );
+
+    expect(() => mtmm.changeKey(newKeyObj4, keyObj4)).toThrow(noKeyMsg);
+    expect(() => mtmm.changeKey(newKeyObj5, newKeyObj5)).toThrow(noSameKeysMsg);
+
+    mtmm.changeKey(keyObj4, newKeyObj3); // newKeyObj already exists
+
+    expect(mtmm.get(newKeyObj3)).toStrictEqual(
+      new Set([valueObj4, valueObj1, valueObj3, valueObj5]),
+    );
+
+    after.push(...mtmm.getAll());
+    mtmm.forEach((value) => after.push(value));
+
+    expect(before).toStrictEqual(after);
   });
 });

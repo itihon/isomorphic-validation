@@ -1,15 +1,28 @@
 import { expect, it, describe, test, beforeEach } from '@jest/globals';
 import ObservablePredicates from '../../src/types/observable-predicates.js';
 import protocols from '../protocols.js';
-import {
-  op1,
-  op2,
-  op3,
-  op4,
-  obj1,
-  obj2,
-  obj3,
-} from '../integration/observable-predicate.test.js';
+import ValidatableItem from '../../src/types/validatable-item.js';
+import Predicate from '../../src/types/predicate.js';
+import ObservablePredicate from '../../src/types/observable-predicate.js';
+import { isOnlyLetters, areNotEqual, isGreaterThan } from '../predicates.js';
+
+const obj1 = { value: 'Firstname' };
+const obj2 = { value: 'Lastname' };
+const obj3 = { value: 42 };
+
+const vi1 = ValidatableItem(obj1, 'value');
+const vi2 = ValidatableItem(obj2, 'value');
+const vi3 = ValidatableItem(obj3, 'value');
+
+const p1 = Predicate(isOnlyLetters);
+const p2 = Predicate(isOnlyLetters);
+const p3 = Predicate(isGreaterThan(18));
+const p4 = Predicate(areNotEqual);
+
+const op1 = ObservablePredicate(p1, [vi1], true); // first name, letters
+const op2 = ObservablePredicate(p2, [vi2]); // last name, letters
+const op3 = ObservablePredicate(p3, [vi3]); // age, achived 18
+const op4 = ObservablePredicate(p4, [vi1, vi2]); // firstname !== lastname
 
 let ops;
 
@@ -23,10 +36,6 @@ describe('ObservablePredicates - a collection of instances of ObservablePredicat
     ops = ObservablePredicates();
   });
 
-  it.todo(
-    'next with debounce, (.invalid, .invalidate). WRITE IN E2E TESTS, OR IN INTEGRATION TESTS',
-  );
-  it.todo('next with debounce, (.cancel). WRITTEN IN E2E TESTS');
   it.todo('console representation, json representation, run(id)');
 
   it('should be true while no predicates added', () => {
@@ -88,7 +97,7 @@ describe('ObservablePredicates - a collection of instances of ObservablePredicat
     expect(ops.isValid).toBe(false);
 
     obj2.value = 'Lastname';
-    obj3.value = 18;
+    obj3.value = 19;
     ops
       .run()
       .then((res) => expect(res).toStrictEqual([true, true, true, true]));
@@ -98,11 +107,10 @@ describe('ObservablePredicates - a collection of instances of ObservablePredicat
   it('should run the next predicate only if the previous one is valid', async () => {
     ops
       .add(op2, { next: false })
-      .add(op1, { next: false })
       .add(op3, { next: false })
       .add(op4, { next: false });
 
-    expect(await ops.run()).toStrictEqual([true, true, true, true]);
+    expect(await ops.run()).toStrictEqual([true, true, true]);
     expect(ops.isValid).toBe(true);
 
     obj2.value = 'not only letters !@#$';
@@ -111,16 +119,16 @@ describe('ObservablePredicates - a collection of instances of ObservablePredicat
 
     obj2.value = 'onlyletters';
     obj3.value = 16;
-    expect(await ops.run()).toStrictEqual([true, true, false]);
+    expect(await ops.run()).toStrictEqual([true, false]);
     expect(ops.isValid).toBe(false);
 
     obj2.value = 'Firstname';
-    obj3.value = 18;
-    expect(await ops.run()).toStrictEqual([true, true, true, false]);
+    obj3.value = 19;
+    expect(await ops.run()).toStrictEqual([true, true, false]);
     expect(ops.isValid).toBe(false);
 
     obj2.value = 'Lastname';
-    expect(await ops.run()).toStrictEqual([true, true, true, true]);
+    expect(await ops.run()).toStrictEqual([true, true, true]);
     expect(ops.isValid).toBe(true);
   });
 });

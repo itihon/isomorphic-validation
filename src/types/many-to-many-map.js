@@ -16,9 +16,9 @@
  */
 
 export default function ManyToManyMap() {
-  const values = new Set();
-  // const map = new class extends Map {};
+  const values = new Set(); // for faster access to all unique values
   const map = new Map();
+  const orderedSet = new Set(); // for consistency of mapping and merging order
 
   Object.defineProperties(map, {
     [Symbol.toStringTag]: {
@@ -28,15 +28,40 @@ export default function ManyToManyMap() {
   });
 
   return Object.assign(map, {
-    add(key, value) {
+    add(key, value, keepOrder = true) {
       values.add(value);
 
       if (map.has(key)) {
-        map.get(key).add(value);
+        const set = map.get(key);
+        const { size } = set;
+
+        set.add(value);
+
+        if (size !== set.size) {
+          if (keepOrder) orderedSet.add([key, value]);
+        }
       } else {
         map.set(key, new Set().add(value));
+        if (keepOrder) orderedSet.add([key, value]);
       }
 
+      return this;
+    },
+    changeKey(oldKey, newKey) {
+      if (oldKey === newKey) {
+        throw new Error('Old key must not be the same as new key');
+      }
+      if (map.has(oldKey)) {
+        map.get(oldKey).forEach((value) => map.add(newKey, value, false));
+        map.delete(oldKey);
+        orderedSet.forEach((entry) => {
+          if (entry[0] === oldKey) {
+            entry[0] = newKey;
+          }
+        });
+      } else {
+        throw new Error('There is no such old key');
+      }
       return this;
     },
     getAll() {
@@ -47,17 +72,8 @@ export default function ManyToManyMap() {
       return this;
     },
     forEach(cbfunction = (/* value, key, values */) => {}) {
-      // ! Eslint disliked this code, but for-loops should run faster than forEach
-      // for (const {0:key, 1:set} of map) {
-      //     for (const value of set) {
-      //         cbfunction(value, key, map);
-      //     }
-      // }
-
-      map.constructor.prototype.forEach.call(map, (set, key) => {
-        set.forEach((value) => {
-          cbfunction(value, key, map);
-        });
+      orderedSet.forEach(([key, value]) => {
+        cbfunction(value, key, map);
       });
     },
     map(cbfunction = (/* value, key, values */) => {}) {

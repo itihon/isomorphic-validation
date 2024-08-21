@@ -1,6 +1,6 @@
 {
   "name": "isomorphic-validation",
-  "version": "0.0.4",
+  "version": "0.0.10",
   "description": "Isomorphic javascript form and data validation library.",
   "homepage": "https://github.com/itihon/isomorphic-validation",
   "bin": {
@@ -20,10 +20,12 @@
     "lint": "eslint --fix .",
     "build:esm": "rollup src/index.js --file dist/index.esm.js --format esm",
     "build:cjs": "rollup src/index.js --file dist/index.cjs.js --format cjs",
-    "build": "npm run build:esm & npm run build:cjs",
+    "build": "npm run build:esm && npm run build:cjs",
     "commit": "git-cz",
-    "test": "jest",
-    "test:watch": "jest --watch"
+    "test:server": "jest --testPathIgnorePatterns=\"__tests__.*client\\.test\\.js\" --env=\"node\"",
+    "test:client": "jest --testPathPattern=\"__tests__.*client\\.test\\.js\" --env=\"jsdom\"",
+    "test:watch": "jest --watch",
+    "test": "npm run test:server && npm run test:client"
   },
   "repository": {
     "type": "git",
@@ -56,11 +58,12 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
     "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^15.2.7",
     "prettier": "3.3.2",
     "rollup": "^4.18.0",
     "rollup-jest": "^3.1.0",
-    "validate-commit-msg": "^2.14.0"
+    "validate-commit-msg": "^1.1.3"
   },
   "overrides": {
     "rollup": "$rollup"

@@ -34,6 +34,7 @@ describe('ValidityCallbacks', () => {
     expect(validatedCB).toHaveBeenCalledTimes(2);
 
     expect(CBs.set(false)).toBe(false);
+    expect(CBs.change(false)).toBe(false);
     expect(validCB).toHaveBeenCalledTimes(2);
     expect(invalidCB).toHaveBeenCalledTimes(1);
     expect(changedCB).toHaveBeenCalledTimes(1);
@@ -46,6 +47,7 @@ describe('ValidityCallbacks', () => {
       .validated(validatedCB);
 
     expect(CBs.set(true)).toBe(true);
+    expect(CBs.change(true)).toBe(true);
     expect(validCB).toHaveBeenCalledTimes(3);
     expect(invalidCB).toHaveBeenCalledTimes(1);
     expect(changedCB).toHaveBeenCalledTimes(2);
@@ -58,6 +60,7 @@ describe('ValidityCallbacks', () => {
     expect(validatedCB).toHaveBeenCalledTimes(5);
 
     expect(CBs.set(false)).toBe(false);
+    expect(CBs.change(false)).toBe(false);
     expect(validCB).toHaveBeenCalledTimes(4);
     expect(invalidCB).toHaveBeenCalledTimes(2);
     expect(changedCB).toHaveBeenCalledTimes(3);
@@ -90,7 +93,11 @@ describe('ValidityCallbacks', () => {
           .changed(changedCB)
           .validated(validatedCB),
       )
-      .map((CBs) => ValidityCallbacks(false, CBs).set(true));
+      .map((CBs) => {
+        const CBsCloned = ValidityCallbacks(false, CBs);
+        CBsCloned.set(true);
+        return CBsCloned.change(true);
+      });
 
     expect(results).toStrictEqual(
       Array.from({ length: results.length }, () => true),
@@ -129,15 +136,88 @@ describe('ValidityCallbacks', () => {
       .validated(validatedCB);
 
     CBs.set(true, args1);
+    CBs.change(true, args1);
     expect(validCB.mock.calls).toStrictEqual([[args1]]);
     expect(invalidCB.mock.calls).toStrictEqual([]);
     expect(changedCB.mock.calls).toStrictEqual([[args1]]);
     expect(validatedCB.mock.calls).toStrictEqual([[args1]]);
 
     CBs.set(false, args2);
+    CBs.change(false, args2);
     expect(validCB.mock.calls).toStrictEqual([[args1]]);
     expect(invalidCB.mock.calls).toStrictEqual([[args2]]);
     expect(changedCB.mock.calls).toStrictEqual([[args1], [args2]]);
     expect(validatedCB.mock.calls).toStrictEqual([[args1], [args2]]);
+  });
+
+  it('should clone an instance passed as the second parameter', () => {
+    const validCB1 = jest.fn();
+    const invalidCB1 = jest.fn();
+    const changedCB1 = jest.fn();
+    const validatedCB1 = jest.fn();
+
+    const validCB2 = jest.fn();
+    const invalidCB2 = jest.fn();
+    const changedCB2 = jest.fn();
+    const validatedCB2 = jest.fn();
+
+    const CBs1 = ValidityCallbacks();
+
+    CBs1.valid(validCB1)
+      .invalid(invalidCB1)
+      .changed(changedCB1)
+      .validated(validatedCB1);
+
+    const CBs2 = ValidityCallbacks(false, CBs1);
+
+    CBs2.valid(validCB2)
+      .invalid(invalidCB2)
+      .changed(changedCB2)
+      .validated(validatedCB2);
+
+    CBs1.set(true);
+    CBs1.change(true);
+
+    expect(validCB1).toHaveBeenCalledTimes(1);
+    expect(invalidCB1).toHaveBeenCalledTimes(0);
+    expect(changedCB1).toHaveBeenCalledTimes(1);
+    expect(validatedCB1).toHaveBeenCalledTimes(1);
+
+    expect(validCB2).toHaveBeenCalledTimes(0);
+    expect(invalidCB2).toHaveBeenCalledTimes(0);
+    expect(changedCB2).toHaveBeenCalledTimes(0);
+    expect(validatedCB2).toHaveBeenCalledTimes(0);
+
+    CBs2.set(true);
+    CBs2.change(true);
+
+    expect(validCB1).toHaveBeenCalledTimes(2);
+    expect(invalidCB1).toHaveBeenCalledTimes(0);
+    expect(changedCB1).toHaveBeenCalledTimes(2);
+    expect(validatedCB1).toHaveBeenCalledTimes(2);
+
+    expect(validCB2).toHaveBeenCalledTimes(1);
+    expect(invalidCB2).toHaveBeenCalledTimes(0);
+    expect(changedCB2).toHaveBeenCalledTimes(1);
+    expect(validatedCB2).toHaveBeenCalledTimes(1);
+
+    const {
+      validCBs: validCBs1,
+      invalidCBs: invalidCBs1,
+      changedCBs: changedCBs1,
+      validatedCBs: validatedCBs1,
+    } = CBs1.valueOf();
+
+    const {
+      validCBs: validCBs2,
+      invalidCBs: invalidCBs2,
+      changedCBs: changedCBs2,
+      validatedCBs: validatedCBs2,
+    } = CBs2.valueOf();
+
+    expect(validCBs1).not.toBe(validCBs2);
+    expect(invalidCBs1).not.toBe(invalidCBs2);
+    expect(changedCBs1).not.toBe(changedCBs2);
+    expect(validatedCBs1).not.toBe(validatedCBs2);
   });
 });

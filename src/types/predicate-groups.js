@@ -4,11 +4,13 @@ import ManyToManyMap from './many-to-many-map.js';
 import ObservablePredicates from './observable-predicates.js';
 import ConsoleRepresentation from './console-representation.js';
 import indexedName from '../utils/indexed-name.js';
+import CloneRegistry from './clone-registry.js';
 
-export default function PredicateGroups() {
+export default function PredicateGroups(
+  pgs = ManyToManyMap(),
+  validityCBs = ValidityCallbacks(),
+) {
   const obs = ObserverAnd();
-  const validityCBs = ValidityCallbacks();
-  const pgs = ManyToManyMap();
   const representation = ConsoleRepresentation(
     'ValidationResult',
     ManyToManyMap(),
@@ -17,27 +19,32 @@ export default function PredicateGroups() {
       target: { writable: true },
       toJSON: {
         value() {
-          return [...this].reduce(
+          return [...representation].reduce(
             (acc, [key, set]) => {
               acc[key.name || indexedName('obj')] = [...set];
               return acc;
             },
             {
-              name: this[Symbol.toStringTag],
+              name: representation[Symbol.toStringTag],
               isValid: obs.getValue(),
             },
           );
-        },
+        }, // without bind jest throwed an error (in expect().toStrictEqual())
       },
     },
   );
 
+  obs.onChanged((result) => validityCBs.change(result, representation));
+
+  // ! bad. hiding unnecessary methods.
   const addRepresentation = representation.add;
+  const representationChangeKey = representation.changeKey;
   delete representation.add;
   delete representation.forEach;
   delete representation.getAll;
   delete representation.map;
   delete representation.mergeWith;
+  delete representation.changeKey;
 
   return Object.defineProperties(
     {
@@ -48,37 +55,63 @@ export default function PredicateGroups() {
         addRepresentation(key, predicateGroup.toRepresentation());
         return this;
       },
-      run(id) {
-        // ! fire the started event
-        // !!! duplicate of logic
+      run(id, callID) {
+        // validityCBs.start(representation);
+
         const predicateGroups = id !== undefined ? pgs.get(id) : pgs.getAll();
 
         return predicateGroups
           ? Promise.all(
               Array.from(predicateGroups, (predicateGroup) =>
-                predicateGroup.run(id),
+                predicateGroup.run(undefined, id, callID),
               ),
-            )
+            ).then((res) => !res.flat().some((value) => value !== true)) // ! slow
           : Promise.reject(
               new Error(
-                'There are no predicates assosiatied with the passed id:',
+                `There are no predicates assosiated with the target ${JSON.stringify(
+                  id,
+                )}`,
               ),
             );
+      },
+      clone(registry = CloneRegistry()) {
+        const newPgs = PredicateGroups(
+          undefined,
+          ValidityCallbacks(false, validityCBs),
+        );
+
+        pgs
+          .map((group) => registry.cloneOnce(group, registry))
+          .forEach((group, key) => newPgs.add(key, group));
+
+        return newPgs;
       },
       toRepresentation(id) {
         representation.target = id;
         return representation;
       },
-      onChanged: obs.onChanged,
+      // changeKey: pgs.changeKey,
+      changeKey(...args) {
+        pgs.changeKey(...args);
+
+        representation.add = addRepresentation; // ! bad
+        representationChangeKey(...args);
+        delete representation.add; // ! bad
+
+        return this;
+      },
       valid: validityCBs.valid,
       invalid: validityCBs.invalid,
       changed: validityCBs.changed,
       validated: validityCBs.validated,
-      // !consider for adding: started
+      started: validityCBs.started,
+      startCBs: validityCBs.start,
       runCBs: validityCBs.set,
       map: pgs.map,
       forEach: pgs.forEach,
       mergeWith: pgs.mergeWith,
+      has: pgs.has.bind(pgs),
+      get: pgs.get.bind(pgs),
       [Symbol.toStringTag]: PredicateGroups.name,
     },
     {

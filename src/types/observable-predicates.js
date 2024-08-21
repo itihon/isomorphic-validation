@@ -2,16 +2,16 @@ import ObserverAnd from './observer-and.js';
 import Functions from './functions.js';
 import ConsoleRepresentation from './console-representation.js';
 import ObservablePredicate from './observable-predicate.js';
-import debounceP from '../utils/debounce-p.js';
 import runPredicatesQueue from '../helpers/run-predicates-queue.js';
+import CloneRegistry from './clone-registry.js';
 
 export default function ObservablePredicates() {
   const obs = ObserverAnd(true); // absense of predicates means valid state of Validation
   const predicates = Functions();
-  const currOf = (arr = []) => arr[arr.length - 1];
-  const prevOf = (arr = []) => arr[arr.length - 2];
   const queueRules = [];
   let withQueueRules = false;
+  let lastStopPredicate;
+
   const representation = ConsoleRepresentation('Predicates', [], {
     isValid: {
       get: obs.getValue,
@@ -31,51 +31,40 @@ export default function ObservablePredicates() {
 
   return Object.defineProperties(
     {
-      add(
-        predicate = ObservablePredicate(),
-        { next = true, debounce = 0 } = {},
-      ) {
+      add(predicate = ObservablePredicate(), { next = true } = {}) {
         if (!(predicate instanceof ObservablePredicate)) return this;
 
         obs.subscribe(predicate);
-
-        predicates.push(debounce ? debounceP(predicate, debounce) : predicate);
+        predicates.push(predicate);
         queueRules.push(next);
         withQueueRules = withQueueRules || !next;
         representation.push(predicate.toRepresentation());
 
-        /* 
-                    !!? It probably should be not prevOf but rather the very first one
-                    (UPD: not first, but rather any before the current one)
-                    with the parameter next = false, 
-                    so all the rest predicates following it 
-                    have to be canceled and invalidated in case that one is invalid
+        if (lastStopPredicate) {
+          lastStopPredicate.onInvalid(predicate.invalidate);
+        }
 
-                    UPD: It should be const idx = queueRules.firstIndexOf(false);
-                    predicates[idx].valueOf().valueOf().invalid()
-                */
-        if (prevOf(queueRules) === false) {
-          // !! it probably should be withQueueRules === true
-          prevOf(predicates)
-            .valueOf()
-            .valueOf()
-            .invalid(currOf(predicates).cancel, currOf(predicates).invalidate);
+        if (!next) {
+          lastStopPredicate = predicate;
         }
 
         return this;
       },
-      run(id) {
-        /*
-                    !consider using predicate's validityCBs.valid mechanism
-                    instead of runPredicatesQueue
-                    UPD: Too complicated! validityCBs.set() doesn't wait for
-                    valid/invalid/changed CBs to be done, it doesn't use 
-                    their result.
-                    But we need to wait for all predicates to be done.
-                */
+      run(...args) {
         return withQueueRules
-          ? runPredicatesQueue(predicates, queueRules)
-          : Promise.all(predicates.run(undefined, id));
+          ? runPredicatesQueue(predicates, queueRules, args)
+          : Promise.all(predicates.run(...args));
+      },
+      clone(registry = CloneRegistry()) {
+        return predicates
+          .map((predicate, idx) => {
+            const clonedPredicate = registry.cloneOnce(predicate, registry);
+            return [clonedPredicate, { next: queueRules[idx] }];
+          })
+          .reduce(
+            (ops, predWithParams) => ops.add(...predWithParams),
+            ObservablePredicates(),
+          );
       },
       toRepresentation() {
         return representation;

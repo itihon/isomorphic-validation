@@ -3,14 +3,18 @@
 
     ## Chores
 
-        - [ ] change double quotes to single quotes in eslint.config.mjs and try to amend the commit in which eslint have been configured
-
-        - [ ] remove test commit
 
 
     ## Features
-
-        - [ ] accept Event object in Validation().validate(event). In order to form.addEventListener('change', Validation().validate);
+        - [ ] .error() or .catch() for error handling
+        - [ ] access to a current validatable value through the validation result
+        - [ ] the feature that allows to distinguish whether an optional validation is valid because the values were validated or because they are init values or undefined. May be unnecessary in case the above feature is implemented.
+        - [ ] clearing a form field on the server side after the value has been preserved 
+        - [x] recreate the form structure on the server side with regard of path. 
+        - [x] data-mappers: .dataMapper
+        - [ ] ignoreNext parameter to call a predicate regardles of previously set next parameter
+        - [x] every validation probably should be a handler/middleware
+        - [x] accept Event object in Validation().validate(event). In order to form.addEventListener('change', Validation().validate);
                 or maybe Validation().validateForm(form, input|change)
                 or maybe Validation().addForm(form, input|change)
                 or maybe Validation().subscribe(form, input|change)
@@ -19,46 +23,64 @@
                 or maybe Validation.form(selector)
                             .firstName.validateOn('input')
                             .email.validateOn('change') to validate different fields on different events
-        - [ ] Validation().onServer.{API} Validation().onClient.{API} Validation[onBoth].{API}
-        - [ ] Validation.getForm(selector) or Validation.form(selector)
+        - [x] Validation().server.{API} Validation().client.{API} Validation[onBoth].{API}
+        - [x] Validation.getForm(selector) or Validation.form(selector)
+        - [ ] isomorphic API in Predicate's representation
         - [ ] Representation -> ConsoleRepresentation, Representation -> DOMRepresentation
-        - [ ]   !consider adding Validation.from() as an immutable analog of .group()
+        - [x]   !consider adding Validation.from() as an immutable analog of .group()
                 or maybe something like this 
                 Validation.group([], {immutable: true}) or Validation.group([], {clone: true})
                 Validation.glue([], {immutable: true}) or Validation.glue([], {clone: true}) 
-                Validation.clone(Validation()) to clone a single validation object
-        - [ ] !consider for adding firing started and canceled??? and deferred (or delayed) events for debounced predicate
-        - [ ] optional constraint (when invalid, does not invalidate the Validation object)
+                [x] Validation.clone(Validation()) to clone a single validation object
+        - [ ] !consider for adding firing canceled??? and deferred (or delayed) events for debounced predicate
+        - [x] optional constraint (when invalid, does not invalidate the Validation object)
                 Validation().constraint(Predicate, { optional: true })
+                    Possible use case:
+                    when we are creating a product, the image constraints are required.
+                    when we are editing the product, the image constraints are optional.
             or maybe optional Validation object (does not invalidate the group it is included in)
             or maybe optional Validation should mean it is valid with the value equal to initVal
             and runs predicates only when the value differs from initVal
             in other words: the value either should be empty or conform to the added predicates if not empty
                 Validation(obj, propName, initVal, optinal = true)
-        - [ ] taking object's value as initial value when creating a new Validation (may be used for adding the optional constraint feature)
+                    .constraint(predicate1)
+                    .constraint(predicate2, { optional: true })
+                    .constraint(predicate3, { optional: true })
 
-        - [ ] Final decision: 
-            Validation.profile(formSelector, ['formFildNames'], [assossiatedValidations])
-                - cloning mechanism
-            Validation().listen(validatedForm|validatedFormField, 'event', { target: true })
-            Validation().bindObj(obj, propName, initVal) // !! can be invoked only on SINGLE validations
-                - ValidatedItem().setObj(obj, propName, initVal)
-                - ManyToManyMap().changeKey(oldKey, newKey)
+        - [x] Final decision: 
+        - [x] Validation.profile(formSelector, ['formFildNames'], [assossiatedValidations])
+                - [x] Maybe it'd be better if ValidationProfile would have validations passed in combained in a grouped validation instead of a collection. Because they have to be grouped later anyway.
+                - [x] ValidatableForm
+                - [x] getEnv
+                - [x] cloning mechanism
+            Validation().listen(validatableForm|validatableFormField, 'event', { target: true })
+            - [x] Validation().bind(obj, propName, initVal) // !! can be invoked only on SINGLE validations
+                - [x] ValidatableItem().setObj(obj, propName, initVal)
+                - [x] ManyToManyMap().changeKey(oldKey, newKey)
 
 
     ## Refactor
 
+        - [ ] makeValidationHandlerFn wraps validations twice: first in ValidationBuilder, second in createProfile(). Rewrite so that it happens once.
+        Probably, it would be needed to add a method to ValidationBuilder for adding a form.
+        - [ ] since Validation instance is a middleware/event handler, it is better to rename its .bind method to something else to avoid conflicting with Function.prototype.bind
+        - [ ] think through if it is possible to completely get rid of memoization of ValidationBuilder in the clone function and use CloneRegestry instead
+        - [x] rename entities from Validated* to Validatable*.
         - [ ] consider renaming ObserverAnd to something like AndGate
-        - [x] consider moving out the keepValid functionality from ObservablePredicate to ValidatedItem as a decorator after the according e2e tests are written:
-            ValidatedItem.keepValid(ObservablePredicate()) or
-            ObservablePredicate({decorators: [debounceP, ValidatedItem.keepValid]});
+        - [ ] consider renaming ValidityCallbacks to ValidityEvents
+        - [x] Validation.group, Validation.glue to accept validations divided by comma
+        - [x] consider moving out the keepValid functionality from ObservablePredicate to ValidatableItem as a decorator after the according e2e tests are written:
+            ValidatableItem.keepValid(ObservablePredicate()) or
+            ObservablePredicate({decorators: [debounceP, ValidatableItem.keepValid]});
 
-        - [x] ValidatedItem.keepValid([...items], validationResult{isValid})
+        - [x] ValidatableItem.keepValid([...items], validationResult{isValid})
         - [x] saveLastValid() and retrieveLastValid() into saveValue() and restoreValue()
         - [x] lastValidCBs -> restoredCBs, onLastValid(), keptValid() -> restored()
         - [x] getObj() -> getObject()
         
         - [ ] when two or more validation assosiated with one object grouped into another validation, consider the possibility of merging collections of predicates into one instead of keeping them all in a set.
+
+        - [ ] consider using containedPgs for validation instead of ownPgs, this will allow to implement .started method in Validation.
 
         - [x] ObservablePredicate should unpack Predicate with valueOf() the same way Predicate does it inside itself while constructing an instance (from the consistency point of view).
 
@@ -68,17 +90,39 @@
 
     ## Tests
 
+        - [ ] validationResult.target must be the same for all invoked callbacks
+        - [ ] performance: makeIsomorphicAPI current version vs proxying the whole API object 
+        - [ ] performance: Validation() with and without makeIsomorphicAPI()
+        - [ ] merge validation.test.js and index.test.js
+        - [x] add a test script to package.json to run browser and node environment tests separately
         - [ ] require/import test to check CJS/ESM compatibility
+        - [ ] performance: check what is faster new Set([value]) or new Set().add(value)
+        - [ ] grouping.test.js should be in integration tests ?
 
 
     ## Bugs
-
-        - [ ] debounce functionality should not be applied on the server side.
+        - [x] missed argument that should be passed to changed cbs for Validation and Predicate
+        - [x] validations which are glued after creating a profile. Their grouping validation doesn't know about them being glued.
+        - [x] ValidationResult.isValid should not be Validation's state, it should be a result of a particular operation
+        - [x] next and invalidate doesn't work after cloning
+        - [x] The value from a validatable object should be read immediately after invoking the validate function because when a predicate's execution is deferred the predicate might deal with irrelevant arguments which might be already changed up to the predicate's execution moment. This is crucial especially for the server side execution.
+        - [x] debounce functionality should not be applied on the server side.
             check it!!!
 
     ## Notes
 
+        - changed callback invokations have a slightly different order for original validation group and its clone. See grouping.test.js
+
+        - When a validated value is equal to its initial value, instead of validating it, maybe it's better to cancel and invalidate all validations.
+
         - When a predicate added with the keepValid option, on every validation with the invalid result, it notifies subscribers twice: first when changed from valid to invalid and then when restores back to the last valid value. It also calls a predicate function twice. Not sure if this is appropriate. See ObservablePredicate integration tests.
 
-        - Binding Validation with a validated object makes more sense in validation profiles because each profile may have a form with it's own unique selector (e.g. #signin_form, #signup_form). Also having different form objects on the server is nessessary.
-        Consider to add this feature. Validation().bindObj(obj, propName, initVal)
+        + UPD: removed memoization. On ValidatableItem. After calling setObject on a cloned item, the original item gets erased from the memoize function's registry. Should it be so??? This is a contradiction in logic: on the one hand memoization implies imposibility of existence of two instances of an item constructed with the same parameters, on the other hand in combination with cloning it becomes possible.
+
+        - A predicate added on a glued validation is called twice while validating a group with no object passed in the validate() funciton. Although one call is enough. The second call is unnecessary.
+
+        - When a Validation is bound to a new object after being grouped into another Validation, the grouping Validation doesn't know about it and the former remains assosiated with the old object in the group. Don't bind validations after grouping, do it before!
+
+        - Because of the asyncronous nature of predicates execution and middlewares, the validatable form may be overwritten between predicate or middleware calls. Do not rely on the validatable form's data in middlewares.
+
+        - The returned value of the isomorphic protocol properties (.client/.server) and ignored functions shouldn't be assigned and used anywhere but in the libriry's methods since the library knows how to deal with this protocol. Use the original object or .isomorphic property instead.

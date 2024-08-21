@@ -8,17 +8,43 @@ it.todo(
 export const isOnlyLetters = jest.fn((value) => /^[A-Za-z]+$/.test(value));
 
 export const isLongerThan = memoize((number) =>
-  jest.fn((value) => String(value).length > number),
+  Object.defineProperty(
+    jest.fn((value) => String(value).length > number),
+    'name',
+    { value: isLongerThan.name },
+  ),
 );
+
 export const isShorterThan = memoize((number) =>
-  jest.fn((value) => String(value).length < number),
+  Object.defineProperty(
+    jest.fn((value) => String(value).length < number),
+    'name',
+    { value: isShorterThan.name },
+  ),
 );
 
 export const isGreaterThan = memoize((number) =>
-  jest.fn((value) => Number(number) < Number(value)),
+  Object.defineProperty(
+    jest.fn((value) => Number(number) < Number(value)),
+    'name',
+    { value: isGreaterThan.name },
+  ),
 );
+
+export const isGreaterOrEqual = memoize((number) =>
+  Object.defineProperty(
+    jest.fn((value) => Number(number) <= Number(value)),
+    'name',
+    { value: isGreaterThan.name },
+  ),
+);
+
 export const isLessThan = memoize((number) =>
-  jest.fn((value) => Number(number) > Number(value)),
+  Object.defineProperty(
+    jest.fn((value) => Number(number) > Number(value)),
+    'name',
+    { value: isLessThan.name },
+  ),
 );
 
 export const isEmail = jest.fn((value) =>
@@ -56,3 +82,17 @@ export const isPositiveInt = jest.fn(
 export const areEqual = jest.fn((...args) =>
   Boolean(args.reduce((acc, v) => (acc === v ? v : false))),
 );
+
+export const areNotEqual = jest.fn((value1, value2) => value1 !== value2);
+
+Object.entries({
+  isOnlyLetters,
+  isEmail,
+  isNotOneTimeEmail,
+  isEmailNotBusy,
+  isPositiveInt,
+  areEqual,
+  areNotEqual,
+}).forEach(([name, predicate]) => {
+  Object.defineProperty(predicate, 'name', { value: name });
+});
