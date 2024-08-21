@@ -52,6 +52,12 @@ export default function ValidationBuilder({
 
         validatableItems.forEach((item) => item.preserveValue(callID));
 
+        (containedGroups.get(target) || containedGroups.getAll()).forEach(
+          (containedPgs) => {
+            containedPgs.startCBs(containedPgs.toRepresentation(target));
+          },
+        );
+
         return pgs.run(target, callID).then((res) => {
           validatableItems.forEach((item) => item.clearValue(callID));
 
@@ -99,7 +105,7 @@ export default function ValidationBuilder({
       invalid: pgs.invalid,
       changed: pgs.changed,
       validated: pgs.validated,
-      // started: pgs.started,
+      started: pgs.started,
     }),
     {
       isValid: Object.getOwnPropertyDescriptor(pgs, 'isValid'),

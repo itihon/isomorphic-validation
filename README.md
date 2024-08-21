@@ -9,6 +9,7 @@
 ### Validation instance methods
 
     Validation(obj, propName, initVal)
+        .started(cb)
         .valid(cb)
         .invalid(cb)
         .changed(cb)
