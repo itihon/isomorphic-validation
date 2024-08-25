@@ -14,7 +14,7 @@
         .invalid(cb)
         .changed(cb)
         .validated(cb)
-        .constraint(Predicate()|Function.prototype, { next, debounce, keepValid, optional })
+        .constraint(Predicate()|Function.prototype, { next, debounce, keepValid, optional, ...anyData })
         .bind(obj, propName, initVal)
         .validate(obj)
         .dataMapper((req, form) => {}) // available after creating a profile

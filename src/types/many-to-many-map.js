@@ -1,20 +1,3 @@
-/**
- * @typedef {Object} MapOfSets
- * @property {(key, value) => ManyToManyMap} add
- * @property {() => Set} getAll
- * @property {(mtmm: ManyToManyMap) => ManyToManyMap} mergeWith
- * @property {(cb: (value, key, values: ManyToManyMap) => void) => void} forEach
- * @property {(cb: (value, key, values: ManyToManyMap) => any) => ManyToManyMap} map
- */
-
-/**
- * @typedef {MapOfSets & Map} ManyToManyMap
- */
-
-/**
- * @returns {ManyToManyMap}
- */
-
 export default function ManyToManyMap() {
   const values = new Set(); // for faster access to all unique values
   const map = new Map();
