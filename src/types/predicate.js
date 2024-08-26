@@ -4,7 +4,7 @@ import Functions from './functions.js';
 import ValidityCallbacks from './validity-callbacks.js';
 
 /**
- * @typedef {import('../../intellisense/predicate.jsdoc.js').default} Predicate
+ * @typedef {import('../../intellisense/predicate.jsdoc.js').Predicate} Predicate
  * @typedef {import('../../intellisense/shared.jsdoc.js').predicateFn} predicateFn
  */
 

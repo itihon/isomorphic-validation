@@ -1,5 +1,7 @@
+export {}
+
 /**
- * @typedef {import('./validation-result.jsdoc.js').default} ValidationResult
+ * @typedef {import('./validation-result.jsdoc.js').ValidationResult} ValidationResult
  */
 
 /**
@@ -12,5 +14,3 @@
  *  @param {...any} value
  *  @returns {(Boolean|Promise<Boolean>)}
  */
-
-export {}

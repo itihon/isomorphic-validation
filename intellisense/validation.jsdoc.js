@@ -1,8 +1,11 @@
+export {}
+
 /**
- * @typedef {import('./validation-result.jsdoc.js').default} ValidationResult
- * @typedef {import('./predicate.jsdoc.js').default} Predicate
+ * @typedef {import('./validation-result.jsdoc.js').ValidationResult} ValidationResult
+ * @typedef {import('./predicate.jsdoc.js').Predicate} Predicate
  * @typedef {import('./shared.jsdoc.js').stateCallback} stateCallback
  * @typedef {import('./shared.jsdoc.js').predicateFn} predicateFn
+ * @typedef {typeof ValidationAPI} Validation
  */
 
 /**
@@ -22,81 +25,81 @@
 /**
  * A validation event handler on the client side.
  * @overload
- * @param {*} event
+ * @param {Event} event
  */
 
-export default function Validation() {};
+function ValidationAPI() {};
 
 /** 
  * The current state of the validation.
  *  @type {Boolean} 
  */
-Validation.isValid;
+ValidationAPI.isValid;
 
 /**
  * A map with validatable objects as keys and sets of constraints as values.
  *  @type {Map.<object, Set>} 
  */
-Validation.constraints;
+ValidationAPI.constraints;
 
 /**
  * An array of grouped (nested) validations.
  *  @type {Array.<Validation>}
  */
-Validation.validations;
+ValidationAPI.validations;
 
 /**
  * Refers to the api object on the server side and a dummy object on the client side.
  *  @type {Validation}
  */
-Validation.server;
+ValidationAPI.server;
 
 /**
  * Refers to the api object on the client side and a dummy object on the server side.
  *  @type {Validation}
  */
-Validation.client;
+ValidationAPI.client;
 
 /**
  * Refers to the api object regardles of the execution environment.
  *  @type {Validation}
  */
-Validation.isomorphic;
+ValidationAPI.isomorphic;
 
 /**
  * Adds a state callback.
  *  @param {stateCallback} callback 
  *  @returns {Validation}
  */
-Validation.started = function (callback) {};
+ValidationAPI.started = function (callback) {};
 
 /**
  * Adds a state callback.
  *  @param {stateCallback} callback 
  *  @returns {Validation}
  */
-Validation.valid = function (callback) {};
+ValidationAPI.valid = function (callback) {};
 
 /**
  * Adds a state callback.
  *  @param {stateCallback} callback 
  *  @returns {Validation}
  */
-Validation.invalid = function (callback) {};
+ValidationAPI.invalid = function (callback) {};
 
 /**
  * Adds a state callback.
  *  @param {stateCallback} callback 
  *  @returns {Validation}
  */
-Validation.changed = function (callback) {};
+ValidationAPI.changed = function (callback) {};
 
 /**
  * Adds a state callback.
  *  @param {stateCallback} callback 
  *  @returns {Validation}
  */
-Validation.validated = function (callback) {};
+ValidationAPI.validated = function (callback) {};
 
 
 /**
@@ -124,7 +127,7 @@ Validation.validated = function (callback) {};
  *  @param {any} [params.anyData] - Any additional data, will be accessible in the validation constraints collection and a validation result.
  *  @returns {Validation}
  */ 
-Validation.constraint = function (predicate, { next, debounce, keepValid, optional, ...anyData }) {};
+ValidationAPI.constraint = function (predicate, { next, debounce, keepValid, optional, ...anyData }) {};
 
 /**
  * Binds the validation to a new validatable item.
@@ -133,20 +136,20 @@ Validation.constraint = function (predicate, { next, debounce, keepValid, option
  *  @param {*} initVal - An initial value of the validatable item.
  *  @returns {Validation}
  */
-Validation.bind = function (obj, propName, initVal) {};
+ValidationAPI.bind = function (obj, propName, initVal) {};
 
 /**
  * Sets a data mapper function. Used only on the server side. 
  *  @param {mapperFn} mapperFn
  *  @returns {Validation}
  */
-Validation.dataMapper = function (mapperFn) {};
+ValidationAPI.dataMapper = function (mapperFn) {};
 
 /**
  * Executes either all predicate groups or only the groups associated with the passed validatable object.
  *  @param {object} [validatableObject]
  *  @returns {Promise<ValidationResult>}
  */
-Validation.validate = function (validatableObject) {};
+ValidationAPI.validate = function (validatableObject) {};
 
 

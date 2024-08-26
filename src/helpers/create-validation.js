@@ -10,7 +10,7 @@ import ValidationBuilder from '../types/validation-builder.js';
 import CloneRegistry from '../types/clone-registry.js';
 
 /**
- * @typedef {import('../../intellisense/validation.jsdoc.js').default} Validation
+ * @typedef {import('../../intellisense/validation.jsdoc.js').Validation} Validation
  */
 
 /**
