@@ -16,6 +16,7 @@
   ],
   "scripts": {
     "postinstall": "echo 'installing git hooks...' && git config core.hooksPath ./.git-hooks",
+    "prepublish": "npm run build",
     "format:check": "prettier --check \"{src,__tests__}/**/*.{js,mjs}\"",
     "format:write": "prettier --write \"{src,__tests__}/**/*.{js,mjs}\"",
     "lint": "eslint --fix .",
