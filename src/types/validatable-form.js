@@ -1,4 +1,5 @@
 import { PROPNAME } from '../constants.js';
+import acceptOnlyNotEmptyString from '../helpers/accept-only-not-empty-string.js';
 import createDummyObj from '../utils/createDummyObj.js';
 import { ifSide } from '../utils/getenv.js';
 
@@ -19,7 +20,9 @@ function FormField(fieldName = '', propChain = []) {
 FormField.prototype = dummyObject;
 
 function FormFields(fieldNames, paths, delim) {
-  fieldNames.forEach((fieldName, idx) => {
+  [].concat(fieldNames).forEach((fieldName, idx) => {
+    acceptOnlyNotEmptyString(fieldName);
+
     const path = paths[idx];
     const propChain = path ? path.split(delim) : [PROPNAME];
     const formField = new FormField(fieldName, propChain);

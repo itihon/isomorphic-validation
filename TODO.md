@@ -61,6 +61,8 @@
 
     ## Refactor
 
+        - [ ] rename src to lib, src/types to lib/entities
+        - [ ] move all error files from the helpers folder into one module Errors.
         - [ ] makeValidationHandlerFn wraps validations twice: first in ValidationBuilder, second in createProfile(). Rewrite so that it happens once.
         Probably, it would be needed to add a method to ValidationBuilder for adding a form.
         - [ ] since Validation instance is a middleware/event handler, it is better to rename its .bind method to something else to avoid conflicting with Function.prototype.bind

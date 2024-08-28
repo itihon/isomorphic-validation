@@ -67,6 +67,14 @@ describe('Validation.profile', () => {
     jest.clearAllMocks();
   });
 
+  it('should normalize to array the second and third parameter', () => {
+    expect(() => Validation.profile('', 'fieldName', emailV)).not.toThrow();
+
+    expect(() => Validation.profile()).not.toThrow();
+
+    expect(() => Validation.profile('', undefined, emailV)).not.toThrow();
+  });
+
   it('should implement iterator protocol', () => {
     const [signInF, signInV] = Validation.profile(
       '#signin',
@@ -327,9 +335,35 @@ describe('Validation.profile', () => {
     expect(signInVs.dataMapper).toThrow();
   });
 
-  it('should throw and error for using a validation as a middleware before creating a profile', () => {
+  it('should throw an error for using a validation as a middleware before creating a profile', () => {
     const req = { body: { login: 'q@q.q.', pwd: 'zxcvbx' } };
     expect(() => emailV(req, {}, () => {})).toThrow();
+  });
+
+  it('should throw an error if a form field is not a string', () => {
+    const err = 'Form field name must be a not empty string.';
+
+    expect(() => Validation.profile('', ['', 'asdf'], emailV)).toThrowError(
+      err,
+    );
+
+    expect(() => Validation.profile('', '', emailV)).toThrowError(err);
+
+    expect(() => Validation.profile('', null, emailV)).toThrowError(err);
+
+    expect(() => Validation.profile('', {}, emailV)).toThrowError(err);
+
+    expect(() => Validation.profile('', 42, emailV)).toThrowError(err);
+  });
+
+  it('should throw an error if not a Validation was passed in', () => {
+    const err = 'Not a Validation was passed in';
+
+    expect(() => Validation.profile('', 'asdf', null)).toThrowError(err);
+
+    expect(() => Validation.profile('', 'asdf', [null, emailV])).toThrowError(
+      err,
+    );
   });
 
   it('should call only server side methods and ignore client side', async () => {

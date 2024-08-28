@@ -5,6 +5,7 @@ import clone from './clone';
 import makeGroupValidationsFn from './make-group-validations-fn';
 import makeValidationHandlerFn from './make-validation-handler-fn';
 import firstEntry from '../utils/firstEntry.js';
+import accepOnlyValidation from './accept-only-validation';
 
 const cloneValidation = (validation) =>
   clone({ validation, registry: CloneRegistry() });
@@ -48,7 +49,9 @@ export default function createProfile(
   fieldNames = [],
   validations = [],
 ) {
-  const paths = validations
+  const paths = []
+    .concat(validations)
+    .map(accepOnlyValidation)
     .map(getItems)
     .map(firstEntry)
     .map(firstItemFromEntrie)
@@ -56,15 +59,18 @@ export default function createProfile(
 
   const validatableForm = ValidatableForm(selector, fieldNames, paths);
 
-  const clonedValidations = validations
+  const clonedValidations = []
+    .concat(validations)
     .map(cloneValidation)
     .map(bind(validatableForm, fieldNames))
     .map(makeValidationHandlerFn(validatableForm));
 
-  const groupedValidations = fieldNames.reduce(
-    assignValidations(clonedValidations),
-    makeGroupValidationsFn(GROUPED)(clonedValidations),
-  );
+  const groupedValidations = []
+    .concat(fieldNames)
+    .reduce(
+      assignValidations(clonedValidations),
+      makeGroupValidationsFn(GROUPED)(clonedValidations),
+    );
 
   return profile(
     validatableForm,
