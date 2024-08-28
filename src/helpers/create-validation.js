@@ -9,19 +9,6 @@ import ValidatableItem from '../types/validatable-item.js';
 import ValidationBuilder from '../types/validation-builder.js';
 import CloneRegistry from '../types/clone-registry.js';
 
-/**
- * @typedef {import('../../intellisense/validation.jsdoc.js').Validation} Validation
- */
-
-/**
- * Creates a validation.
- * @function Validation
- * @param {Object} obj - A validatable object to bind the validation to.
- * @param {string} propName - A property name or a path to the validatable value with dots as delimitters.
- * @param {*} initVal - An initial value of the validatable item.
- * @returns {Validation}
- */
-
 export default function createValidation(
   obj = { value: 'default' },
   propName = PROPNAME,

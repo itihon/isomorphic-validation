@@ -3,25 +3,6 @@ import makeIsomorphicAPI from '../utils/make-isomorphic-api.js';
 import Functions from './functions.js';
 import ValidityCallbacks from './validity-callbacks.js';
 
-/**
- * @typedef {import('../../intellisense/predicate.jsdoc.js').Predicate} Predicate
- * @typedef {import('../../intellisense/shared.jsdoc.js').predicateFn} predicateFn
- */
-
-/**
- * Creates a predicate object.
- * @overload
- * @param {predicateFn} predicateFn - A predicate function to be wrapped.
- * @returns {Predicate}
- */
-
-/**
- * Creates a predicate object.
- * @overload
- * @param {Predicate} predicate - A predicate object to be cloned.
- * @returns {Predicate}
- */
-
 export default function Predicate(fnOrPred) {
   if (!isFunction(fnOrPred) && !(fnOrPred instanceof Predicate)) return null;
 

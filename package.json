@@ -12,8 +12,9 @@
   "files": [
     "dist",
     "bin",
-    "intellisense"
+    "types"
   ],
+  "types": "types/index.d.ts",
   "scripts": {
     "postinstall": "echo 'installing git hooks...' && git config core.hooksPath ./.git-hooks",
     "prepublishOnly": "npm run build",
