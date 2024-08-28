@@ -8,6 +8,7 @@
 
 ### Validation instance methods
 
+```js
     Validation(obj, propName, initVal)
         .started(cb)
         .valid(cb)
@@ -17,26 +18,33 @@
         .constraint(Predicate()|Function.prototype, { next, debounce, keepValid, optional, ...anyData })
         .bind(obj, propName, initVal)
         .validate(obj)
-        .dataMapper((req, form) => {}) // available after creating a profile
+        .dataMapper((req, form) => {}) 
+```
+
 
 ### Validation instance properties
 
+```js
     Validation().constraints
     Validation().validations
     Validation().isValid
     Validation().server // isomorphic API
     Validation().client // isomorphic API
     Validation().isomorphic // isomorphic API
+```
 
 ### Validation static methods
 
+```js
     Validation.group([Validation(), Validation()])
     Validation.glue([Validation(), Validation()])
     Validation.clone(Validation())
     Validation.profile(selector, [fieldNames], [Validation(), Validation()])
+```
 
-### Predicate instance properties
-    
+### Predicate instance methods
+
+```js  
     Predicate(() => true|false|Promise{true|false})
         .started(cb)
         .valid(cb)
@@ -44,3 +52,12 @@
         .changed(cb)
         .validated(cb)
         .restored(cb)
+```
+
+### Predicate instance properties
+
+```js
+    Predicate().server // isomorphic API
+    Predicate().client // isomorphic API
+    Predicate().isomorphic // isomorphic API
+```
