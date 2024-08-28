@@ -6,4 +6,6 @@
 # status after issuing an appropriate message if it wants to stop the
 # commit.  The hook is allowed to edit the commit message file.
 
+echo 'running commit-msg hook ...'
+echo ' - validating the commit message ...'
 npx validate-commit-msg
