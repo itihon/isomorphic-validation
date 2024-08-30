@@ -3,6 +3,8 @@
 
     ## Chores
 
+        - [ ] install rollup dts plugin to bundle type declarations in order to 
+            avoid exposing unnecessary types and polluting IntelliSense.
 
 
     ## Features
@@ -103,6 +105,8 @@
 
 
     ## Bugs
+
+        - [ ] typescript incorrectly infers the type of an imported validation which comes from array destructuring.
         - [x] missed argument that should be passed to changed cbs for Validation and Predicate
         - [x] validations which are glued after creating a profile. Their grouping validation doesn't know about them being glued.
         - [x] ValidationResult.isValid should not be Validation's state, it should be a result of a particular operation

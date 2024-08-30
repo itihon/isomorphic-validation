@@ -24,7 +24,7 @@ export default function ObservablePredicate(
 
   const fn = ({ restoredCBs, validityCBs } = predicate.valueOf()).valueOf();
 
-  const obs = ObserverAnd();
+  const obs = ObserverAnd(optional); // optional predicates are valid by default
   const onInvalidCBs = Functions();
 
   const notifySubscribers = obs.update;
