@@ -132,9 +132,16 @@ describe('Validation', () => {
     it('should be valid when has only optional predicates and the validatable value equals the initial value', async () => {
       const results = [];
       const validation = Validation(obj1);
+
+      // validation with no constraints is valid
+      expect(validation.isValid).toBe(true);
+
       validation
         .constraint(isGreaterThan(42), { optional: true })
         .constraint(isGreaterThan(1), { optional: true });
+
+      // validation having only optional constraints is valid
+      expect(validation.isValid).toBe(true);
 
       obj1.value = 1;
       results.push(validation.validate()); // false

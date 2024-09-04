@@ -23,7 +23,27 @@ export default function ObservablePredicate(
   let validityCBs;
 
   const fn = ({ restoredCBs, validityCBs } = predicate.valueOf()).valueOf();
+  /**
+ * // @bug: optional predicates should be valid by default
+ * // if the current validatable values are equal to their init values or undefined
+ * // at the moment a predicate is being created 
+ * // temporarily fixed
+ * // should be fixed like this (tests are needed)
+ *  
+ *  let initVal = false;
+ *  
+ *  if (optional) {
+ *    const keys = items.map(item => item.preserveValue());  
 
+ *    const isInitVal = items
+ *      .map((item) => item.isInitValue())
+ *      .every((value) => value === true);
+ *    
+ *    initVal = isInitVal;
+ *  }
+ * 
+ *  const obs = ObserverAnd(initVal);
+ */
   const obs = ObserverAnd(optional); // optional predicates are valid by default
   const onInvalidCBs = Functions();
 

@@ -114,6 +114,7 @@
         - [x] The value from a validatable object should be read immediately after invoking the validate function because when a predicate's execution is deferred the predicate might deal with irrelevant arguments which might be already changed up to the predicate's execution moment. This is crucial especially for the server side execution.
         - [x] debounce functionality should not be applied on the server side.
             check it!!!
+        - [ ] Optional predicates should be valid by default. Temporarily fixed. See the comment in observable-predicate.js
 
     ## Notes
 
