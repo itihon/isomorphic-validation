@@ -731,6 +731,36 @@ describe('callbacks', () => {
     cbs = assignCBs();
   });
 
+  it('should accept only functions as state callbacks and ignore anything else', async () => {
+    const cb1 = jest.fn();
+    const cb2 = jest.fn();
+    const cb3 = jest.fn();
+    const p = jest.fn(() => true);
+
+    const predicate = Predicate(p)
+      .started(cb1, {}, cb2, [cb2], cb3, 42)
+      .valid(cb1, {}, cb2, [cb2], cb3, 42)
+      .invalid(cb1, {}, cb2, [cb2], cb3, 42)
+      .changed(cb1, {}, cb2, [cb2], cb3, 42)
+      .validated(cb1, {}, cb2, [cb2], cb3, 42)
+      .restored(cb1, {}, cb2, [cb2], cb3, 42);
+
+    const validation = Validation()
+      .constraint(predicate)
+      .started(cb1, {}, cb2, [cb2], cb3, 42)
+      .valid(cb1, {}, cb2, [cb2], cb3, 42)
+      .invalid(cb1, {}, cb2, [cb2], cb3, 42)
+      .changed(cb1, {}, cb2, [cb2], cb3, 42)
+      .validated(cb1, {}, cb2, [cb2], cb3, 42);
+
+    expect(validation.validate).not.toThrow();
+    await expect(validation.validate()).resolves.not.toThrow();
+
+    expect(cb1).toHaveBeenCalled();
+    expect(cb2).toHaveBeenCalled();
+    expect(cb3).toHaveBeenCalled();
+  });
+
   it.each([{ title: 'original' }, { title: 'cloned' }])(
     '$title: should be invoked in the right order right amount of times',
     async ({ title }) => {

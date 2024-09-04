@@ -20,18 +20,12 @@ describe('e2e', () => {
     validatedObj.value = 42;
   });
 
-  it.todo(
-    'valid, invalid, changed etc. accept only functions and ignore anything else',
-  );
-
-  it.todo(
-    'newly created Validation is valid, when predicates are added becomes invalid',
-  );
-
-  it.todo('first argument for Validation(), what if it is not an object');
-  it.todo(
-    'first argument for Validation(), what if it does not contain the specified propName',
-  );
+  it('should be valid, after having predicates added become invalid (unless they are optional)', () => {
+    const validation = Validation();
+    expect(validation.isValid).toBe(true);
+    validation.constraint(jest.fn());
+    expect(validation.isValid).toBe(false);
+  });
 
   // this feature is considered for deprication
   it.skip('is imposible to start an async predicate unless the previously launched is not finished', (done) => {
