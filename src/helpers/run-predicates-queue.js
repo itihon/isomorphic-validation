@@ -5,6 +5,7 @@ export default function runPredicatesQueue(
 ) {
   const promises = [];
   let resolve;
+  let reject;
 
   const finish = () =>
     Promise.all(promises).then((results) => resolve(results));
@@ -14,7 +15,14 @@ export default function runPredicatesQueue(
     let predicate;
 
     while ((predicate = predicateIt.next().value)) {
-      promises.push((promise = Promise.resolve(predicate(...itemsToCheck))));
+      try {
+        promises.push(
+          (promise = Promise.resolve(predicate(...itemsToCheck)).catch(reject)),
+        );
+      } catch (err) {
+        reject(err);
+        return;
+      }
 
       if (!nextIt.next().value) {
         promise.then((pRes) =>
@@ -26,9 +34,12 @@ export default function runPredicatesQueue(
     finish();
   };
 
+  const retVal = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+
   runPromiseQueue(predicates[Symbol.iterator](), nexts[Symbol.iterator]());
 
-  return new Promise((res /* rej */) => {
-    resolve = res;
-  });
+  return retVal;
 }

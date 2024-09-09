@@ -2,13 +2,20 @@
 export default function debounceP(fn = Function.prototype, delay = 0) {
   let timeout;
   let promise;
-  let resolver = () => {};
+  let resolve = () => {};
+  let reject = () => {};
   const suffix = '_DP';
   const debouncedFnName = fn.name + suffix;
+
   const deferredFn = (...args) => {
-    resolver(fn(...args));
+    try {
+      resolve(fn(...args));
+    } catch (err) {
+      reject(err);
+    }
     promise = null;
   };
+
   const debouncedFn = {
     [debouncedFnName]: (...args) => {
       clearTimeout(timeout);
@@ -16,8 +23,9 @@ export default function debounceP(fn = Function.prototype, delay = 0) {
       timeout = setTimeout(deferredFn, delay, ...args);
 
       if (!promise) {
-        promise = new Promise((res /* rej */) => {
-          resolver = res;
+        promise = new Promise((res, rej) => {
+          resolve = res;
+          reject = rej;
         });
       }
 
@@ -27,7 +35,7 @@ export default function debounceP(fn = Function.prototype, delay = 0) {
 
   debouncedFn.cancel = (retVal) => {
     clearTimeout(timeout);
-    resolver(retVal);
+    resolve(retVal);
     promise = null;
   };
 

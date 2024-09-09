@@ -42,7 +42,7 @@ let syncPredicate;
 let asyncPredicate;
 
 const init = () => {
-  validation = Validation().constraint(() => true);
+  validation = Validation().constraint(() => true, { next: false });
   syncPredicate = Predicate(syncPredicateWithoutError);
   asyncPredicate = Predicate(asyncPredicateWithoutError);
   jest.clearAllMocks();
