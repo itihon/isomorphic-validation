@@ -1,9 +1,7 @@
 import { it, jest } from '@jest/globals';
 import memoize from '../src/utils/memoize.js';
 
-it.todo(
-  'Import these predicates in test suits. Call jest.clearAllMocks() before using them.',
-);
+it('Import these predicates in test suits. Call jest.clearAllMocks() before using them.', () => {});
 
 export const isOnlyLetters = jest.fn((value) => /^[A-Za-z]+$/.test(value));
 

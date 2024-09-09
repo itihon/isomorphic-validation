@@ -1,6 +1,6 @@
 import { it, expect } from '@jest/globals';
 
-it.todo('import it to test protocols');
+it('import it to test protocols', () => {});
 
 const protocols = {
   ObserverAnd: {
