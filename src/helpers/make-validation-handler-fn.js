@@ -43,8 +43,14 @@ const createMiddlewareFn = (form, validation, dataMapper) => () => {
   }
 
   return async (req, res, next) => {
-    mapper(req, form);
-    req.validationResult = await validation.validate();
+    try {
+      mapper(req, form);
+    } catch (err) {
+      next(err);
+      return;
+    }
+
+    req.validationResult = await validation.validate().catch(next);
     next();
   };
 };
