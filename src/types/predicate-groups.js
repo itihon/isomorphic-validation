@@ -100,11 +100,16 @@ export default function PredicateGroups(
 
         return this;
       },
+      enableCatch() {
+        return validityCBs.valueOf().errorCBs.length;
+      },
       valid: validityCBs.valid,
       invalid: validityCBs.invalid,
       changed: validityCBs.changed,
       validated: validityCBs.validated,
       started: validityCBs.started,
+      error: validityCBs.error,
+      catchCBs: validityCBs.catch,
       startCBs: validityCBs.start,
       runCBs: validityCBs.set,
       map: pgs.map,

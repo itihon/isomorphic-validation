@@ -15,10 +15,11 @@
         .invalid(cb)
         .changed(cb)
         .validated(cb)
+        .error(cb)
         .constraint(Predicate()|Function.prototype, { next, debounce, keepValid, optional, ...anyData })
         .bind(obj, propName, initVal)
-        .validate(obj)
         .dataMapper((req, form) => {}) 
+        .validate(obj)
 ```
 
 
@@ -52,6 +53,7 @@
         .changed(cb)
         .validated(cb)
         .restored(cb)
+        .error(cb)
 ```
 
 ### Predicate instance properties

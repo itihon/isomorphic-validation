@@ -7,6 +7,7 @@ import addObservablePredicate from '../helpers/add-observable-predicate.js';
 import firstEntry from '../utils/firstEntry.js';
 import makeIsomorphicAPI from '../utils/make-isomorphic-api.js';
 import makeValidationHandlerFn from '../helpers/make-validation-handler-fn.js';
+import tryCatch from '../utils/try-catch.js';
 
 export default function ValidationBuilder({
   pgs = PredicateGroups(),
@@ -106,10 +107,20 @@ export default function ValidationBuilder({
       changed: pgs.changed,
       validated: pgs.validated,
       started: pgs.started,
+      error: pgs.error,
     }),
     {
       isValid: Object.getOwnPropertyDescriptor(pgs, 'isValid'),
     },
+  );
+
+  representation.validate = tryCatch(
+    representation.validate,
+    pgs.catchCBs,
+    pgs.enableCatch,
+    () => Promise.resolve(pgs.toRepresentation()), // if the catch function is also faulty, return ValidationResult and swallow the error
+    () => Promise.resolve(pgs.toRepresentation()), // return ValidationResult on any error occurance
+    true, // promisify sync errors
   );
 
   return makeIsomorphicAPI(representation);

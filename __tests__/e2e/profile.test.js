@@ -623,11 +623,11 @@ describe('Validation.profile', () => {
     expect(Object.hasOwn(form.field2.files, '0')).toBe(true);
     expect(Object.hasOwn(form.field3.files[1], 'size')).toBe(true);
 
-    expect(validations[2].validate).toThrowError(
+    await expect(validations[2].validate()).rejects.toThrowError(
       `There is no path 'files.0' in object {}`,
     );
 
-    expect(validations[3].validate).toThrowError(
+    await expect(validations[3].validate()).rejects.toThrowError(
       `There is no path 'files.1.size' in object {}`,
     );
 

@@ -8,6 +8,7 @@ import Functions from './functions.js';
 import acceptOnlyBoolean from '../helpers/accept-only-boolean.js';
 import { IS_CLIENT } from '../utils/getenv.js';
 import debounceP from '../utils/debounce-p.js';
+import tryCatch from '../utils/try-catch.js';
 
 export default function ObservablePredicate(
   predicate = Predicate(),
@@ -65,6 +66,7 @@ export default function ObservablePredicate(
       validated: validityCBs.validated,
       started: validityCBs.started,
       restored: restoredCBs.push,
+      error: validityCBs.error,
       // !consider for adding: deferred (or delayed), canceled???
     },
     {
@@ -142,9 +144,17 @@ export default function ObservablePredicate(
     return predicatePostExec(result, forbidInvalid);
   }
 
-  Reflect.setPrototypeOf(obsPredicate, ObservablePredicate.prototype);
+  const obsPredicateTC = tryCatch(
+    obsPredicate,
+    validityCBs.catch, // the catch function
+    () => validityCBs.valueOf().errorCBs.length, // enable the catch function if error state callbacks were added
+    () => false, // if the catch function is also faulty, return false and swallow the error
+    () => obsPredicateTC.invalidate(), // invalidate on any error occurance
+  );
 
-  return Object.defineProperties(obsPredicate, {
+  Reflect.setPrototypeOf(obsPredicateTC, ObservablePredicate.prototype);
+
+  return Object.defineProperties(obsPredicateTC, {
     toRepresentation: { value: () => representation },
     invalidate: {
       value: () => {

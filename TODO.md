@@ -8,7 +8,7 @@
 
 
     ## Features
-        - [ ] .error() or .catch() for error handling
+        - [x] .error() or .catch() for error handling
         - [ ] access to a current validatable value through the validation result
         - [ ] the feature that allows to distinguish whether an optional validation is valid because the values were validated or because they are init values or undefined. May be unnecessary in case the above feature is implemented.
         - [ ] clearing a form field on the server side after the value has been preserved 
@@ -71,6 +71,9 @@
         - [ ] think through if it is possible to completely get rid of memoization of ValidationBuilder in the clone function and use CloneRegestry instead
         - [x] rename entities from Validated* to Validatable*.
         - [ ] consider renaming ObserverAnd to something like AndGate
+        - [ ] consider using the .isValid property of a group in the .run method of PredicateGroups in order to avoid iterating over the result loop. Like this:
+                id !== undefined ? obs.isValid : group.isValid;
+        const predicateGroups = id !== undefined ? pgs.get(id) : pgs.getAll();
         - [ ] consider renaming ValidityCallbacks to ValidityEvents
         - [x] Validation.group, Validation.glue to accept validations divided by comma
         - [x] consider moving out the keepValid functionality from ObservablePredicate to ValidatableItem as a decorator after the according e2e tests are written:
@@ -135,3 +138,5 @@
         - Because of the asyncronous nature of predicates execution and middlewares, the validatable form may be overwritten between predicate or middleware calls. Do not rely on the validatable form's data in middlewares.
 
         - The returned value of the isomorphic protocol properties (.client/.server) and ignored functions shouldn't be assigned and used anywhere but in the libriry's methods since the library knows how to deal with this protocol. Use the original object or .isomorphic property instead.
+
+        - When you add error state callbacks to validations and then group them and validate through the grouping validation, an error will not be catched. Error state callbacks must be added to a validation on which the `.validate()` method is called or which is used as middleware/event handler (the grouping validation in this case). Grouping validation doesn't invoke the `.validate()` method of the grouped validations.

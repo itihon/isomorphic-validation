@@ -7,15 +7,15 @@ export default function ValidityCallbacks(
   CBs = ValidityCallbacks(false, {}),
 ) {
   let isValid = initVal;
-  let { validCBs, invalidCBs, changedCBs, validatedCBs, startedCBs } = CBs
-    ? CBs.valueOf()
-    : {};
+  let { validCBs, invalidCBs, changedCBs, validatedCBs, startedCBs, errorCBs } =
+    CBs ? CBs.valueOf() : {};
 
   validCBs = Functions(validCBs);
   invalidCBs = Functions(invalidCBs);
   changedCBs = Functions(changedCBs);
   validatedCBs = Functions(validatedCBs);
   startedCBs = Functions(startedCBs);
+  errorCBs = Functions(errorCBs);
 
   return {
     set(value = false, cbArgs = undefined) {
@@ -37,7 +37,14 @@ export default function ValidityCallbacks(
       return isValid;
     },
     valueOf() {
-      return { validCBs, invalidCBs, changedCBs, validatedCBs, startedCBs };
+      return {
+        validCBs,
+        invalidCBs,
+        changedCBs,
+        validatedCBs,
+        startedCBs,
+        errorCBs,
+      };
     },
     start: startedCBs.run,
     started: startedCBs.push,
@@ -45,6 +52,8 @@ export default function ValidityCallbacks(
     invalid: invalidCBs.push,
     changed: changedCBs.push,
     validated: validatedCBs.push,
+    catch: errorCBs.run,
+    error: errorCBs.push,
     [Symbol.toStringTag]: ValidityCallbacks.name,
   };
 }
