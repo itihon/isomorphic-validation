@@ -40,6 +40,12 @@ declare namespace PredicateAPI {
      */
     function restored(callback: stateCallback): Predicate;
     /**
+     * Adds an error state callback and catches an error.
+     *  @param {stateCallback} callback
+     *  @returns {Predicate}
+     */
+    function error(callback: stateCallback): Predicate;
+    /**
      * Refers to the api object on the server side and a dummy object on the client side.
      */
     let server: Predicate;

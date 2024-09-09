@@ -28,7 +28,7 @@ declare namespace ValidationAPI {
     /**
      * A map with validatable objects as keys and sets of constraints as values.
      */
-    let constraints: Map<object, Set<any>>;
+    let constraints: Map<object, Set<Array<Predicate>>>;
     /**
      * An array of grouped (nested) validations.
      */
@@ -75,6 +75,12 @@ declare namespace ValidationAPI {
      *  @returns {Validation}
      */
     function validated(callback: stateCallback): Validation;
+    /**
+     * Adds an error state callback and catches an error.
+     *  @param {stateCallback} callback
+     *  @returns {Validation}
+     */
+    function error(callback: stateCallback): Validation;
     /**
      * Adds a constraint to the validation.
      *  @overload
