@@ -2,6 +2,8 @@
 
 ## An isomorphic data and form validation javascript library which runs the same code both client and server side
 
+<img src="./isomorphic-validation_smaller.gif" alt="isomorphic validation" width="550" height="700">
+
 ## developing
 
 ## This is a brief outline of the whole library's API
