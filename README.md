@@ -1,12 +1,15 @@
 # isomorphic-validation
 
-## An isomorphic data and form validation javascript library which runs the same code both client and server side
+## An isomorphic data and form validation javascript library which runs the same code both client and server side and allows for reusing validation logic for the same fields on different forms.
 
 <img src="./isomorphic-validation_smaller.gif" alt="isomorphic validation" width="550" height="700">
 
-## developing
+## Usage examples:
+- [Sign-up sign-in forms example](https://github.com/itihon/signup_signin_example)
 
-## This is a brief outline of the whole library's API
+## Developing ...
+
+## This is a brief outline of the whole library's API:
 
 ### Validation instance methods
 
