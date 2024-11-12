@@ -105,12 +105,13 @@ export default function ObservablePredicate(
   obs.onChanged((result) => validityCBs.change(result, validationResult));
   items.forEach((item) => item.onRestored(...restoredCBs));
 
-  function predicatePostExec(result, forbidInvalid) {
+  function predicatePostExec(result, forbidInvalid, target, callID) {
     acceptOnlyBoolean(result);
     notifySubscribers(result);
     if (forbidInvalid) {
       if (ValidatableItem.keepValid(items, validationResult)) {
-        return obsPredicate(!forbidInvalid);
+        items.forEach((item) => item.preserveValue(callID));
+        return obsPredicate(!forbidInvalid, target, callID, true);
       }
     }
     return setValidity(result, validationResult);
@@ -120,10 +121,13 @@ export default function ObservablePredicate(
     forbidInvalid = keepValid,
     target = undefined,
     callID = undefined,
+    revalidate = false,
   ) {
     validationResult.target = target;
 
-    validityCBs.start(validationResult);
+    if (!revalidate) {
+      validityCBs.start(validationResult);
+    }
 
     if (optional) {
       const isInitVal = items
@@ -131,17 +135,19 @@ export default function ObservablePredicate(
         .every((value) => value === true);
 
       if (isInitVal) {
-        return predicatePostExec(true, forbidInvalid);
+        return predicatePostExec(true, forbidInvalid, target, callID);
       }
     }
 
     const result = predicateFn(...items.map((item) => item.getValue(callID)));
 
     if (result && result.then) {
-      return result.then((res) => predicatePostExec(res, forbidInvalid));
+      return result.then((res) =>
+        predicatePostExec(res, forbidInvalid, target, callID),
+      );
     }
 
-    return predicatePostExec(result, forbidInvalid);
+    return predicatePostExec(result, forbidInvalid, target, callID);
   }
 
   const obsPredicateTC = tryCatch(

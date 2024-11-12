@@ -120,6 +120,8 @@
         - [x] debounce functionality should not be applied on the server side.
             check it!!!
         - [ ] Optional predicates should be valid by default. Temporarily fixed. See the comment in observable-predicate.js
+        - [ ] The `.error()` method should accept an errorStateCallback in validation.d.ts and predicate.d.ts
+        - [x] A predicated added with the option keepValid=true runs started state callback twice (second time after the restored state callback)
 
     ## Notes
 
@@ -140,3 +142,9 @@
         - The returned value of the isomorphic protocol properties (.client/.server) and ignored functions shouldn't be assigned and used anywhere but in the libriry's methods since the library knows how to deal with this protocol. Use the original object or .isomorphic property instead.
 
         - When you add error state callbacks to validations and then group them and validate through the grouping validation, an error will not be catched. Error state callbacks must be added to a validation on which the `.validate()` method is called or which is used as middleware/event handler (the grouping validation in this case). Grouping validation doesn't invoke the `.validate()` method of the grouped validations.
+
+        - The parameter next=false cancels the execution of the predicates following after the current one and invalidates them every time the current one gets invalid. Probably a more optimized way would be if it would happen only on state change from valid to invalid.
+
+        - Once a predicate added with the parameter next=false gets valid, predicates added with the parameter "debounce" following after it start getting invoked, and after their deferred execution their state callbacks are called as many times as the debounced predicates were called even though the deferred execution was only one. The state callbacks invokation number of time probably should be considered as one invokation. So this behavious needs to be changed.
+
+        - A predicate added with the parameter next=false when invalid first invalidates the predicates following after it causing their invalid state callbacks to be invoked and then causes its own invalid state callback to be invoked.
