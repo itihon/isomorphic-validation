@@ -68,7 +68,7 @@ export default function PredicateGroups(
             ).then((res) => !res.flat().some((value) => value !== true)) // ! slow
           : Promise.reject(
               new Error(
-                `There are no predicates assosiated with the target ${JSON.stringify(
+                `There are no predicates associated with the target ${JSON.stringify(
                   id,
                 )}`,
               ),
