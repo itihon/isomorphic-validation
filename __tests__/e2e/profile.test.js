@@ -532,6 +532,12 @@ describe('Validation.profile', () => {
   });
 
   it('should validate by target', async () => {
+    let vr; // ValidationResult
+    const checkTargetStateCB = jest.fn();
+
+    signInVs.validated(checkTargetStateCB);
+    signUpVs.validated(checkTargetStateCB);
+
     signInForm.email.value = 'a@a.a';
     signInForm.password.value = 'asdfg';
 
@@ -539,17 +545,39 @@ describe('Validation.profile', () => {
     signUpForm.password.value = 'asdfg1';
     signUpForm.pwdconfirm.value = 'asdfg1';
 
-    expect((await signInVs.validate(signInForm.email)).isValid).toBe(true);
+    expect((vr = await signInVs.validate(signInForm.email)).isValid).toBe(true);
+    expect(vr.target).toBe(signInForm.email);
+    expect(checkTargetStateCB.mock.lastCall[0].target).toBe(signInForm.email);
     expect(isEmail.mock.calls).toStrictEqual([['a@a.a']]);
-    expect((await signInVs.validate(signInForm.password)).isValid).toBe(true);
+    expect((vr = await signInVs.validate(signInForm.password)).isValid).toBe(
+      true,
+    );
+    expect(vr.target).toBe(signInForm.password);
+    expect(checkTargetStateCB.mock.lastCall[0].target).toBe(
+      signInForm.password,
+    );
     expect(isLongerThan(4).mock.calls).toStrictEqual([['a@a.a'], ['asdfg']]);
     expect(signInVs.isValid).toBe(true);
 
-    expect((await signUpVs.validate(signUpForm.email)).isValid).toBe(true);
+    expect((vr = await signUpVs.validate(signUpForm.email)).isValid).toBe(true);
+    expect(vr.target).toBe(signUpForm.email);
+    expect(checkTargetStateCB.mock.lastCall[0].target).toBe(signUpForm.email);
     expect(isEmail.mock.calls).toStrictEqual([['a@a.a'], ['b@b.b']]);
-    expect((await signUpVs.validate(signUpForm.password)).isValid).toBe(true);
+    expect((vr = await signUpVs.validate(signUpForm.password)).isValid).toBe(
+      true,
+    );
+    expect(vr.target).toBe(signUpForm.password);
+    expect(checkTargetStateCB.mock.lastCall[0].target).toBe(
+      signUpForm.password,
+    );
     expect(areEqual.mock.calls).toStrictEqual([['asdfg1', 'asdfg1']]);
-    expect((await signUpVs.validate(signUpForm.pwdconfirm)).isValid).toBe(true);
+    expect((vr = await signUpVs.validate(signUpForm.pwdconfirm)).isValid).toBe(
+      true,
+    );
+    expect(vr.target).toBe(signUpForm.pwdconfirm);
+    expect(checkTargetStateCB.mock.lastCall[0].target).toBe(
+      signUpForm.pwdconfirm,
+    );
     expect(areEqual.mock.calls).toStrictEqual([
       ['asdfg1', 'asdfg1'],
       ['asdfg1', 'asdfg1'],

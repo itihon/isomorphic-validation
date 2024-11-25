@@ -16,6 +16,7 @@ export default function ValidationBuilder({
   TYPE = SINGLE,
   validations = [],
 } = {}) {
+  let ownTarget = TYPE === SINGLE ? firstEntry(items)[0] : undefined;
   const representation = ConsoleRepresentation(
     'Validation',
     makeValidationHandlerFn(null)({
@@ -42,7 +43,7 @@ export default function ValidationBuilder({
         );
         return this;
       },
-      validate(target) {
+      validate(target = ownTarget) {
         // all items will be preserved regardless of the target
         // not the most optimal way, but fixes the bug with validating a glued validation
         // by target through a grouping validation
@@ -94,6 +95,8 @@ export default function ValidationBuilder({
         items.changeKey(oldObj, newObj);
         pgs.changeKey(oldObj, newObj);
         containedGroups.changeKey(oldObj, newObj);
+
+        [ownTarget] = firstEntry(items);
 
         return this;
       },

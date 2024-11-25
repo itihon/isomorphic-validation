@@ -8,8 +8,14 @@
 
 
     ## Features
+        - [x] consider change the behavior for the `.validate()` method of a "single" validation so that it uses its own validatable object as the target if the passed in validatableObject is `undefined` and just runs the only predicate group it contains. This would facilitate easier validations chainig in the following way:
+            > v1.invalid(() => v2())   -->   v1.invalid(v2)
+        - [ ] consider for adding ValidationResult.wasValid
+        - [ ] consider for adding `.each` property for adding state callbacks to each validation in a group
+        - [x] consider for adding `Validation().initial()` to run callbacks when the validatable value is equal to the initial value
+            NOT IMPLEMENTED. REASON: ambiguity in call logic of grouping validations.
         - [x] .error() or .catch() for error handling
-        - [ ] access to a current validatable value through the validation result
+        - [ ] access to the current validatable value through the validation result
         - [ ] the feature that allows to distinguish whether an optional validation is valid because the values were validated or because they are init values or undefined. May be unnecessary in case the above feature is implemented.
         - [ ] clearing a form field on the server side after the value has been preserved 
         - [x] recreate the form structure on the server side with regard of path. 
@@ -97,6 +103,7 @@
 
     ## Tests
 
+        - [ ] chaining validations
         - [ ] validationResult.target must be the same for all invoked callbacks
         - [ ] performance: makeIsomorphicAPI current version vs proxying the whole API object 
         - [ ] performance: Validation() with and without makeIsomorphicAPI()
@@ -105,6 +112,7 @@
         - [ ] require/import test to check CJS/ESM compatibility
         - [ ] performance: check what is faster new Set([value]) or new Set().add(value)
         - [ ] grouping.test.js should be in integration tests ?
+        - [ ] When `Validation` containing a few predicates was validated and is valid, add another constraint, the `Validation` must become invalid unless the constraint is optional.
 
 
     ## Bugs

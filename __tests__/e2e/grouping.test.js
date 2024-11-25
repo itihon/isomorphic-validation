@@ -913,16 +913,20 @@ describe('callbacks', () => {
   it.each([{ title: 'original' }, { title: 'cloned' }])(
     '$title: should be called when validated by the associated object',
     async ({ title }) => {
+      let res;
+
       const isCloned = title === 'cloned';
       const validation = isCloned ? Validation.clone(origVF) : origVF;
 
       await invalidate(validation);
       jest.clearAllMocks();
-      await validation.validate();
+      res = await validation.validate();
+      expect(res.target).toBe(undefined);
       reinitCbsOrder();
 
       predicates.P1b.mockImplementationOnce(() => false);
-      await validation.validate(b);
+      res = await validation.validate(b);
+      expect(res.target).toBe(b);
 
       // ! changed callback invocations have a sligtly different order
       // for original validation group and its clone
@@ -955,7 +959,8 @@ describe('callbacks', () => {
       ]);
 
       reinitCbsOrder();
-      await validation.validate(b);
+      res = await validation.validate(b);
+      expect(res.target).toBe(b);
 
       // ! changed callback invocations have a sligtly different order
       // for original validation group and its clone

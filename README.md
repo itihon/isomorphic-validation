@@ -4,6 +4,9 @@
 
 <img src="./isomorphic-validation_smaller.gif" alt="isomorphic validation" width="550" height="700">
 
+## Documentation
+[<img alt="isomorphic validation logo" src="https://itihon.github.io/isomorphic-validation-docs/favicon.svg" width="18px"> isomorphic-validation-docs](https://itihon.github.io/isomorphic-validation-docs)
+
 ## Usage examples:
 - [Sign-up sign-in forms example](https://github.com/itihon/signup_signin_example)
 

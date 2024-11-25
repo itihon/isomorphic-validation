@@ -9,10 +9,13 @@ import {
 import { Validation } from '../../src/index.js';
 import { isGreaterThan } from '../predicates';
 
+let res;
+
 const obj1 = { value: 1 };
 const obj2 = { value: 42 };
 const obj3 = { value: 43 };
 
+const checkTargetStateCB = jest.fn();
 const validatedCB1 = jest.fn();
 const validatedCB2 = jest.fn();
 
@@ -27,38 +30,46 @@ describe('Validation', () => {
 
   describe('bind', () => {
     it('should bind a Validation to a validated object', async () => {
-      await v1.validate();
+      v1.validated(checkTargetStateCB);
+
+      res = await v1.validate();
       expect(v1.isValid).toBe(false);
       expect(isGreaterThan(16)).toHaveBeenLastCalledWith(obj1.value);
       expect(isGreaterThan(16)).toHaveBeenCalledTimes(1);
+      expect(res.target).toBe(obj1);
+      expect(checkTargetStateCB.mock.lastCall[0].target).toBe(obj1);
 
       v1.bind(obj2);
-      await v1.validate();
+      res = await v1.validate();
       expect(v1.isValid).toBe(true);
       expect(isGreaterThan(16)).toHaveBeenLastCalledWith(obj2.value);
       expect(isGreaterThan(16)).toHaveBeenCalledTimes(2);
+      expect(res.target).toBe(obj2);
+      expect(checkTargetStateCB.mock.lastCall[0].target).toBe(obj2);
     });
 
     it('should bind a cloned Validation to a validated object', async () => {
       v2 = Validation.clone(v1);
       v2.constraint(isGreaterThan(42));
 
-      await v2.validate();
+      res = await v2.validate();
       expect(v2.isValid).toBe(false);
       expect(v1.isValid).toBe(true);
       expect(isGreaterThan(16)).toHaveBeenLastCalledWith(obj2.value);
       expect(isGreaterThan(16)).toHaveBeenCalledTimes(3);
       expect(isGreaterThan(42)).toHaveBeenLastCalledWith(obj2.value);
       expect(isGreaterThan(42)).toHaveBeenCalledTimes(1);
+      expect(res.target).toBe(obj2);
 
       v2.bind(obj3);
-      await v2.validate();
+      res = await v2.validate();
       expect(v2.isValid).toBe(true);
       expect(v1.isValid).toBe(true);
       expect(isGreaterThan(16)).toHaveBeenLastCalledWith(obj3.value);
       expect(isGreaterThan(16)).toHaveBeenCalledTimes(4);
       expect(isGreaterThan(42)).toHaveBeenLastCalledWith(obj3.value);
       expect(isGreaterThan(42)).toHaveBeenCalledTimes(2);
+      expect(res.target).toBe(obj3);
     });
 
     it('validate a Validation in a group by a bound object', async () => {
@@ -70,10 +81,12 @@ describe('Validation', () => {
       await vs1.validate(obj2);
       expect(validatedCB1).toHaveBeenCalledTimes(1);
       expect(validatedCB2).toHaveBeenCalledTimes(0); // 1???
+      expect(validatedCB1.mock.calls[0][0].target).toBe(obj2);
 
       await vs1.validate(obj3);
       expect(validatedCB1).toHaveBeenCalledTimes(1); // 2 ???
       expect(validatedCB2).toHaveBeenCalledTimes(1); // 2 ???
+      expect(validatedCB2.mock.calls[0][0].target).toBe(obj3);
     });
 
     it('should bind only single validations', () => {
@@ -125,7 +138,7 @@ describe('Validation', () => {
       expect(isGreaterThan(1)).toHaveBeenCalledTimes(3);
 
       expect(
-        (await Promise.all(results)).map((res) => res.isValid),
+        (await Promise.all(results)).map((result) => result.isValid),
       ).toStrictEqual([false, true, false, true]);
     });
 
@@ -164,7 +177,7 @@ describe('Validation', () => {
       expect(isGreaterThan(1)).toHaveBeenCalledTimes(3);
 
       expect(
-        (await Promise.all(results)).map((res) => res.isValid),
+        (await Promise.all(results)).map((result) => result.isValid),
       ).toStrictEqual([false, true, true, true]);
     });
   });
