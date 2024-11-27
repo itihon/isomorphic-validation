@@ -103,6 +103,15 @@
 
     ## Tests
 
+        - [ ] adding state callbacks to a "validator" of different "glued" validations. It probably should be the same instance: 
+        Validation.glue(Validation(), Validation())
+            .constraint(() => true)
+            .constraints.forEach((set, key) => set.forEach(
+                validator => validator
+                    .validated(() => {})
+            ))
+        should add a validated state callback twice to the same validator. (in comparison to a "grouped" validations, one to each)
+
         - [ ] chaining validations
         - [ ] validationResult.target must be the same for all invoked callbacks
         - [ ] performance: makeIsomorphicAPI current version vs proxying the whole API object 
