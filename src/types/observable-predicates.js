@@ -6,7 +6,7 @@ import runPredicatesQueue from '../helpers/run-predicates-queue.js';
 import CloneRegistry from './clone-registry.js';
 
 export default function ObservablePredicates() {
-  const obs = ObserverAnd(true); // absense of predicates means valid state of Validation
+  const obs = ObserverAnd();
   const predicates = Functions();
   const queueRules = [];
   let withQueueRules = false;

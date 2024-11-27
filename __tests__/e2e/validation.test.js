@@ -146,8 +146,7 @@ describe('Validation', () => {
       const results = [];
       const validation = Validation(obj1);
 
-      // validation with no constraints is valid
-      expect(validation.isValid).toBe(true);
+      expect(validation.isValid).toBe(false);
 
       validation
         .constraint(isGreaterThan(42), { optional: true })

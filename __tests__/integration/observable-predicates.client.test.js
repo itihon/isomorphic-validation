@@ -34,15 +34,14 @@ describe('ObservablePredicates', () => {
     op1.invalidate();
     op2.invalidate();
 
-    expect(ops1.getValue()).toBe(true); // absense of predicates means valid state
+    expect(ops1.getValue()).toBe(false); // the initial value is false
 
     ops1
       .onChanged(onChangedCB1)
       .add(op1, { next: false })
       .add(op2, { next: false });
 
-    expect(ops1.getValue()).toBe(false); // becomes invalid after adding predicates before running them
-    expect(onChangedCB1).toHaveBeenCalledTimes(1);
+    expect(onChangedCB1).toHaveBeenCalledTimes(0);
 
     const ops2 = ops1.clone();
     ops2.onChanged(onChangedCB2).add(op5);
@@ -52,7 +51,7 @@ describe('ObservablePredicates', () => {
     expect(await ops1.run()).toStrictEqual([true, true]);
     expect(ops1.getValue()).toBe(true);
     expect(ops2.getValue()).toBe(false); // ops2 is not affected
-    expect(onChangedCB1).toHaveBeenCalledTimes(2);
+    expect(onChangedCB1).toHaveBeenCalledTimes(1);
     expect(onChangedCB2).toHaveBeenCalledTimes(0); // ops2 is not affected
 
     expect(await ops2.run()).toStrictEqual([true, true, true]);
@@ -74,7 +73,7 @@ describe('ObservablePredicates', () => {
     expect(ops2.getValue()).toBe(false);
     expect(onChangedCB2).toHaveBeenCalledTimes(4);
     expect(ops1.getValue()).toBe(true); // ops1 is not affected
-    expect(onChangedCB1).toHaveBeenCalledTimes(2);
+    expect(onChangedCB1).toHaveBeenCalledTimes(1);
 
     expect(await ops2.run()).toStrictEqual([true, true, true]);
     expect(onChangedCB2).toHaveBeenCalledTimes(5);
@@ -83,7 +82,7 @@ describe('ObservablePredicates', () => {
     op1.invalidate();
     expect(ops2.getValue()).toBe(true); // !!! ops2 should not be affected
     expect(ops1.getValue()).toBe(false);
-    expect(onChangedCB1).toHaveBeenCalledTimes(3);
+    expect(onChangedCB1).toHaveBeenCalledTimes(2);
 
     isOnlyLetters.mockClear();
     ops2.run();

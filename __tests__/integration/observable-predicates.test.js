@@ -38,8 +38,8 @@ describe('ObservablePredicates - a collection of instances of ObservablePredicat
 
   it.todo('console representation, json representation, run(id)');
 
-  it('should be true while no predicates added', () => {
-    expect(ops.isValid).toBe(true);
+  it('the initial value should be false', () => {
+    expect(ops.isValid).toBe(false);
   });
 
   it('should add only instances of ObservablePredicate and return this', () => {
