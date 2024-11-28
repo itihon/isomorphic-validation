@@ -132,7 +132,7 @@ export default function ObservablePredicate(
     if (optional) {
       const isInitVal = items
         .map((item) => item.isInitValue())
-        .every((value) => value === true);
+        .some((value) => value === true); // for the glued: one optional validaiton makes all optional
 
       if (isInitVal) {
         return predicatePostExec(true, forbidInvalid, target, callID);

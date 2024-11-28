@@ -112,6 +112,7 @@
             ))
         should add a validated state callback twice to the same validator. (in comparison to a "grouped" validations, one to each)
 
+        - [ ] Validation.glue().constraint(() => true, { optional: true }) one optional validation makes all glued validations optional.
         - [ ] chaining validations
         - [ ] validationResult.target must be the same for all invoked callbacks
         - [ ] performance: makeIsomorphicAPI current version vs proxying the whole API object 
