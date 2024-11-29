@@ -731,37 +731,80 @@ describe('callbacks', () => {
     cbs = assignCBs();
   });
 
-  it('should accept only functions as state callbacks and ignore anything else', async () => {
-    const cb1 = jest.fn();
-    const cb2 = jest.fn();
-    const cb3 = jest.fn();
-    const p = jest.fn(() => true);
+  it.each([
+    { method: 'started' },
+    { method: 'valid' },
+    { method: 'invalid' },
+    { method: 'changed' },
+    { method: 'validated' },
+    { method: 'restored' },
+    { method: 'error' },
+  ])(
+    '$method: should accept only functions as state callbacks and throw an error otherwise',
+    async ({ method }) => {
+      const cb1 = jest.fn();
+      const cb2 = jest.fn();
+      const cb3 = jest.fn();
+      const p = jest.fn(() => true);
 
-    const predicate = Predicate(p)
-      .started(cb1, {}, cb2, [cb2], cb3, 42)
-      .valid(cb1, {}, cb2, [cb2], cb3, 42)
-      .invalid(cb1, {}, cb2, [cb2], cb3, 42)
-      .changed(cb1, {}, cb2, [cb2], cb3, 42)
-      .validated(cb1, {}, cb2, [cb2], cb3, 42)
-      .restored(cb1, {}, cb2, [cb2], cb3, 42)
-      .error(cb1, {}, cb2, [cb2], cb3, 42);
+      const predicate = Predicate(p);
+      const validation = Validation();
 
-    const validation = Validation()
-      .constraint(predicate)
-      .started(cb1, {}, cb2, [cb2], cb3, 42)
-      .valid(cb1, {}, cb2, [cb2], cb3, 42)
-      .invalid(cb1, {}, cb2, [cb2], cb3, 42)
-      .changed(cb1, {}, cb2, [cb2], cb3, 42)
-      .validated(cb1, {}, cb2, [cb2], cb3, 42)
-      .error(cb1, {}, cb2, [cb2], cb3, 42);
+      expect(() => predicate[method]([cb1])).toThrow();
+      expect(() => predicate[method]([])).toThrow();
+      expect(() => predicate[method]('')).toThrow();
+      expect(() => predicate[method]({})).toThrow();
+      expect(() => predicate[method](false)).toThrow();
+      expect(() => predicate[method](42)).toThrow();
+      expect(() => predicate[method](cb1, [])).toThrow();
+      expect(() => predicate[method](cb1, '')).toThrow();
+      expect(() => predicate[method](cb1, {})).toThrow();
+      expect(() => predicate[method](cb1, false)).toThrow();
+      expect(() => predicate[method](cb1, 42)).toThrow();
+      expect(() => predicate[method](cb1, cb2, [])).toThrow();
+      expect(() => predicate[method](cb1, cb2, '')).toThrow();
+      expect(() => predicate[method](cb1, cb2, {})).toThrow();
+      expect(() => predicate[method](cb1, cb2, false)).toThrow();
+      expect(() => predicate[method](cb1, cb2, 42)).toThrow();
 
-    expect(validation.validate).not.toThrow();
-    await expect(validation.validate()).resolves.not.toThrow();
+      expect(() => predicate[method](cb1)).not.toThrow();
+      expect(() => predicate[method](cb1, cb2)).not.toThrow();
+      expect(() => predicate[method](cb1, cb2, cb3)).not.toThrow();
 
-    expect(cb1).toHaveBeenCalled();
-    expect(cb2).toHaveBeenCalled();
-    expect(cb3).toHaveBeenCalled();
-  });
+      validation.constraint(predicate);
+
+      if (method !== 'restored') {
+        // validation doesn't have this method
+        expect(() => validation[method]([cb1])).toThrow();
+        expect(() => validation[method]([])).toThrow();
+        expect(() => validation[method]('')).toThrow();
+        expect(() => validation[method]({})).toThrow();
+        expect(() => validation[method](false)).toThrow();
+        expect(() => validation[method](42)).toThrow();
+        expect(() => validation[method](cb1, [])).toThrow();
+        expect(() => validation[method](cb1, '')).toThrow();
+        expect(() => validation[method](cb1, {})).toThrow();
+        expect(() => validation[method](cb1, false)).toThrow();
+        expect(() => validation[method](cb1, 42)).toThrow();
+        expect(() => validation[method](cb1, cb2, [])).toThrow();
+        expect(() => validation[method](cb1, cb2, '')).toThrow();
+        expect(() => validation[method](cb1, cb2, {})).toThrow();
+        expect(() => validation[method](cb1, cb2, false)).toThrow();
+        expect(() => validation[method](cb1, cb2, 42)).toThrow();
+
+        expect(() => validation[method](cb1)).not.toThrow();
+        expect(() => validation[method](cb1, cb2)).not.toThrow();
+        expect(() => validation[method](cb1, cb2, cb3)).not.toThrow();
+
+        if (method !== 'invalid' && method !== 'error') {
+          await validation.validate();
+          expect(cb1).toHaveBeenCalledTimes(6);
+          expect(cb2).toHaveBeenCalledTimes(4);
+          expect(cb3).toHaveBeenCalledTimes(2);
+        }
+      }
+    },
+  );
 
   it.each([{ title: 'original' }, { title: 'cloned' }])(
     '$title: should be invoked in the right order right amount of times',

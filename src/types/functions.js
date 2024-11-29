@@ -1,13 +1,10 @@
-import isFunction from '../utils/is-function.js';
+import acceptOnlyFunction from '../helpers/accept-only-function.js';
 
 export default function Functions(iterable = [][Symbol.iterator]()) {
-  const obj = { ...iterable, length: 0 };
-  obj.length = Object.keys(obj).length - 1;
-
-  const fns = Array.from(obj).filter(isFunction);
+  const fns = [...iterable].map(acceptOnlyFunction);
 
   function push(...args) {
-    Array.prototype.push.call(fns, ...args.filter(isFunction));
+    Array.prototype.push.call(fns, ...args.map(acceptOnlyFunction));
     return this;
   }
 
