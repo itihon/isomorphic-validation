@@ -113,6 +113,7 @@
         should add a validated state callback twice to the same validator. (in comparison to a "grouped" validations, one to each)
 
         - [ ] chaining validations
+            .error() catching errors in chained validations
         - [ ] validationResult.target must be the same for all invoked callbacks
         - [ ] performance: makeIsomorphicAPI current version vs proxying the whole API object 
         - [ ] performance: Validation() with and without makeIsomorphicAPI()
@@ -126,6 +127,8 @@
 
     ## Bugs
 
+        - [ ] http://localhost:4321/isomorphic-validation-docs/api/validation/static-methods/glue/#validating-one-field-depending-on-another
+        method .error() does not catch the error in state callbacks (target undefined)
         - [ ] when a validatable object doesn't have a one level path it does not throw an error.
         Instead, undefined is passed to predicates. Validation({}, 'prop1').validate() - doesn't throw an error, Validation({}, 'prop1.prop2').validate() - throws an error.
         - [ ] typescript incorrectly infers the type of an imported validation which comes from array destructuring.
