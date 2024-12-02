@@ -120,13 +120,17 @@ declare namespace ValidationAPI {
         anyData?: any;
     }): Validation;
     /**
-     * Binds the validation to a new validatable item.
-     *  @param {Object} obj - A validatable object to bind the validation to.
-     *  @param {string} propName - A property name or a path to the validatable value with dots as delimitters.
-     *  @param {*} initVal - An initial value of the validatable item.
+     * Binds the validation to a new validatable object.
+     *  @param {object} obj - A validatable object to bind the validation to.
+     *  @param {object} options
+     *  @param {string} [options.path] - A property name or a path to the validatable value with dots as delimitters.
+     *  @param {*} [options.initValue] - An initial value of the validatable item.
      *  @returns {Validation}
      */
-    function bind(obj: any, propName: string, initVal: any): Validation;
+    function bind(obj: any, options?: { 
+        path?: string, 
+        initValue?: any 
+    }): Validation;
     /**
      * Sets a data mapper function. Used only on the server side.
      *  @param {mapperFn} mapperFn

@@ -8,11 +8,18 @@ declare namespace IsomorphicValidation {
     /**
      * Creates a validation.
      * @param {Object} obj - A validatable object to bind the validation to.
-     * @param {string} propName - A property name or a path to the validatable value with dots as delimitters.
-     * @param {*} initVal - An initial value of the validatable item.
+     * @param {Object} options
+     * @param {string} [options.path] - A property name or a path to the validatable value with dots as delimitters.
+     * @param {*} [options.initValue] - An initial value of the validatable item.
+     * @param {Boolean} [options.optional=false] - If true, the predicate will only execute when the validatable vlaue is not equal to the validation's initial value or undefined.
      * @returns {Validation}
      */
-    function Validation(obj: Object, propName: String, initVal: any): Validation;
+    function Validation(obj: Object, options?: { 
+        path?: String, 
+        initValue?: any,
+        optional?: Boolean,
+    }): Validation;
+
     declare namespace Validation {
         /**
          * Groups validations into one that is subscribed to each.
