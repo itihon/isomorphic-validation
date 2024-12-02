@@ -85,15 +85,15 @@ declare namespace ValidationAPI {
      * Adds a constraint to the validation.
      *  @overload
      *  @param {predicateFn} predicate - A predicate function.
-     *  @param {object} params
-     *  @param {Boolean} [params.next=true] - When false, the next predicate will not be executed if the current one returns false.
-     *  @param {Number} [params.debounce=0] - Time in ms.
-     *  @param {Boolean} [params.keepValid=false] - If true, whenever this predicate returns false, the validatable value will be replaced with the previous valid value.
-     *  @param {Boolean} [params.optional=false] - If true, the predicate will only execute when the validatable vlaue is not equal to the validation's initial value or undefined.
-     *  @param {any} [params.anyData] - Any additional data, will be accessible in the validation constraints collection and a validation result.
+     *  @param {object} options
+     *  @param {Boolean} [options.next=true] - When false, the next predicate will not be executed if the current one returns false.
+     *  @param {Number} [options.debounce=0] - Time in ms.
+     *  @param {Boolean} [options.keepValid=false] - If true, whenever this predicate returns false, the validatable value will be replaced with the previous valid value.
+     *  @param {Boolean} [options.optional=false] - If true, the predicate will only execute when the validatable vlaue is not equal to the validation's initial value or undefined.
+     *  @param {any} [options.anyData] - Any additional data, will be accessible in the validation constraints collection and a validation result.
      *  @returns {Validation}
      */
-    function constraint(predicate: predicateFn, params: {
+    function constraint(predicate: predicateFn, options?: {
         next?: boolean;
         debounce?: number;
         keepValid?: boolean;
@@ -104,15 +104,15 @@ declare namespace ValidationAPI {
      * Adds a constraint to the validation.
      *  @overload
      *  @param {Predicate} predicate - A predicate function wrapped in a Predicate object.
-     *  @param {object} params
-     *  @param {Boolean} [params.next=true] - When false, the next predicate will not be executed if the current one returns false.
-     *  @param {Number} [params.debounce=0] - Time in ms.
-     *  @param {Boolean} [params.keepValid=false] - If true, whenever this predicate returns false, the validatable value will be replaced with the previous valid value.
-     *  @param {Boolean} [params.optional=false] - If true, the predicate will only execute when the validatable vlaue is not equal to the validation's initial value or undefined.
-     *  @param {any} [params.anyData] - Any additional data, will be accessible in the validation constraints collection and a validation result.
+     *  @param {object} options
+     *  @param {Boolean} [options.next=true] - When false, the next predicate will not be executed if the current one returns false.
+     *  @param {Number} [options.debounce=0] - Time in ms.
+     *  @param {Boolean} [options.keepValid=false] - If true, whenever this predicate returns false, the validatable value will be replaced with the previous valid value.
+     *  @param {Boolean} [options.optional=false] - If true, the predicate will only execute when the validatable vlaue is not equal to the validation's initial value or undefined.
+     *  @param {any} [options.anyData] - Any additional data, will be accessible in the validation constraints collection and a validation result.
      *  @returns {Validation}
      */
-    function constraint(predicate: Predicate, params: {
+    function constraint(predicate: Predicate, options?: {
         next?: boolean;
         debounce?: number;
         keepValid?: boolean;
