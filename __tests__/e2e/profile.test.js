@@ -156,7 +156,9 @@ describe('Validation.profile', () => {
     expect(areEqual.mock.calls).toStrictEqual([
       ['', ''],
       ['', ''],
-    ]); // !glued predicate is called twice. One call is enough
+      ['', ''],
+      ['', ''],
+    ]); // !glued predicate is called 4 times. One call is enough
 
     expect(signInVs.isValid).toBe(true);
     expect(signUpVs.isValid).toBe(false);
@@ -193,7 +195,9 @@ describe('Validation.profile', () => {
     expect(areEqual.mock.calls).toStrictEqual([
       [password, password],
       [password, password],
-    ]); // !glued predicate is called twice. One call is enough
+      [password, password],
+      [password, password],
+    ]); // !glued predicate is called 4 times. One call is enough
 
     expect(signInVs.isValid).toBe(false);
     expect(signUpVs.isValid).toBe(true);
@@ -570,7 +574,11 @@ describe('Validation.profile', () => {
     expect(checkTargetStateCB.mock.lastCall[0].target).toBe(
       signUpForm.password,
     );
-    expect(areEqual.mock.calls).toStrictEqual([['asdfg1', 'asdfg1']]);
+    // glued, called twice
+    expect(areEqual.mock.calls).toStrictEqual([
+      ['asdfg1', 'asdfg1'],
+      ['asdfg1', 'asdfg1'],
+    ]);
     expect((vr = await signUpVs.validate(signUpForm.pwdconfirm)).isValid).toBe(
       true,
     );
@@ -578,7 +586,10 @@ describe('Validation.profile', () => {
     expect(checkTargetStateCB.mock.lastCall[0].target).toBe(
       signUpForm.pwdconfirm,
     );
+    // glued, called twice
     expect(areEqual.mock.calls).toStrictEqual([
+      ['asdfg1', 'asdfg1'],
+      ['asdfg1', 'asdfg1'],
       ['asdfg1', 'asdfg1'],
       ['asdfg1', 'asdfg1'],
     ]);
@@ -613,15 +624,24 @@ describe('Validation.profile', () => {
       ['q@q.q'],
     ]);
     expect((await signUpVs.validate(signUpForm.password)).isValid).toBe(true);
+    // glued, called twice
     expect(areEqual.mock.calls).toStrictEqual([
+      ['asdfg1', 'asdfg1'],
+      ['asdfg1', 'asdfg1'],
       ['asdfg1', 'asdfg1'],
       ['asdfg1', 'asdfg1'],
       ['asdfg2', 'asdfg2'],
+      ['asdfg2', 'asdfg2'],
     ]);
     expect((await signUpVs.validate(signUpForm.pwdconfirm)).isValid).toBe(true);
+    // glued, called twice
     expect(areEqual.mock.calls).toStrictEqual([
       ['asdfg1', 'asdfg1'],
       ['asdfg1', 'asdfg1'],
+      ['asdfg1', 'asdfg1'],
+      ['asdfg1', 'asdfg1'],
+      ['asdfg2', 'asdfg2'],
+      ['asdfg2', 'asdfg2'],
       ['asdfg2', 'asdfg2'],
       ['asdfg2', 'asdfg2'],
     ]);
@@ -635,9 +655,9 @@ describe('Validation.profile', () => {
   it('should recreate a form fields structure by paths', async () => {
     const validations = [
       Validation(),
-      Validation({}, 'value'),
-      Validation({}, 'files.0'),
-      Validation({}, 'files.1.size'),
+      Validation({}, { path: 'value' }),
+      Validation({}, { path: 'files.0' }),
+      Validation({}, { path: 'files.1.size' }),
     ].map((v) => v.constraint(isLongerThan(1)));
 
     const { form, validation } = Validation.profile(

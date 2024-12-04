@@ -69,6 +69,18 @@
 
     ## Refactor
 
+        - [ ] parameter "optional"
+            [x] Validation(obj { path: 'value', initialValue: '', optional: false });
+            [x] Validation().bind(obj { path: 'value', initialValue: '' });
+            [x] d.ts signature of Validation() and Validation().bind()
+            [ ] move "options" parametes into from Validation() and Validation().bind() into a separate type to make vscode show hints
+            [ ] d.ts signature of Validation().constraint()
+            [ ] move "optional" logic from `ObservablePredicate` to an upper level, possibly to `ObservablePredicates` to make the whole group "optional" instead of predicates.
+            `ObservablePredicates` should be "aware" of `ValidatableItem`.
+            ObservablePredicates().clone() method will be affected
+            Validation().bind() method will be affected
+            [ ] change documentation accordingly 
+                Validation(), Validation().bind(), Validation.constraint()
         - [ ] rename src to lib, src/types to lib/entities
         - [ ] move all error files from the helpers folder into one module Errors.
         - [ ] makeValidationHandlerFn wraps validations twice: first in ValidationBuilder, second in createProfile(). Rewrite so that it happens once.
@@ -103,6 +115,7 @@
 
     ## Tests
 
+        - [ ] `Validation.bind()` with options "{ path, initVal }"
         - [ ] adding state callbacks to a "validator" of different "glued" validations. It probably should be the same instance: 
         Validation.glue(Validation(), Validation())
             .constraint(() => true)
@@ -153,7 +166,7 @@
 
         + UPD: removed memoization. On ValidatableItem. After calling setObject on a cloned item, the original item gets erased from the memoize function's registry. Should it be so??? This is a contradiction in logic: on the one hand memoization implies imposibility of existence of two instances of an item constructed with the same parameters, on the other hand in combination with cloning it becomes possible.
 
-        - A predicate added on a glued validation is called twice while validating a group with no object passed in the validate() funciton. Although one call is enough. The second call is unnecessary.
+        - A predicate added on two glued validations is called 4 times (twice on each) while validating a group with no object passed in the validate() function. Although one call is enough. The rest are unnecessary. This is because two instances of ObservablePredicate are called in each predicate group (ObservablePredicates). Glued predicate groups can not have the same instance of ObservablePredicate because any of them can possibly be optional ("valid" by default, therefore all predicates added to it also should be "valid" by default whereas non-optional are "invalid").
 
         - When a Validation is bound to a new object after being grouped into another Validation, the grouping Validation doesn't know about it and the former remains assosiated with the old object in the group. Don't bind validations after grouping, do it before!
 

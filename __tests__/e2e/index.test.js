@@ -20,14 +20,15 @@ describe('e2e', () => {
     validatedObj.value = 42;
   });
 
-  it('should be valid, after having predicates added become invalid (unless they are optional)', () => {
-    const validation = Validation();
-    expect(validation.isValid).toBe(true);
-    validation.constraint(jest.fn());
-    expect(validation.isValid).toBe(false);
-  });
+  // this should have been removed in a3888f3 refactor(observable-predicates.js): remove valid state of Validation with no constraints
+  // it('should be valid, after having predicates added become invalid (unless they are optional)', () => {
+  //   const validation = Validation();
+  //   expect(validation.isValid).toBe(true);
+  //   validation.constraint(jest.fn());
+  //   expect(validation.isValid).toBe(false);
+  // });
 
-  // this feature is considered for deprication
+  // this feature is considered for removing
   it.skip('is imposible to start an async predicate unless the previously launched is not finished', (done) => {
     const testAsyncValidation = Validation(validatedObj);
     testAsyncValidation.constraint(syncPredicate).constraint(asyncPredicate);
@@ -43,7 +44,7 @@ describe('e2e', () => {
     }, 1200);
   }, 2000);
 
-  it.only('keepValid', async () => {
+  it('keepValid', async () => {
     const isTens = jest.fn(
       (value) => Number(value) !== 0 && Number(value) % 10 === 0,
     );
@@ -59,9 +60,12 @@ describe('e2e', () => {
     const predicateChangedCB = jest.fn();
     const predicateRestoredCB = jest.fn();
 
-    const initVal = '';
+    const initValue = 0;
 
-    const testValidation = Validation(validatedObj, 'value', initVal);
+    const testValidation = Validation(validatedObj, {
+      path: 'value',
+      initValue,
+    });
 
     testValidation
       .constraint(
@@ -78,8 +82,9 @@ describe('e2e', () => {
       .invalid(invalidCB)
       .changed(changedCB);
 
+    validatedObj.value = initValue;
     expect((await testValidation.validate()).isValid).toBe(false);
-    expect(validatedObj.value).toBe(initVal);
+    expect(validatedObj.value).toBe(initValue);
     expect(startedCB).toHaveBeenCalledTimes(1);
     expect(validCB).toHaveBeenCalledTimes(0);
     expect(invalidCB).toHaveBeenCalledTimes(1);
@@ -155,9 +160,9 @@ describe('e2e', () => {
     expect(predicateChangedCB).toHaveBeenCalledTimes(7); // !!called twice
     expect(predicateRestoredCB).toHaveBeenCalledTimes(4);
 
-    validatedObj.value = initVal;
+    validatedObj.value = initValue;
     expect((await testValidation.validate()).isValid).toBe(false);
-    expect(validatedObj.value).toBe(initVal);
+    expect(validatedObj.value).toBe(initValue);
     expect(startedCB).toHaveBeenCalledTimes(7);
     expect(validCB).toHaveBeenCalledTimes(5);
     expect(invalidCB).toHaveBeenCalledTimes(2);

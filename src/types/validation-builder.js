@@ -22,13 +22,7 @@ export default function ValidationBuilder({
     makeValidationHandlerFn(null)({
       constraint(
         validator = Predicate(),
-        {
-          next = true,
-          debounce = 0,
-          keepValid = false,
-          optional = false,
-          ...anyData
-        } = {},
+        { next = true, debounce = 0, keepValid = false, ...anyData } = {},
       ) {
         const predicate = Predicate(validator);
         pgs.forEach(
@@ -37,8 +31,8 @@ export default function ValidationBuilder({
             next,
             debounce,
             keepValid,
-            optional,
             anyData,
+            groups: pgs.getAll(),
           }),
         );
         return this;
@@ -77,7 +71,7 @@ export default function ValidationBuilder({
           });
         });
       },
-      bind(newObj = {}, path = undefined, initVal = undefined) {
+      bind(newObj = {}, { path = undefined, initValue = undefined } = {}) {
         if (TYPE !== SINGLE) {
           throw new Error('Only single validation can be bound');
         }
@@ -88,7 +82,7 @@ export default function ValidationBuilder({
         const newPath = path !== undefined ? path : validatableItem.getPath();
 
         const newInitVal =
-          initVal !== undefined ? initVal : validatableItem.getInitValue();
+          initValue !== undefined ? initValue : validatableItem.getInitValue();
 
         validatableItem.setObject(newObj, newPath, newInitVal);
 

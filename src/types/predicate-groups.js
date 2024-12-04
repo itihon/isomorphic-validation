@@ -39,6 +39,7 @@ export default function PredicateGroups(
   // ! bad. hiding unnecessary methods.
   const addRepresentation = representation.add;
   const representationChangeKey = representation.changeKey;
+
   delete representation.add;
   delete representation.forEach;
   delete representation.getAll;
@@ -49,6 +50,7 @@ export default function PredicateGroups(
   return Object.defineProperties(
     {
       add(key, predicateGroup = ObservablePredicates()) {
+        // delete from representation ⬆
         obs.subscribe(predicateGroup);
         pgs.add(key, predicateGroup);
         // representation.add(keys, predicateGroup.toRepresentation());
@@ -90,8 +92,9 @@ export default function PredicateGroups(
         representation.target = id;
         return representation;
       },
-      // changeKey: pgs.changeKey,
+      // changeKey: pgs.changeKey, // delete from representation ⬆
       changeKey(...args) {
+        // delete from representation ⬆
         pgs.changeKey(...args);
 
         representation.add = addRepresentation; // ! bad
@@ -112,9 +115,10 @@ export default function PredicateGroups(
       catchCBs: validityCBs.catch,
       startCBs: validityCBs.start,
       runCBs: validityCBs.set,
-      map: pgs.map,
-      forEach: pgs.forEach,
-      mergeWith: pgs.mergeWith,
+      map: pgs.map, // delete from representation ⬆
+      forEach: pgs.forEach, // delete from representation ⬆
+      mergeWith: pgs.mergeWith, // delete from representation ⬆
+      getAll: pgs.getAll, // delete from representation ⬆
       has: pgs.has.bind(pgs),
       get: pgs.get.bind(pgs),
       [Symbol.toStringTag]: PredicateGroups.name,

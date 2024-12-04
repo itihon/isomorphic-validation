@@ -11,16 +11,16 @@ import CloneRegistry from '../types/clone-registry.js';
 
 export default function createValidation(
   obj = { value: 'default' },
-  propName = PROPNAME,
-  initVal = INITVAL,
+  { path = PROPNAME, initValue = INITVAL, optional = false } = {},
 ) {
   const pgs = PredicateGroups();
   const items = ManyToManyMap();
   const containedGroups = ManyToManyMap();
   const TYPE = SINGLE;
+  const item = ValidatableItem(obj, path, initValue);
 
-  pgs.add(obj, ObservablePredicates());
-  items.add(obj, ValidatableItem(obj, propName, initVal));
+  pgs.add(obj, ObservablePredicates(item, optional));
+  items.add(obj, item);
   containedGroups.add(obj, pgs);
 
   return ValidationBuilder({ pgs, items, containedGroups, TYPE });

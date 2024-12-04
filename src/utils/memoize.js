@@ -24,14 +24,20 @@ export default function memoize(
     return params;
   };
 
-  const remember =
-    (Fn) =>
-    (...args) => {
-      const params = mergeWithDefaults(args);
-      return retrieveIfHas(resIdxs)(Fn, ...params)(
-        params.map(retrieveIfHas(argsIdxs)(counter)).slice(0, limit).join(','),
-      );
-    };
+  const remember = (Fn) =>
+    Object.defineProperty(
+      (...args) => {
+        const params = mergeWithDefaults(args);
+        return retrieveIfHas(resIdxs)(Fn, ...params)(
+          params
+            .map(retrieveIfHas(argsIdxs)(counter))
+            .slice(0, limit)
+            .join(','),
+        );
+      },
+      'name',
+      { value: `${fn.name}_MEM` },
+    );
 
   const memoized = remember(fn);
 

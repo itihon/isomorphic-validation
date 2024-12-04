@@ -4,9 +4,32 @@ import ConsoleRepresentation from './console-representation.js';
 import ObservablePredicate from './observable-predicate.js';
 import runPredicatesQueue from '../helpers/run-predicates-queue.js';
 import CloneRegistry from './clone-registry.js';
+import ValidatableItem from './validatable-item.js';
 
-export default function ObservablePredicates() {
-  const obs = ObserverAnd();
+const glue = (predicate = ObservablePredicate(), gluedPredicates = []) => {
+  if (gluedPredicates.length) {
+    const glued = (...args) => {
+      const res = predicate(...args);
+      gluedPredicates.forEach((gluedPredicate) => gluedPredicate(...args));
+      return res;
+    };
+
+    return Object.defineProperties(glued, {
+      name: { value: `${predicate.name}_GL` },
+      valueOf: {
+        value: () => ({ gluedPredicates, valueOf: () => predicate }),
+      },
+    });
+  }
+
+  return predicate;
+};
+
+export default function ObservablePredicates(
+  item = ValidatableItem(),
+  optional = false,
+) {
+  const obs = ObserverAnd(optional); // optional groups are valid by default
   const predicates = Functions();
   const queueRules = [];
   let withQueueRules = false;
@@ -31,11 +54,15 @@ export default function ObservablePredicates() {
 
   return Object.defineProperties(
     {
-      add(predicate = ObservablePredicate(), { next = true } = {}) {
+      add(
+        predicate = ObservablePredicate(),
+        { next = true } = {},
+        gluedPredicates = [],
+      ) {
         if (!(predicate instanceof ObservablePredicate)) return this;
 
         obs.subscribe(predicate);
-        predicates.push(predicate);
+        predicates.push(glue(predicate, gluedPredicates));
         queueRules.push(next);
         withQueueRules = withQueueRules || !next;
         representation.push(predicate.toRepresentation());
@@ -51,23 +78,38 @@ export default function ObservablePredicates() {
         return this;
       },
       run(...args) {
+        const skip = optional && item.isInitValue();
         return withQueueRules
           ? runPredicatesQueue(predicates, queueRules, args)
-          : Promise.all(predicates.run(...args));
+          : Promise.all(predicates.run(...args, undefined, skip));
       },
       clone(registry = CloneRegistry()) {
         return predicates
           .map((predicate, idx) => {
-            const clonedPredicate = registry.cloneOnce(predicate, registry);
-            return [clonedPredicate, { next: queueRules[idx] }];
+            let gluedPredicates = [];
+            const origPredicate = ({ gluedPredicates } =
+              predicate.valueOf()).valueOf();
+            const clonedPredicate = registry.cloneOnce(origPredicate, registry);
+            const clonedGluedPredicates = registry.cloneMapOnce(
+              gluedPredicates,
+              registry,
+            );
+            return [
+              clonedPredicate,
+              { next: queueRules[idx] },
+              clonedGluedPredicates,
+            ];
           })
           .reduce(
             (ops, predWithParams) => ops.add(...predWithParams),
-            ObservablePredicates(),
+            ObservablePredicates(registry.cloneOnce(item), optional),
           );
       },
       toRepresentation() {
         return representation;
+      },
+      isOptional() {
+        return optional;
       },
       getID: obs.getID,
       getValue: obs.getValue,

@@ -427,9 +427,15 @@ describe('group with clone', () => {
   describe.each(dataTable)('$dataName: Validation.glue', ({ Ve, Vg, VK }) => {
     it('should be predicate calls with glued validated values passed in', () => {
       Ve.validate();
-      // glued
-      expect(predicates.P1K.mock.calls).toStrictEqual([[e.value, g.value]]);
-      expect(predicates.P2K.mock.calls).toStrictEqual([[e.value, g.value]]);
+      // glued, called twice
+      expect(predicates.P1K.mock.calls).toStrictEqual([
+        [e.value, g.value],
+        [e.value, g.value],
+      ]);
+      expect(predicates.P2K.mock.calls).toStrictEqual([
+        [e.value, g.value],
+        [e.value, g.value],
+      ]);
 
       // not glued
       expect(predicates.P1I.mock.calls).toStrictEqual([[e.value]]);
@@ -438,12 +444,16 @@ describe('group with clone', () => {
       expect(predicates.P2F.mock.calls).toStrictEqual([[e.value]]);
 
       Vg.validate();
-      // glued
+      // glued, called twice
       expect(predicates.P1K.mock.calls).toStrictEqual([
+        [e.value, g.value],
+        [e.value, g.value],
         [e.value, g.value],
         [e.value, g.value],
       ]);
       expect(predicates.P2K.mock.calls).toStrictEqual([
+        [e.value, g.value],
+        [e.value, g.value],
         [e.value, g.value],
         [e.value, g.value],
       ]);
@@ -460,18 +470,21 @@ describe('group with clone', () => {
       expect(Ve1.isValid).toBe(true);
       expect(Vg1.isValid).toBe(true);
 
-      // predicate added on glued validation
-      predicates.P1K.mockImplementationOnce(() => false);
+      // predicate added on the glued validation
+      predicates.P1K.mockImplementation(() => false);
 
       Ve1.validate();
       expect(Ve1.isValid).toBe(false);
       expect(Vg1.isValid).toBe(false);
 
+      // predicate added on the glued validation
+      predicates.P1K.mockImplementation(() => true);
+
       Vg1.validate();
       expect(Ve1.isValid).toBe(true);
       expect(Vg1.isValid).toBe(true);
 
-      // predicate added on non glued validation
+      // predicate added on the non glued validation
       predicates.P1I.mockImplementationOnce(() => false);
 
       Ve1.validate();

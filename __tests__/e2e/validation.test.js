@@ -107,11 +107,11 @@ describe('Validation', () => {
 
     it('should run optional predicates only if the validatable value does not equal the initial value', async () => {
       const results = [];
-      const validation = Validation(obj1);
+      const validation = Validation(obj1, { optional: true });
       validation
-        .constraint(isGreaterThan(42), { optional: true })
+        .constraint(isGreaterThan(42))
         .constraint(isGreaterThan(16))
-        .constraint(isGreaterThan(1), { optional: true });
+        .constraint(isGreaterThan(1));
 
       obj1.value = 1;
       results.push(validation.validate()); // false
@@ -126,33 +126,32 @@ describe('Validation', () => {
       expect(isGreaterThan(1)).toHaveBeenCalledTimes(2);
 
       obj1.value = ''; // initial value
-      results.push(validation.validate()); // false
+      results.push(validation.validate()); // true
       expect(isGreaterThan(42)).toHaveBeenCalledTimes(2);
-      expect(isGreaterThan(16)).toHaveBeenCalledTimes(3);
+      expect(isGreaterThan(16)).toHaveBeenCalledTimes(2);
       expect(isGreaterThan(1)).toHaveBeenCalledTimes(2);
 
       obj1.value = 44;
       results.push(validation.validate()); // true
       expect(isGreaterThan(42)).toHaveBeenCalledTimes(3);
-      expect(isGreaterThan(16)).toHaveBeenCalledTimes(4);
+      expect(isGreaterThan(16)).toHaveBeenCalledTimes(3);
       expect(isGreaterThan(1)).toHaveBeenCalledTimes(3);
 
       expect(
         (await Promise.all(results)).map((result) => result.isValid),
-      ).toStrictEqual([false, true, false, true]);
+      ).toStrictEqual([false, true, true, true]);
     });
 
-    it('should be valid when has only optional predicates and the validatable value equals the initial value', async () => {
+    it('should be valid by default when optional', async () => {
       const results = [];
-      const validation = Validation(obj1);
+      const validation = Validation(obj1, { optional: true });
 
-      expect(validation.isValid).toBe(false);
+      // After creation a Validation is in valid state since it is optional
+      expect(validation.isValid).toBe(true);
 
-      validation
-        .constraint(isGreaterThan(42), { optional: true })
-        .constraint(isGreaterThan(1), { optional: true });
+      validation.constraint(isGreaterThan(42)).constraint(isGreaterThan(1));
 
-      // validation having only optional constraints is valid
+      // remains valid by default after adding constraints
       expect(validation.isValid).toBe(true);
 
       obj1.value = 1;

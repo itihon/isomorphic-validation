@@ -132,7 +132,10 @@ describe('Validation.profile', () => {
     expect(signUpVs.isValid).toBe(false);
     expect(isEmail.mock.calls).toStrictEqual([['q.'], ['q@q.q'], ['a@a.a']]);
     expect(isEmailNotBusy.mock.calls).toStrictEqual([['q@q.q'], ['a@a.a']]);
-    expect(areEqual.mock.calls).toStrictEqual([['asdfg', '']]);
+    expect(areEqual.mock.calls).toStrictEqual([
+      ['asdfg', ''],
+      ['asdfg', ''],
+    ]); // glued, called twice
     expect(emailChangedCB).toBeCalledTimes(1);
     expect(paswordChangedCB).toBeCalledTimes(0);
     expect(pwdconfirmChangedCB).toBeCalledTimes(0);
@@ -151,7 +154,10 @@ describe('Validation.profile', () => {
     expect(isEmail.mock.calls).toStrictEqual([['q.'], ['q@q.q'], ['a@a.a']]);
     expect(isEmailNotBusy.mock.calls).toStrictEqual([['q@q.q'], ['a@a.a']]);
     expect(areEqual.mock.calls).toStrictEqual([
+      // glued, called twice
       ['asdfg', ''],
+      ['asdfg', ''],
+      ['asdfg', 'asdfg'],
       ['asdfg', 'asdfg'],
     ]);
     expect(emailChangedCB).toBeCalledTimes(1);
@@ -215,7 +221,10 @@ describe('Validation.profile', () => {
     expect(signUpVs.isValid).toBe(false);
     expect(isEmail.mock.calls).toStrictEqual([['q.'], ['q@q.q'], ['a@a.a']]);
     expect(isEmailNotBusy.mock.calls).toStrictEqual([['q@q.q'], ['a@a.a']]);
-    expect(areEqual.mock.calls).toStrictEqual([['asdfg', '']]);
+    expect(areEqual.mock.calls).toStrictEqual([
+      ['asdfg', ''],
+      ['asdfg', ''],
+    ]); // glued, called twice
 
     signUpForm.elements.email.value = 'a@a.a';
     signUpForm.elements.password.value = 'asdfg';
@@ -230,7 +239,10 @@ describe('Validation.profile', () => {
     expect(isEmail.mock.calls).toStrictEqual([['q.'], ['q@q.q'], ['a@a.a']]);
     expect(isEmailNotBusy.mock.calls).toStrictEqual([['q@q.q'], ['a@a.a']]);
     expect(areEqual.mock.calls).toStrictEqual([
+      // glued, called twice
       ['asdfg', ''],
+      ['asdfg', ''],
+      ['asdfg', 'asdfg'],
       ['asdfg', 'asdfg'],
     ]);
   });

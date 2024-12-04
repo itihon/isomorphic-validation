@@ -9,7 +9,7 @@ export const isLongerThan = memoize((number) =>
   Object.defineProperty(
     jest.fn((value) => String(value).length > number),
     'name',
-    { value: isLongerThan.name },
+    { value: `isLongerThan(${number})` },
   ),
 );
 
@@ -17,7 +17,7 @@ export const isShorterThan = memoize((number) =>
   Object.defineProperty(
     jest.fn((value) => String(value).length < number),
     'name',
-    { value: isShorterThan.name },
+    { value: `isShorterThan(${number})` },
   ),
 );
 
@@ -25,7 +25,7 @@ export const isGreaterThan = memoize((number) =>
   Object.defineProperty(
     jest.fn((value) => Number(number) < Number(value)),
     'name',
-    { value: isGreaterThan.name },
+    { value: `isGreaterThan(${number})` },
   ),
 );
 
@@ -33,7 +33,7 @@ export const isGreaterOrEqual = memoize((number) =>
   Object.defineProperty(
     jest.fn((value) => Number(number) <= Number(value)),
     'name',
-    { value: isGreaterThan.name },
+    { value: `isGreaterOrEqual(${number})` },
   ),
 );
 
@@ -41,7 +41,7 @@ export const isLessThan = memoize((number) =>
   Object.defineProperty(
     jest.fn((value) => Number(number) > Number(value)),
     'name',
-    { value: isLessThan.name },
+    { value: `isLessThan(${number})` },
   ),
 );
 

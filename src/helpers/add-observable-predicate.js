@@ -10,23 +10,35 @@ export default function addObservablePredicate(
     TYPE = SINGLE,
     next = true,
     keepValid = false,
-    optional = false,
     debounce = 0,
     anyData,
+    groups,
   } = {},
 ) {
   if (TYPE === GLUED) {
-    const op = ObservablePredicate(
-      predicate,
-      [...items.getAll()],
-      keepValid,
-      optional,
-      debounce,
-      anyData,
+    // create ObservablePredicate the amount of groups number
+    const gluedOPs = [...groups].map((group) =>
+      ObservablePredicate(
+        predicate,
+        [...items.getAll()],
+        keepValid,
+        group.isOptional(), // init state for an optional predicate
+        debounce,
+        anyData,
+      ),
     );
 
+    let i = 0;
+
     return function forGlued(predicateGroup /* key */) {
-      predicateGroup.add(op, { next });
+      predicateGroup.add(
+        gluedOPs[i],
+        { next },
+        gluedOPs.filter((_, idx) => idx !== i),
+      );
+      if (groups.size === ++i) {
+        i = 0;
+      }
     };
   }
 
@@ -36,7 +48,7 @@ export default function addObservablePredicate(
         Predicate(predicate),
         [...items.get(key)],
         keepValid,
-        optional,
+        predicateGroup.isOptional(), // init state for an optional predicate
         debounce,
         anyData,
       ),

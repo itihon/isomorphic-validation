@@ -14,7 +14,7 @@ export default function ObservablePredicate(
   predicate = Predicate(),
   items = [],
   keepValid = false,
-  optional = false,
+  initState = false,
   debounce = 0,
   anyData = {},
 ) {
@@ -24,28 +24,7 @@ export default function ObservablePredicate(
   let validityCBs;
 
   const fn = ({ restoredCBs, validityCBs } = predicate.valueOf()).valueOf();
-  /**
- * // @bug: optional predicates should be valid by default
- * // if the current validatable values are equal to their init values or undefined
- * // at the moment a predicate is being created 
- * // temporarily fixed
- * // should be fixed like this (tests are needed)
- *  
- *  let initVal = false;
- *  
- *  if (optional) {
- *    const keys = items.map(item => item.preserveValue());  
-
- *    const isInitVal = items
- *      .map((item) => item.isInitValue())
- *      .every((value) => value === true);
- *    
- *    initVal = isInitVal;
- *  }
- * 
- *  const obs = ObserverAnd(initVal);
- */
-  const obs = ObserverAnd(optional); // optional predicates are valid by default
+  const obs = ObserverAnd(initState); // optional predicates are valid by default
   const onInvalidCBs = Functions();
 
   const notifySubscribers = obs.update;
@@ -122,6 +101,7 @@ export default function ObservablePredicate(
     target = undefined,
     callID = undefined,
     revalidate = false,
+    skipOptional = false,
   ) {
     validationResult.target = target;
 
@@ -129,14 +109,8 @@ export default function ObservablePredicate(
       validityCBs.start(validationResult);
     }
 
-    if (optional) {
-      const isInitVal = items
-        .map((item) => item.isInitValue())
-        .every((value) => value === true);
-
-      if (isInitVal) {
-        return predicatePostExec(true, forbidInvalid, target, callID);
-      }
+    if (skipOptional) {
+      return predicatePostExec(true, forbidInvalid, target, callID);
     }
 
     const result = predicateFn(...items.map((item) => item.getValue(callID)));
@@ -174,7 +148,7 @@ export default function ObservablePredicate(
           Predicate(predicate),
           items.map((item) => registry.cloneOnce(item)),
           keepValid,
-          optional,
+          initState,
           debounce,
           anyData,
         ),
