@@ -17,15 +17,15 @@
 ### Validation instance methods
 
 ```js
-    Validation(obj, propName, initVal)
+    Validation(obj, { path, initValue, optional })
         .started(cb)
         .valid(cb)
         .invalid(cb)
         .changed(cb)
         .validated(cb)
         .error(cb)
-        .constraint(Predicate()|Function.prototype, { next, debounce, keepValid, optional, ...anyData })
-        .bind(obj, propName, initVal)
+        .constraint(Predicate()|Function.prototype, { next, debounce, keepValid, ...anyData })
+        .bind(obj, { path, initValue })
         .dataMapper((req, form) => {}) 
         .validate(obj)
 ```

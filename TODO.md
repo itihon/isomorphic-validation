@@ -8,6 +8,7 @@
 
 
     ## Features
+        - consider throwing an error if not an options object is passed into Validation().
         - [x] consider change the behavior for the `.validate()` method of a "single" validation so that it uses its own validatable object as the target if the passed in validatableObject is `undefined` and just runs the only predicate group it contains. This would facilitate easier validations chainig in the following way:
             > v1.invalid(() => v2())   -->   v1.invalid(v2)
         - [ ] consider for adding ValidationResult.wasValid
@@ -69,18 +70,18 @@
 
     ## Refactor
 
-        - [ ] parameter "optional"
+        - [-] parameter "optional"
             [x] Validation(obj { path: 'value', initialValue: '', optional: false });
             [x] Validation().bind(obj { path: 'value', initialValue: '' });
             [x] d.ts signature of Validation() and Validation().bind()
-            [ ] move "options" parametes into from Validation() and Validation().bind() into a separate type to make vscode show hints
-            [ ] d.ts signature of Validation().constraint()
-            [ ] move "optional" logic from `ObservablePredicate` to an upper level, possibly to `ObservablePredicates` to make the whole group "optional" instead of predicates.
+            [ ] move "options" parameters into from Validation() and Validation().bind() into a separate type to make vscode show hints
+            [x] d.ts signature of Validation().constraint()
+            [x] move "optional" logic from `ObservablePredicate` to an upper level, possibly to `ObservablePredicates` to make the whole group "optional" instead of predicates.
             `ObservablePredicates` should be "aware" of `ValidatableItem`.
             ObservablePredicates().clone() method will be affected
             Validation().bind() method will be affected
-            [ ] change documentation accordingly 
-                Validation(), Validation().bind(), Validation.constraint()
+            [x] change documentation accordingly 
+                [x] Validation(), [x] Validation().bind(), [x] Validation.constraint()
         - [ ] rename src to lib, src/types to lib/entities
         - [ ] move all error files from the helpers folder into one module Errors.
         - [ ] makeValidationHandlerFn wraps validations twice: first in ValidationBuilder, second in createProfile(). Rewrite so that it happens once.
