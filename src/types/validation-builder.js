@@ -48,23 +48,27 @@ export default function ValidationBuilder({
 
         validatableItems.forEach((item) => item.preserveValue(callID));
 
-        (containedGroups.get(target) || containedGroups.getAll()).forEach(
-          (containedPgs) => {
+        // ! a better solution would be to run all grouping validations' started callbacks first
+        pgs.startCBs(pgs.toRepresentation(target)); // run startCBs of the grouping validation first
+
+        const containedPgsSet =
+          containedGroups.get(target) || containedGroups.getAll();
+
+        containedPgsSet.forEach((containedPgs) => {
+          if (containedPgs !== pgs) {
             containedPgs.startCBs(containedPgs.toRepresentation(target));
-          },
-        );
+          }
+        });
 
         return pgs.run(target, callID).then((res) => {
           validatableItems.forEach((item) => item.clearValue(callID));
 
-          (containedGroups.get(target) || containedGroups.getAll()).forEach(
-            (containedPgs) => {
-              containedPgs.runCBs(
-                containedPgs.isValid,
-                containedPgs.toRepresentation(target),
-              );
-            },
-          );
+          containedPgsSet.forEach((containedPgs) => {
+            containedPgs.runCBs(
+              containedPgs.isValid,
+              containedPgs.toRepresentation(target),
+            );
+          });
 
           return Object.create(pgs.toRepresentation(target), {
             isValid: { value: res },

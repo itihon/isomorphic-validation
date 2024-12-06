@@ -667,6 +667,7 @@ describe('group with clone', () => {
 describe('callbacks', () => {
   const cbsOrder = {
     all: [],
+    started: [],
     valid: [],
     invalid: [],
     changed: [],
@@ -703,6 +704,8 @@ describe('callbacks', () => {
       .map(([vName, validation]) => [vName.slice(4), validation])
       .map(([vName, validation]) => [
         {
+          [`started_${vName}`]: (op, cbName) =>
+            jest.fn(createCbImpl(op, cbName)),
           [`valid_${vName}`]: (op, cbName) => jest.fn(createCbImpl(op, cbName)),
           [`invalid_${vName}`]: (op, cbName) =>
             jest.fn(createCbImpl(op, cbName)),
@@ -831,6 +834,22 @@ describe('callbacks', () => {
       reinitCbsOrder();
 
       await validation1.validate();
+
+      // ! a better solution would be to run all grouping validations' started callbacks first
+      expect(cbsOrder.started).toStrictEqual([
+        'started_VI',
+        'started_Va', //
+        'started_Vb',
+        'started_VC', //
+        'started_Vd1',
+        'started_Vd2', //
+        'started_VJ',
+        'started_Ve', //
+        'started_Vh',
+        'started_VF', //
+        'started_Vg',
+        'started_VK', //
+      ]);
 
       // ! changed callback invocations have a sligtly different order
       // for original validation group and its clone
