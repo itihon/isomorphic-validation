@@ -18,21 +18,25 @@ export default function ValidityCallbacks(
   errorCBs = Functions(errorCBs);
 
   return {
-    set(value = false, cbArgs = undefined) {
+    set(value = false, cbArgs = {}) {
       if (value) {
+        cbArgs.type = 'valid';
         validCBs.run(cbArgs);
       } else {
+        cbArgs.type = 'invalid';
         invalidCBs.run(cbArgs);
       }
 
       isValid = value;
 
+      cbArgs.type = 'validated';
       validatedCBs.run(cbArgs);
 
       return isValid;
     },
-    change(value = false, cbArgs = undefined) {
+    change(value = false, cbArgs = {}) {
       isValid = value;
+      cbArgs.type = 'changed';
       changedCBs.run(cbArgs);
       return isValid;
     },
@@ -46,7 +50,10 @@ export default function ValidityCallbacks(
         errorCBs,
       };
     },
-    start: startedCBs.run,
+    start(cbArgs = {}) {
+      cbArgs.type = 'started';
+      startedCBs.run(cbArgs);
+    },
     started: startedCBs.push,
     valid: validCBs.push,
     invalid: invalidCBs.push,

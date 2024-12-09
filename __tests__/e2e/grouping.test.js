@@ -1323,6 +1323,60 @@ describe('callbacks', () => {
       expect(grValidatedCB).toBeCalledTimes(3);
     },
   );
+
+  it('should specify the result type', async () => {
+    const obj = { value: 0 };
+    const isMeaningOfLife = (value) => value === 42;
+
+    const vStartedCB = jest.fn(({ type }) => expect(type).toBe('started'));
+    const vValidCB = jest.fn(({ type }) => expect(type).toBe('valid'));
+    const vInvalidCB = jest.fn(({ type }) => expect(type).toBe('invalid'));
+    const vChangedCB = jest.fn(({ type }) => expect(type).toBe('changed'));
+    const vValidatedCB = jest.fn(({ type }) => expect(type).toBe('validated'));
+
+    const pStartedCB = jest.fn(({ type }) => expect(type).toBe('started'));
+    const pValidCB = jest.fn(({ type }) => expect(type).toBe('valid'));
+    const pInvalidCB = jest.fn(({ type }) => expect(type).toBe('invalid'));
+    const pChangedCB = jest.fn(({ type }) => expect(type).toBe('changed'));
+    const pValidatedCB = jest.fn(({ type }) => expect(type).toBe('validated'));
+    const pRestoredCB = jest.fn(({ type }) => expect(type).toBe('restored'));
+
+    const validation = Validation(obj)
+      .constraint(
+        Predicate(isMeaningOfLife)
+          .started(pStartedCB)
+          .valid(pValidCB)
+          .invalid(pInvalidCB)
+          .changed(pChangedCB)
+          .validated(pValidatedCB)
+          .restored(pRestoredCB),
+        { keepValid: true },
+      )
+      .started(vStartedCB)
+      .valid(vValidCB)
+      .invalid(vInvalidCB)
+      .changed(vChangedCB)
+      .validated(vValidatedCB);
+
+    obj.value = 41;
+    expect((await validation.validate()).type).toBe('validated');
+
+    obj.value = 42;
+    expect((await validation.validate()).type).toBe('validated');
+
+    expect(vStartedCB).toHaveBeenCalled();
+    expect(vValidCB).toHaveBeenCalled();
+    expect(vInvalidCB).toHaveBeenCalled();
+    expect(vChangedCB).toHaveBeenCalled();
+    expect(vValidatedCB).toHaveBeenCalled();
+
+    expect(pStartedCB).toHaveBeenCalled();
+    expect(pValidCB).toHaveBeenCalled();
+    expect(pInvalidCB).toHaveBeenCalled();
+    expect(pChangedCB).toHaveBeenCalled();
+    expect(pValidatedCB).toHaveBeenCalled();
+    expect(pRestoredCB).toHaveBeenCalled();
+  });
 });
 
 describe('cloned object and its origin should not affect each other', () => {

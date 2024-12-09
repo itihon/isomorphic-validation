@@ -17,6 +17,7 @@ export default function PredicateGroups(
     {
       isValid: { get: obs.getValue },
       target: { writable: true },
+      type: { writable: true },
       toJSON: {
         value() {
           return [...representation].reduce(

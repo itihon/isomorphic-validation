@@ -80,16 +80,19 @@ describe('ValidatableItem', () => {
     expect(onRestoredCB1).lastCalledWith({
       isValid: false,
       desc: 'restored 1',
+      type: 'restored',
     });
     expect(onRestoredCB2).lastCalledWith({
       isValid: false,
       desc: 'restored 1',
+      type: 'restored',
     });
 
     expect(
       ValidatableItem.keepValid([vi1, vi2], {
         isValid: false,
         desc: 'restored 2',
+        type: 'restored',
       }),
     ).toBe(true);
     expect(vi1.getValue()).toBe(initVal1);
@@ -99,10 +102,12 @@ describe('ValidatableItem', () => {
     expect(onRestoredCB1).lastCalledWith({
       isValid: false,
       desc: 'restored 2',
+      type: 'restored',
     });
     expect(onRestoredCB2).lastCalledWith({
       isValid: false,
       desc: 'restored 2',
+      type: 'restored',
     });
 
     obj1.value = 42;
@@ -117,10 +122,12 @@ describe('ValidatableItem', () => {
     expect(onRestoredCB1).lastCalledWith({
       isValid: false,
       desc: 'restored 2',
+      type: 'restored',
     });
     expect(onRestoredCB2).lastCalledWith({
       isValid: false,
       desc: 'restored 2',
+      type: 'restored',
     });
 
     obj1.value = 7;
@@ -138,10 +145,12 @@ describe('ValidatableItem', () => {
     expect(onRestoredCB1).lastCalledWith({
       isValid: false,
       desc: 'restored 3',
+      type: 'restored',
     });
     expect(onRestoredCB2).lastCalledWith({
       isValid: false,
       desc: 'restored 3',
+      type: 'restored',
     });
 
     obj1.value = initVal1;
@@ -159,10 +168,12 @@ describe('ValidatableItem', () => {
     expect(onRestoredCB1).lastCalledWith({
       isValid: false,
       desc: 'restored 4',
+      type: 'restored',
     });
     expect(onRestoredCB2).lastCalledWith({
       isValid: false,
       desc: 'restored 4',
+      type: 'restored',
     });
 
     obj1.value = 42;
@@ -177,10 +188,12 @@ describe('ValidatableItem', () => {
     expect(onRestoredCB1).lastCalledWith({
       isValid: false,
       desc: 'restored 5',
+      type: 'restored',
     });
     expect(onRestoredCB2).lastCalledWith({
       isValid: false,
       desc: 'restored 4',
+      type: 'restored',
     });
   });
 

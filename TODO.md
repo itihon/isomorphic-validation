@@ -141,6 +141,7 @@
 
     ## Bugs
 
+        - [ ] Validation.group() and Validation.glue() methods should throw if nothing is passed in.
         - [ ] http://localhost:4321/isomorphic-validation-docs/api/validation/static-methods/glue/#validating-one-field-depending-on-another
         method .error() does not catch the error in state callbacks (target undefined)
         - [ ] when a validatable object doesn't have a one level path it does not throw an error.
@@ -153,7 +154,7 @@
         - [x] The value from a validatable object should be read immediately after invoking the validate function because when a predicate's execution is deferred the predicate might deal with irrelevant arguments which might be already changed up to the predicate's execution moment. This is crucial especially for the server side execution.
         - [x] debounce functionality should not be applied on the server side.
             check it!!!
-        - [ ] Optional predicates should be valid by default. Temporarily fixed. See the comment in observable-predicate.js
+        - [x] Optional predicates should be valid by default. Temporarily fixed. See the comment in observable-predicate.js REFACTORED.
         - [ ] The `.error()` method should accept an errorStateCallback in validation.d.ts and predicate.d.ts
         - [x] A predicated added with the option keepValid=true runs started state callback twice (second time after the restored state callback)
 

@@ -54,7 +54,7 @@ function ValidatableItem(
     saveValue: () => {
       savedValue = getByPath(ownObj, ownPath, delim, isPath);
     },
-    restoreValue: (cbArgs) => {
+    restoreValue: (cbArgs = {}) => {
       const isInitValue =
         isInitVal === undefined
           ? getByPath(ownObj, ownPath, delim, isPath) === ownInitVal
@@ -65,6 +65,7 @@ function ValidatableItem(
       } else {
         savedValue = ownInitVal;
       }
+      cbArgs.type = 'restored';
       ownOnRestoredCBs.run(cbArgs);
     },
     preserveValue(key = Symbol('ValidatableItem.value')) {

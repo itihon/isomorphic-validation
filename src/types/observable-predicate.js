@@ -74,8 +74,9 @@ export default function ObservablePredicate(
       ]),
     ),
     {
-      target: { writable: true },
       isValid: { get: obs.getValue },
+      target: { writable: true },
+      type: { writable: true },
     },
   );
 
