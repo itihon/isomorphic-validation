@@ -66,7 +66,7 @@ export default function PredicateGroups(
         return predicateGroups
           ? Promise.all(
               Array.from(predicateGroups, (predicateGroup) =>
-                predicateGroup.run(undefined, id, callID),
+                predicateGroup.run(undefined, callID),
               ),
             ).then((res) => !res.flat().some((value) => value !== true)) // ! slow
           : Promise.reject(

@@ -8,6 +8,7 @@
 
 
     ## Features
+        - [ ] consider leaving .forEach method in Representation
         - consider throwing an error if not an options object is passed into Validation().
         - [x] consider change the behavior for the `.validate()` method of a "single" validation so that it uses its own validatable object as the target if the passed in validatableObject is `undefined` and just runs the only predicate group it contains. This would facilitate easier validations chainig in the following way:
             > v1.invalid(() => v2())   -->   v1.invalid(v2)
@@ -70,6 +71,8 @@
 
     ## Refactor
 
+        - [x] ObservablePredicate: parameter "target" probably should be passed during creation time since it is known what validatable object the predicate belongs to;
+            it will affect: .clone(), Validation.bind() methods.
         - [-] parameter "optional"
             [x] Validation(obj { path: 'value', initialValue: '', optional: false });
             [x] Validation().bind(obj { path: 'value', initialValue: '' });
@@ -159,6 +162,8 @@
         - [x] A predicated added with the option keepValid=true runs started state callback twice (second time after the restored state callback)
 
     ## Notes
+
+        - The parameter "next" when one predicate invalidates another: should an invalidated predicate invoke its state callbacks??? Probably only "changed" state callbacks should be invoked in this case, because "started", "valid", "invalid", "validated" are called when Validation().validate() method is called.
 
         - changed callback invokations have a slightly different order for original validation group and its clone. See grouping.test.js
 

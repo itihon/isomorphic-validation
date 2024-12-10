@@ -111,6 +111,7 @@ export default function ObservablePredicates(
       isOptional() {
         return optional;
       },
+      getItem: () => item,
       getID: obs.getID,
       getValue: obs.getValue,
       onChanged: obs.onChanged,

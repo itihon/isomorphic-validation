@@ -17,14 +17,15 @@ export default function addObservablePredicate(
 ) {
   if (TYPE === GLUED) {
     // create ObservablePredicate the amount of groups number
-    const gluedOPs = [...groups].map((group) =>
+    const gluedOPs = [...groups].map((predicateGroup) =>
       ObservablePredicate(
         predicate,
         [...items.getAll()],
         keepValid,
-        group.isOptional(), // init state for an optional predicate
+        predicateGroup.isOptional(), // init state for an optional predicate
         debounce,
         anyData,
+        predicateGroup.getItem(), // A validatable item the predicate group associated with (used as "target" in ObservablePredicate -> ValidationResult)
       ),
     );
 
@@ -51,6 +52,7 @@ export default function addObservablePredicate(
         predicateGroup.isOptional(), // init state for an optional predicate
         debounce,
         anyData,
+        predicateGroup.getItem(), // A validatable item the predicate group associated with (used as "target" in ObservablePredicate -> ValidationResult)
       ),
       { next },
     );

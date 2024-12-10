@@ -1128,6 +1128,11 @@ describe('callbacks', () => {
       expect(validCB1.mock.calls).toStrictEqual(validatedCB1.mock.calls);
       expect(validatedCB1.mock.calls).toStrictEqual(changedCB1.mock.calls);
 
+      // check ValidationResult target
+      expect(validCB1.mock.calls[0][0].target).toBe(isAdded ? x : b);
+      expect(changedCB1.mock.calls[0][0].target).toBe(isAdded ? x : b);
+      expect(validatedCB1.mock.calls[0][0].target).toBe(isAdded ? x : b);
+
       jest.clearAllMocks();
       predicateFn1.mockImplementationOnce(() => false);
 
@@ -1147,6 +1152,11 @@ describe('callbacks', () => {
       // callbacks have been invoked with the same argument
       expect(validCB1.mock.calls).toStrictEqual(validatedCB1.mock.calls);
       expect(validatedCB1.mock.calls).toStrictEqual(restoredCB1.mock.calls);
+
+      // check ValidationResult target
+      expect(validCB1.mock.calls[0][0].target).toBe(isAdded ? x : b);
+      expect(validatedCB1.mock.calls[0][0].target).toBe(isAdded ? x : b);
+      expect(restoredCB1.mock.calls[0][0].target).toBe(isAdded ? x : b);
 
       jest.clearAllMocks();
 
@@ -1170,6 +1180,10 @@ describe('callbacks', () => {
 
       // callbacks have been invoked with the same argument
       expect(validatedCB2.mock.calls).toStrictEqual(invalidCB2.mock.calls);
+
+      // check ValidationResult target
+      expect(validatedCB2.mock.calls[0][0].target).toBe(a);
+      expect(invalidCB2.mock.calls[0][0].target).toBe(a);
 
       predicateFn2.mockImplementation(() => true); // needed for the following tests
     },
