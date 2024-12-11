@@ -320,4 +320,72 @@ describe('Validation', () => {
       ).toStrictEqual([false, true, true, true]);
     });
   });
+
+  describe('Iterator', () => {
+    it.each([{ operation: 'group' }, { operation: 'clone' }])(
+      '$operation: should iterate over constraints collection',
+      ({ operation }) => {
+        const predicates = Array.from({ length: 9 })
+          .map(
+            (_, idx) =>
+              ({ [`predicate${idx}`]: () => true })[`predicate${idx}`],
+          )
+          [Symbol.iterator]();
+
+        const results = [
+          ['obj3', 'predicate0'],
+          ['obj3', 'predicate1'],
+          ['obj3', 'predicate8'],
+          ['obj1', 'predicate2'],
+          ['obj1', 'predicate3'],
+          ['obj1', 'predicate6'],
+          ['obj1', 'predicate7'],
+          ['obj1', 'predicate8'],
+          ['obj2', 'predicate4'],
+          ['obj2', 'predicate5'],
+          ['obj2', 'predicate6'],
+          ['obj2', 'predicate7'],
+          ['obj2', 'predicate8'],
+        ];
+
+        const object1 = { value: 'obj1' };
+        const object2 = { value: 'obj2' };
+        const object3 = { value: 'obj3' };
+
+        const { constraints } = Validation[operation](
+          Validation.group(
+            Validation(object3)
+              .constraint(predicates.next().value) // 0
+              .constraint(predicates.next().value), // 1
+
+            Validation.group(
+              Validation(object1)
+                .constraint(predicates.next().value) // 2
+                .constraint(predicates.next().value), // 3
+
+              Validation(object2)
+                .constraint(predicates.next().value) // 4
+                .constraint(predicates.next().value), // 5
+            )
+              .constraint(predicates.next().value) // 6
+              .constraint(predicates.next().value), // 7
+          ).constraint(predicates.next().value), // 8
+        );
+
+        expect(
+          [...constraints].map(([obj, pred]) => [
+            obj.value,
+            pred[Symbol.toStringTag],
+          ]),
+        ).toStrictEqual(results);
+
+        const forEachResults = [];
+        constraints.forEach((pred, obj) =>
+          forEachResults.push([obj.value, pred[Symbol.toStringTag]]),
+        );
+
+        expect(forEachResults).toStrictEqual(results);
+      },
+    );
+  });
 });

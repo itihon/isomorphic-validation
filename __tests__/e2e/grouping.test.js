@@ -644,7 +644,12 @@ describe('group with clone', () => {
 
       iteratorOrderCmp.push(
         [...cgVI].map(([obj, set]) =>
-          [...set].map((pgs) => `${obj.value}: ${pgs.name}`),
+          [...set].map((pgs) => {
+            expect(pgs.name).not.toBe(undefined);
+            expect(pgs.name).not.toBe('undefined');
+            expect(Object.hasOwn(pgs, 'name')).toBe(true);
+            return `${obj.value}: ${pgs.name}`;
+          }),
         ),
       );
 

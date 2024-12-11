@@ -322,9 +322,7 @@ describe.each([
 
       const [defaultValidator, syncValidator, asyncValidator] = [
         ...validation1.constraints,
-      ]
-        .map(([, set]) => [].concat(...set))
-        .flat();
+      ].map(([, validator]) => validator);
 
       // throws an error since has no error state callbacks added
       // and the predicate invalidates

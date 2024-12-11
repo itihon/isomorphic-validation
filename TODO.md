@@ -8,7 +8,8 @@
 
 
     ## Features
-        - [ ] consider leaving .forEach method in Representation
+        - [x] consider leaving .forEach method in Representation 
+        - [x] implement a custom iterator for Representation [...Validation().constraints] to avoid complecated destructuring syntax so it yields exactly what is needed instead of what it actually contains
         - consider throwing an error if not an options object is passed into Validation().
         - [x] consider change the behavior for the `.validate()` method of a "single" validation so that it uses its own validatable object as the target if the passed in validatableObject is `undefined` and just runs the only predicate group it contains. This would facilitate easier validations chainig in the following way:
             > v1.invalid(() => v2())   -->   v1.invalid(v2)
@@ -77,7 +78,6 @@
             [x] Validation(obj { path: 'value', initialValue: '', optional: false });
             [x] Validation().bind(obj { path: 'value', initialValue: '' });
             [x] d.ts signature of Validation() and Validation().bind()
-            [ ] move "options" parameters into from Validation() and Validation().bind() into a separate type to make vscode show hints
             [x] d.ts signature of Validation().constraint()
             [x] move "optional" logic from `ObservablePredicate` to an upper level, possibly to `ObservablePredicates` to make the whole group "optional" instead of predicates.
             `ObservablePredicates` should be "aware" of `ValidatableItem`.

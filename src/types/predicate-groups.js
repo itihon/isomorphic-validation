@@ -32,6 +32,24 @@ export default function PredicateGroups(
           );
         }, // without bind jest throwed an error (in expect().toStrictEqual())
       },
+      [Symbol.iterator]: {
+        value() {
+          const values = [];
+          this.forEach((value, key) => values.push([key, value]));
+          return values[Symbol.iterator]();
+        },
+      },
+      forEach: {
+        value(cbfunction = (/* value, key, values */) => {}) {
+          [...this.entries()].forEach(([key, set]) => {
+            set.forEach((predicates) => {
+              predicates.forEach((predicate) =>
+                cbfunction(predicate, key, this),
+              );
+            });
+          });
+        },
+      },
     },
   );
 
@@ -42,7 +60,6 @@ export default function PredicateGroups(
   const representationChangeKey = representation.changeKey;
 
   delete representation.add;
-  delete representation.forEach;
   delete representation.getAll;
   delete representation.map;
   delete representation.mergeWith;
@@ -117,7 +134,7 @@ export default function PredicateGroups(
       startCBs: validityCBs.start,
       runCBs: validityCBs.set,
       map: pgs.map, // delete from representation ⬆
-      forEach: pgs.forEach, // delete from representation ⬆
+      forEach: pgs.forEach, // override in representation ⬆
       mergeWith: pgs.mergeWith, // delete from representation ⬆
       getAll: pgs.getAll, // delete from representation ⬆
       has: pgs.has.bind(pgs),
