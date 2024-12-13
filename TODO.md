@@ -36,8 +36,6 @@
                             .email.validateOn('change') to validate different fields on different events
         - [x] Validation().server.{API} Validation().client.{API} Validation[onBoth].{API}
         - [x] Validation.getForm(selector) or Validation.form(selector)
-        - [ ] isomorphic API in Predicate's representation
-        - [ ] Representation -> ConsoleRepresentation, Representation -> DOMRepresentation
         - [x]   !consider adding Validation.from() as an immutable analog of .group()
                 or maybe something like this 
                 Validation.group([], {immutable: true}) or Validation.group([], {clone: true})
@@ -85,6 +83,7 @@
             Validation().bind() method will be affected
             [x] change documentation accordingly 
                 [x] Validation(), [x] Validation().bind(), [x] Validation.constraint()
+        - [ ] remove default parameters that are used only as type hints and add jsdoc instead. It may result in less file size after minimization.
         - [ ] rename src to lib, src/types to lib/entities
         - [ ] move all error files from the helpers folder into one module Errors.
         - [ ] makeValidationHandlerFn wraps validations twice: first in ValidationBuilder, second in createProfile(). Rewrite so that it happens once.
@@ -107,8 +106,6 @@
         - [x] lastValidCBs -> restoredCBs, onLastValid(), keptValid() -> restored()
         - [x] getObj() -> getObject()
         
-        - [ ] when two or more validation assosiated with one object grouped into another validation, consider the possibility of merging collections of predicates into one instead of keeping them all in a set.
-
         - [ ] consider using containedPgs for validation instead of ownPgs, this will allow to implement .started method in Validation.
 
         - [x] ObservablePredicate should unpack Predicate with valueOf() the same way Predicate does it inside itself while constructing an instance (from the consistency point of view).
@@ -119,6 +116,7 @@
 
     ## Tests
 
+        - [ ] ...anyData
         - [ ] `Validation.bind()` with options "{ path, initVal }"
         - [ ] adding state callbacks to a "validator" of different "glued" validations. It probably should be the same instance: 
         Validation.glue(Validation(), Validation())
@@ -131,7 +129,6 @@
 
         - [ ] chaining validations
             .error() catching errors in chained validations
-        - [ ] validationResult.target must be the same for all invoked callbacks
         - [ ] performance: makeIsomorphicAPI current version vs proxying the whole API object 
         - [ ] performance: Validation() with and without makeIsomorphicAPI()
         - [ ] merge validation.test.js and index.test.js
