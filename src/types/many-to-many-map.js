@@ -3,14 +3,7 @@ export default function ManyToManyMap() {
   const map = new Map();
   const orderedSet = new Set(); // for consistency of mapping and merging order
 
-  Object.defineProperties(map, {
-    [Symbol.toStringTag]: {
-      value: ManyToManyMap.name,
-      configurable: true,
-    },
-  });
-
-  return Object.assign(map, {
+  const api = {
     add(key, value, keepOrder = true) {
       values.add(value);
 
@@ -35,7 +28,7 @@ export default function ManyToManyMap() {
         throw new Error('Old key must not be the same as new key');
       }
       if (map.has(oldKey)) {
-        map.get(oldKey).forEach((value) => map.add(newKey, value, false));
+        map.get(oldKey).forEach((value) => api.add(newKey, value, false));
         map.delete(oldKey);
         orderedSet.forEach((entry) => {
           if (entry[0] === oldKey) {
@@ -66,5 +59,24 @@ export default function ManyToManyMap() {
       );
       return mtmm;
     },
+
+    has: map.has.bind(map),
+    get: map.get.bind(map),
+    keys: map.keys.bind(map),
+    values: map.values.bind(map),
+    entries: map.entries.bind(map),
+    [Symbol.iterator]: map[Symbol.iterator].bind(map),
+  };
+
+  Object.defineProperties(api, {
+    [Symbol.toStringTag]: {
+      value: ManyToManyMap.name,
+      configurable: true,
+    },
+    size: { get: () => map.size },
   });
+
+  Reflect.setPrototypeOf(api, map);
+
+  return api;
 }
