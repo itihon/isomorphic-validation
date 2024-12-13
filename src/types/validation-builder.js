@@ -1,7 +1,6 @@
 import { SINGLE } from '../constants.js';
 import PredicateGroups from './predicate-groups.js';
 import ManyToManyMap from './many-to-many-map.js';
-import ConsoleRepresentation from './console-representation.js';
 import Predicate from './predicate.js';
 import addObservablePredicate from '../helpers/add-observable-predicate.js';
 import firstEntry from '../utils/firstEntry.js';
@@ -17,112 +16,114 @@ export default function ValidationBuilder({
   validations = [],
 } = {}) {
   let ownTarget = TYPE === SINGLE ? firstEntry(items)[0] : undefined;
-  const representation = ConsoleRepresentation(
-    'Validation',
-    makeValidationHandlerFn(null)({
-      constraint(
-        validator = Predicate(),
-        { next = true, debounce = 0, keepValid = false, ...anyData } = {},
-      ) {
-        const predicate = Predicate(validator);
-        pgs.forEach(
-          addObservablePredicate(predicate, items, {
-            TYPE,
-            next,
-            debounce,
-            keepValid,
-            anyData,
-            groups: pgs.getAll(),
-          }),
-        );
-        return this;
-      },
-      validate(target = ownTarget) {
-        // all items will be preserved regardless of the target
-        // not the most optimal way, but fixes the bug with validating a glued validation
-        // by target through a grouping validation
-        const validatableItems = items.getAll();
-        // target !== undefined ? items.get(target) : items.getAll();
 
-        const callID = Symbol('callID');
+  const api = makeValidationHandlerFn(null)({
+    constraint(
+      validator = Predicate(),
+      { next = true, debounce = 0, keepValid = false, ...anyData } = {},
+    ) {
+      const predicate = Predicate(validator);
+      pgs.forEach(
+        addObservablePredicate(predicate, items, {
+          TYPE,
+          next,
+          debounce,
+          keepValid,
+          anyData,
+          groups: pgs.getAll(),
+        }),
+      );
+      return this;
+    },
 
-        validatableItems.forEach((item) => item.preserveValue(callID));
+    validate(target = ownTarget) {
+      // all items will be preserved regardless of the target
+      // not the most optimal way, but fixes the bug with validating a glued validation
+      // by target through a grouping validation
+      const validatableItems = items.getAll();
+      // target !== undefined ? items.get(target) : items.getAll();
 
-        // ! a better solution would be to run all grouping validations' started callbacks first
-        pgs.startCBs(pgs.toRepresentation(target)); // run startCBs of the grouping validation first
+      const callID = Symbol('callID');
 
-        const containedPgsSet =
-          containedGroups.get(target) || containedGroups.getAll();
+      validatableItems.forEach((item) => item.preserveValue(callID));
+
+      // ! a better solution would be to run all grouping validations' started callbacks first
+      pgs.startCBs(pgs.result(target)); // run startCBs of the grouping validation first
+
+      const containedPgsSet =
+        containedGroups.get(target) || containedGroups.getAll();
+
+      containedPgsSet.forEach((containedPgs) => {
+        if (containedPgs !== pgs) {
+          containedPgs.startCBs(containedPgs.result(target));
+        }
+      });
+
+      return pgs.run(target, callID).then((res) => {
+        validatableItems.forEach((item) => item.clearValue(callID));
 
         containedPgsSet.forEach((containedPgs) => {
-          if (containedPgs !== pgs) {
-            containedPgs.startCBs(containedPgs.toRepresentation(target));
-          }
+          containedPgs.runCBs(
+            containedPgs.isValid,
+            containedPgs.result(target),
+          );
         });
 
-        return pgs.run(target, callID).then((res) => {
-          validatableItems.forEach((item) => item.clearValue(callID));
-
-          containedPgsSet.forEach((containedPgs) => {
-            containedPgs.runCBs(
-              containedPgs.isValid,
-              containedPgs.toRepresentation(target),
-            );
-          });
-
-          return Object.create(pgs.toRepresentation(target), {
-            isValid: { value: res },
-          });
-        });
-      },
-      bind(newObj = {}, { path = undefined, initValue = undefined } = {}) {
-        if (TYPE !== SINGLE) {
-          throw new Error('Only single validation can be bound');
-        }
-
-        const [oldObj, set] = firstEntry(items);
-        const validatableItem = [...set][0]; // firstItemFromEntrie
-
-        const newPath = path !== undefined ? path : validatableItem.getPath();
-
-        const newInitVal =
-          initValue !== undefined ? initValue : validatableItem.getInitValue();
-
-        validatableItem.setObject(newObj, newPath, newInitVal);
-
-        items.changeKey(oldObj, newObj);
-        pgs.changeKey(oldObj, newObj);
-        containedGroups.changeKey(oldObj, newObj);
-
-        [ownTarget] = firstEntry(items);
-
-        return this;
-      },
-      valueOf() {
-        return { pgs, items, containedGroups, TYPE };
-      },
-      constraints: pgs.toRepresentation(),
-      validations,
-      valid: pgs.valid,
-      invalid: pgs.invalid,
-      changed: pgs.changed,
-      validated: pgs.validated,
-      started: pgs.started,
-      error: pgs.error,
-    }),
-    {
-      isValid: Object.getOwnPropertyDescriptor(pgs, 'isValid'),
+        return Object.create(pgs.result(target), { isValid: { value: res } });
+      });
     },
-  );
 
-  representation.validate = tryCatch(
-    representation.validate,
+    bind(newObj = {}, { path = undefined, initValue = undefined } = {}) {
+      if (TYPE !== SINGLE) {
+        throw new Error('Only single validation can be bound');
+      }
+
+      const [oldObj, set] = firstEntry(items);
+      const validatableItem = [...set][0]; // firstItemFromEntrie
+
+      const newPath = path !== undefined ? path : validatableItem.getPath();
+
+      const newInitVal =
+        initValue !== undefined ? initValue : validatableItem.getInitValue();
+
+      validatableItem.setObject(newObj, newPath, newInitVal);
+
+      items.changeKey(oldObj, newObj);
+      pgs.changeKey(oldObj, newObj);
+      containedGroups.changeKey(oldObj, newObj);
+
+      [ownTarget] = firstEntry(items);
+
+      return this;
+    },
+
+    valueOf() {
+      return { pgs, items, containedGroups, TYPE };
+    },
+
+    constraints: pgs.toRepresentation(),
+    validations,
+    valid: pgs.valid,
+    invalid: pgs.invalid,
+    changed: pgs.changed,
+    validated: pgs.validated,
+    started: pgs.started,
+    error: pgs.error,
+  });
+
+  Object.defineProperties(api, {
+    [Symbol.toStringTag]: { value: 'Validation' },
+    isValid: Object.getOwnPropertyDescriptor(pgs, 'isValid'),
+  });
+
+  api.validate = tryCatch(
+    api.validate,
     pgs.catchCBs,
     pgs.enableCatch,
-    () => Promise.resolve(pgs.toRepresentation()), // if the catch function is also faulty, return ValidationResult and swallow the error
-    () => Promise.resolve(pgs.toRepresentation()), // return ValidationResult on any error occurance
+    () => Promise.resolve(pgs.result()), // if the catch function is also faulty, return ValidationResult and swallow the error
+    () => Promise.resolve(pgs.result()), // return ValidationResult on any error occurance
     true, // promisify sync errors
   );
 
-  return makeIsomorphicAPI(representation);
+  return makeIsomorphicAPI(api);
 }

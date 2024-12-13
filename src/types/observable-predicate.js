@@ -1,6 +1,5 @@
 import Predicate from './predicate.js';
 import ObserverAnd from './observer-and.js';
-import ConsoleRepresentation from './console-representation.js';
 import indexedName from '../utils/indexed-name.js';
 import ValidatableItem from './validatable-item.js';
 import CloneRegistry from './clone-registry.js';
@@ -9,6 +8,12 @@ import acceptOnlyBoolean from '../helpers/accept-only-boolean.js';
 import { IS_CLIENT } from '../utils/getenv.js';
 import debounceP from '../utils/debounce-p.js';
 import tryCatch from '../utils/try-catch.js';
+import {
+  ObservablePredicateRepresentation,
+  ObservablePredicatesRepresentation,
+  PredicateGroupsRepresentation,
+  ValidationResult,
+} from './representations.js';
 
 export default function ObservablePredicate(
   predicate = Predicate(),
@@ -25,6 +30,7 @@ export default function ObservablePredicate(
   let validityCBs;
 
   const fn = ({ restoredCBs, validityCBs } = predicate.valueOf()).valueOf();
+  const fnName = fn.name || indexedName('predicate');
   const obs = ObserverAnd(initState); // optional predicates are valid by default
   const onInvalidCBs = Functions();
 
@@ -35,51 +41,28 @@ export default function ObservablePredicate(
     }
     return validityCBs.set(value, cbArgs);
   };
-  const fnName = fn.name || indexedName('predicate');
-  const representation = ConsoleRepresentation(
+
+  const representation = ObservablePredicateRepresentation(
+    obs,
+    predicate,
     fnName,
-    {
-      ...anyData,
-      valid: validityCBs.valid,
-      invalid: validityCBs.invalid,
-      changed: validityCBs.changed,
-      validated: validityCBs.validated,
-      started: validityCBs.started,
-      restored: restoredCBs.push,
-      error: validityCBs.error,
-      // !consider for adding: deferred (or delayed), canceled???
-    },
-    {
-      isValid: { get: obs.getValue },
-      toJSON: {
-        value() {
-          return {
-            name: this[Symbol.toStringTag],
-            ...anyData,
-            isValid: obs.getValue(),
-          };
-        },
-      },
-    },
+    anyData,
   );
-  const validationResult = ConsoleRepresentation(
-    'ValidationResult',
-    new Map(
-      items.map((item) => [
-        item.getObject(),
-        new Set([
-          ConsoleRepresentation('Predicates', [representation], {
-            isValid: { get: obs.getValue },
-          }),
-        ]),
-      ]),
-    ),
-    {
-      isValid: { get: obs.getValue },
-      target: { get: validatableItem.getObject },
-      type: { writable: true },
-    },
+  const groupRepresentation = ObservablePredicatesRepresentation(obs);
+  const pgsRepresentation = PredicateGroupsRepresentation(obs);
+  const validationResult = ValidationResult(
+    pgsRepresentation.toRepresentation(),
   );
+
+  groupRepresentation.push(representation);
+  items.forEach((item) =>
+    pgsRepresentation.add(item.getObject(), groupRepresentation),
+  );
+
+  Object.defineProperties(validationResult, {
+    // getter, because the object can be changed through Validation().bind() method
+    target: { get: validatableItem.getObject },
+  });
 
   const predicateFn = debounce && IS_CLIENT ? debounceP(fn, debounce) : fn;
 

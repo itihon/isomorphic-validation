@@ -1,10 +1,10 @@
 import ObserverAnd from './observer-and.js';
 import Functions from './functions.js';
-import ConsoleRepresentation from './console-representation.js';
 import ObservablePredicate from './observable-predicate.js';
 import runPredicatesQueue from '../helpers/run-predicates-queue.js';
 import CloneRegistry from './clone-registry.js';
 import ValidatableItem from './validatable-item.js';
+import { ObservablePredicatesRepresentation } from './representations.js';
 
 const glue = (predicate = ObservablePredicate(), gluedPredicates = []) => {
   if (gluedPredicates.length) {
@@ -35,22 +35,7 @@ export default function ObservablePredicates(
   let withQueueRules = false;
   let lastStopPredicate;
 
-  const representation = ConsoleRepresentation('Predicates', [], {
-    isValid: {
-      get: obs.getValue,
-      configurable: true,
-    },
-    toJSON: {
-      value() {
-        return {
-          name: this[Symbol.toStringTag],
-          length: this.length,
-          ...this,
-          isValid: obs.getValue(),
-        };
-      },
-    },
-  });
+  const representation = ObservablePredicatesRepresentation(obs);
 
   return Object.defineProperties(
     {
@@ -77,12 +62,14 @@ export default function ObservablePredicates(
 
         return this;
       },
+
       run(...args) {
         const skip = optional && item.isInitValue();
         return withQueueRules
           ? runPredicatesQueue(predicates, queueRules, args)
           : Promise.all(predicates.run(...args, undefined, skip));
       },
+
       clone(registry = CloneRegistry()) {
         return predicates
           .map((predicate, idx) => {
@@ -105,13 +92,17 @@ export default function ObservablePredicates(
             ObservablePredicates(registry.cloneOnce(item), optional),
           );
       },
+
       toRepresentation() {
         return representation;
       },
+
       isOptional() {
         return optional;
       },
+
       getItem: () => item,
+
       getID: obs.getID,
       getValue: obs.getValue,
       onChanged: obs.onChanged,

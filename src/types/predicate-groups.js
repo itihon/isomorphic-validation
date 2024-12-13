@@ -2,82 +2,33 @@ import ObserverAnd from './observer-and.js';
 import ValidityCallbacks from './validity-callbacks.js';
 import ManyToManyMap from './many-to-many-map.js';
 import ObservablePredicates from './observable-predicates.js';
-import ConsoleRepresentation from './console-representation.js';
-import indexedName from '../utils/indexed-name.js';
 import CloneRegistry from './clone-registry.js';
+import {
+  PredicateGroupsRepresentation,
+  ValidationResult,
+} from './representations.js';
 
 export default function PredicateGroups(
   pgs = ManyToManyMap(),
   validityCBs = ValidityCallbacks(),
 ) {
   const obs = ObserverAnd();
-  const representation = ConsoleRepresentation(
-    'ValidationResult',
-    ManyToManyMap(),
-    {
-      isValid: { get: obs.getValue },
-      target: { writable: true },
-      type: { writable: true },
-      toJSON: {
-        value() {
-          return [...representation].reduce(
-            (acc, [key, set]) => {
-              acc[key.name || indexedName('obj')] = [...set];
-              return acc;
-            },
-            {
-              name: representation[Symbol.toStringTag],
-              isValid: obs.getValue(),
-            },
-          );
-        }, // without bind jest throwed an error (in expect().toStrictEqual())
-      },
-      [Symbol.iterator]: {
-        value() {
-          const values = [];
-          this.forEach((value, key) => values.push([key, value]));
-          return values[Symbol.iterator]();
-        },
-      },
-      forEach: {
-        value(cbfunction = (/* value, key, values */) => {}) {
-          [...this.entries()].forEach(([key, set]) => {
-            set.forEach((predicates) => {
-              predicates.forEach((predicate) =>
-                cbfunction(predicate, key, this),
-              );
-            });
-          });
-        },
-      },
-    },
-  );
+  const representation = PredicateGroupsRepresentation(obs);
+  const view = representation.toRepresentation();
+  const validationResult = ValidationResult(view);
 
-  obs.onChanged((result) => validityCBs.change(result, representation));
-
-  // ! bad. hiding unnecessary methods.
-  const addRepresentation = representation.add;
-  const representationChangeKey = representation.changeKey;
-
-  delete representation.add;
-  delete representation.getAll;
-  delete representation.map;
-  delete representation.mergeWith;
-  delete representation.changeKey;
+  obs.onChanged((result) => validityCBs.change(result, validationResult));
 
   return Object.defineProperties(
     {
       add(key, predicateGroup = ObservablePredicates()) {
-        // delete from representation ⬆
         obs.subscribe(predicateGroup);
         pgs.add(key, predicateGroup);
-        // representation.add(keys, predicateGroup.toRepresentation());
-        addRepresentation(key, predicateGroup.toRepresentation());
+        representation.add(key, predicateGroup.toRepresentation());
         return this;
       },
-      run(id, callID) {
-        // validityCBs.start(representation);
 
+      run(id, callID) {
         const predicateGroups = id !== undefined ? pgs.get(id) : pgs.getAll();
 
         return predicateGroups
@@ -94,6 +45,7 @@ export default function PredicateGroups(
               ),
             );
       },
+
       clone(registry = CloneRegistry()) {
         const newPgs = PredicateGroups(
           undefined,
@@ -106,24 +58,23 @@ export default function PredicateGroups(
 
         return newPgs;
       },
-      toRepresentation(id) {
-        representation.target = id;
-        return representation;
-      },
-      // changeKey: pgs.changeKey, // delete from representation ⬆
-      changeKey(...args) {
-        // delete from representation ⬆
-        pgs.changeKey(...args);
 
-        representation.add = addRepresentation; // ! bad
-        representationChangeKey(...args);
-        delete representation.add; // ! bad
-
+      changeKey(oldKey, newKey) {
+        pgs.changeKey(oldKey, newKey);
+        representation.changeKey(oldKey, newKey);
         return this;
       },
+
       enableCatch() {
         return validityCBs.valueOf().errorCBs.length;
       },
+
+      result(target) {
+        validationResult.target = target;
+        return validationResult;
+      },
+
+      toRepresentation: representation.toRepresentation,
       valid: validityCBs.valid,
       invalid: validityCBs.invalid,
       changed: validityCBs.changed,
@@ -133,10 +84,10 @@ export default function PredicateGroups(
       catchCBs: validityCBs.catch,
       startCBs: validityCBs.start,
       runCBs: validityCBs.set,
-      map: pgs.map, // delete from representation ⬆
-      forEach: pgs.forEach, // override in representation ⬆
-      mergeWith: pgs.mergeWith, // delete from representation ⬆
-      getAll: pgs.getAll, // delete from representation ⬆
+      map: pgs.map,
+      forEach: pgs.forEach,
+      mergeWith: pgs.mergeWith,
+      getAll: pgs.getAll,
       has: pgs.has.bind(pgs),
       get: pgs.get.bind(pgs),
       [Symbol.toStringTag]: PredicateGroups.name,

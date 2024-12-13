@@ -324,7 +324,18 @@ describe('Validation', () => {
   describe('Iterator', () => {
     it.each([{ operation: 'group' }, { operation: 'clone' }])(
       '$operation: should iterate over constraints collection',
-      ({ operation }) => {
+      async ({ operation }) => {
+        const useIterator = (map) =>
+          [...map].map(([obj, pred]) => [obj.value, pred[Symbol.toStringTag]]);
+
+        const useForEach = (map) => {
+          const result = [];
+          map.forEach((pred, obj) =>
+            result.push([obj.value, pred[Symbol.toStringTag]]),
+          );
+          return result;
+        };
+
         const predicates = Array.from({ length: 9 })
           .map(
             (_, idx) =>
@@ -332,7 +343,7 @@ describe('Validation', () => {
           )
           [Symbol.iterator]();
 
-        const results = [
+        const snapshot = [
           ['obj3', 'predicate0'],
           ['obj3', 'predicate1'],
           ['obj3', 'predicate8'],
@@ -352,7 +363,7 @@ describe('Validation', () => {
         const object2 = { value: 'obj2' };
         const object3 = { value: 'obj3' };
 
-        const { constraints } = Validation[operation](
+        const validation = Validation[operation](
           Validation.group(
             Validation(object3)
               .constraint(predicates.next().value) // 0
@@ -372,19 +383,328 @@ describe('Validation', () => {
           ).constraint(predicates.next().value), // 8
         );
 
-        expect(
-          [...constraints].map(([obj, pred]) => [
-            obj.value,
-            pred[Symbol.toStringTag],
-          ]),
-        ).toStrictEqual(results);
+        const { constraints } = validation;
 
-        const forEachResults = [];
-        constraints.forEach((pred, obj) =>
-          forEachResults.push([obj.value, pred[Symbol.toStringTag]]),
+        // iterable constraints property
+        expect(useIterator(constraints)).toStrictEqual(snapshot);
+
+        // forEach method of the constraints property
+        expect(useForEach(constraints)).toStrictEqual(snapshot);
+
+        // iterable validation result in predicate state callbacks
+        let results = [];
+        constraints.forEach((validator) =>
+          validator.server.validated((result) => {
+            results.push(...useIterator(result));
+          }),
+        );
+        await validation.validate();
+        expect(results).toStrictEqual(snapshot);
+
+        // forEach method of validation result in predicate state callback
+        let results2 = [];
+        constraints.forEach((validator) =>
+          validator.server.validated((result) => {
+            results2.push(...useForEach(result));
+          }),
+        );
+        await validation.validate();
+        expect(results2).toStrictEqual(snapshot);
+
+        // iterable validation result in validation state callbacks
+        results = [];
+        await validation
+          .validated((result) => {
+            results.push(...useIterator(result));
+          })
+          .validate();
+        expect(results).toStrictEqual(snapshot.concat(snapshot));
+
+        // forEach method of validation result in validation state callback
+        results2 = [];
+        await validation
+          .validated((result) => {
+            results2.push(...useForEach(result));
+          })
+          .validate();
+        expect(results2).toStrictEqual(snapshot.concat(snapshot));
+
+        // iterable validation result returned by Validation().validate()
+        expect(useIterator(await validation.validate())).toStrictEqual(
+          snapshot,
         );
 
-        expect(forEachResults).toStrictEqual(results);
+        // forEach method validation result returned by Validation().validate()
+        expect(useForEach(await validation.validate())).toStrictEqual(snapshot);
+      },
+    );
+  });
+
+  describe('JSON', () => {
+    it.each([{ operation: 'group' }, { operation: 'clone' }])(
+      '$operation: should generate correct JSON',
+      async ({ operation }) => {
+        const predicates = Array.from({ length: 11 }).map((_, idx) =>
+          Object.defineProperty(
+            jest.fn(() => idx > 5),
+            'name',
+            { value: `predicate${idx}` },
+          ),
+        );
+
+        const object1 = { value: 'obj1', name: 'obj1' };
+        const object2 = { value: 'obj2', name: 'obj2' };
+        const object3 = { value: 'obj3', name: 'obj3' };
+
+        const validation = Validation[operation](
+          Validation.group(
+            Validation(object3)
+              .constraint(predicates[0], { idx: 0 })
+              .constraint(predicates[1], { idx: 1 }),
+
+            Validation.group(
+              Validation(object1)
+                .constraint(predicates[2], { idx: 2 })
+                .constraint(predicates[3], { idx: 3 }),
+
+              Validation(object2)
+                .constraint(predicates[4], { idx: 4 })
+                .constraint(predicates[5], { idx: 5 }),
+
+              Validation(object3)
+                .constraint(predicates[6], { idx: 6 })
+                .constraint(predicates[7], { idx: 7 }),
+            )
+              .constraint(predicates[8], { idx: 8 })
+              .constraint(predicates[9], { idx: 9 }),
+          ).constraint(predicates[10], { idx: 10 }),
+        );
+
+        const { constraints } = validation;
+
+        const snapshot1 = `
+       {
+        "isValid": false,
+        "obj3": [
+            {
+              "0": { "name": "predicate0", "idx": 0, "isValid": false },
+              "1": { "name": "predicate1", "idx": 1, "isValid": false },
+              "2": { "name": "predicate10", "idx": 10, "isValid": false },
+              "name": "PredicateGroup",
+              "length": 3,
+              "isValid": false
+            },
+            {
+              "0": { "name": "predicate6", "idx": 6, "isValid": false },
+              "1": { "name": "predicate7", "idx": 7, "isValid": false },
+              "2": { "name": "predicate8", "idx": 8, "isValid": false },
+              "3": { "name": "predicate9", "idx": 9, "isValid": false },
+              "4": { "name": "predicate10", "idx": 10, "isValid": false },
+              "name": "PredicateGroup",
+              "length": 5,
+              "isValid": false
+            }
+        ],
+        "obj1": [
+            {
+              "0": { "name": "predicate2", "idx": 2, "isValid": false },
+              "1": { "name": "predicate3", "idx": 3, "isValid": false },
+              "2": { "name": "predicate8", "idx": 8, "isValid": false },
+              "3": { "name": "predicate9", "idx": 9, "isValid": false },
+              "4": { "name": "predicate10", "idx": 10, "isValid": false },
+              "name": "PredicateGroup",
+              "length": 5,
+              "isValid": false
+            }
+        ],
+        "obj2": [
+            {
+              "0": { "name": "predicate4", "idx": 4, "isValid": false },
+              "1": { "name": "predicate5", "idx": 5, "isValid": false },
+              "2": { "name": "predicate8", "idx": 8, "isValid": false },
+              "3": { "name": "predicate9", "idx": 9, "isValid": false },
+              "4": { "name": "predicate10", "idx": 10, "isValid": false },
+              "name": "PredicateGroup",
+              "length": 5,
+              "isValid": false
+            }
+          ]
+        } 
+        `;
+
+        expect(JSON.parse(JSON.stringify(constraints))).toStrictEqual(
+          JSON.parse(snapshot1),
+        );
+
+        const snapshot2 = `
+       {
+        "isValid": false,
+        "obj3": [
+            {
+              "0": { "name": "predicate0", "idx": 0, "isValid": false },
+              "1": { "name": "predicate1", "idx": 1, "isValid": false },
+              "2": { "name": "predicate10", "idx": 10, "isValid": true },
+              "name": "PredicateGroup",
+              "length": 3,
+              "isValid": false
+            },
+            {
+              "0": { "name": "predicate6", "idx": 6, "isValid": true },
+              "1": { "name": "predicate7", "idx": 7, "isValid": true },
+              "2": { "name": "predicate8", "idx": 8, "isValid": true },
+              "3": { "name": "predicate9", "idx": 9, "isValid": true },
+              "4": { "name": "predicate10", "idx": 10, "isValid": true },
+              "name": "PredicateGroup",
+              "length": 5,
+              "isValid": true
+            }
+        ],
+        "obj1": [
+            {
+              "0": { "name": "predicate2", "idx": 2, "isValid": false },
+              "1": { "name": "predicate3", "idx": 3, "isValid": false },
+              "2": { "name": "predicate8", "idx": 8, "isValid": true },
+              "3": { "name": "predicate9", "idx": 9, "isValid": true },
+              "4": { "name": "predicate10", "idx": 10, "isValid": true },
+              "name": "PredicateGroup",
+              "length": 5,
+              "isValid": false
+            }
+        ],
+        "obj2": [
+            {
+              "0": { "name": "predicate4", "idx": 4, "isValid": false },
+              "1": { "name": "predicate5", "idx": 5, "isValid": false },
+              "2": { "name": "predicate8", "idx": 8, "isValid": true },
+              "3": { "name": "predicate9", "idx": 9, "isValid": true },
+              "4": { "name": "predicate10", "idx": 10, "isValid": true },
+              "name": "PredicateGroup",
+              "length": 5,
+              "isValid": false
+            }
+          ]
+        } 
+        `;
+
+        expect(
+          JSON.parse(JSON.stringify(await validation.validate())),
+        ).toStrictEqual(JSON.parse(snapshot2));
+
+        predicates.forEach((predicate, idx) =>
+          predicate.mockImplementation(() => idx > 3),
+        );
+
+        const snapshot3 = `
+       {
+        "isValid": false,
+        "obj3": [
+            {
+              "0": { "name": "predicate0", "idx": 0, "isValid": false },
+              "1": { "name": "predicate1", "idx": 1, "isValid": false },
+              "2": { "name": "predicate10", "idx": 10, "isValid": true },
+              "name": "PredicateGroup",
+              "length": 3,
+              "isValid": false
+            },
+            {
+              "0": { "name": "predicate6", "idx": 6, "isValid": true },
+              "1": { "name": "predicate7", "idx": 7, "isValid": true },
+              "2": { "name": "predicate8", "idx": 8, "isValid": true },
+              "3": { "name": "predicate9", "idx": 9, "isValid": true },
+              "4": { "name": "predicate10", "idx": 10, "isValid": true },
+              "name": "PredicateGroup",
+              "length": 5,
+              "isValid": true
+            }
+        ],
+        "obj1": [
+            {
+              "0": { "name": "predicate2", "idx": 2, "isValid": false },
+              "1": { "name": "predicate3", "idx": 3, "isValid": false },
+              "2": { "name": "predicate8", "idx": 8, "isValid": true },
+              "3": { "name": "predicate9", "idx": 9, "isValid": true },
+              "4": { "name": "predicate10", "idx": 10, "isValid": true },
+              "name": "PredicateGroup",
+              "length": 5,
+              "isValid": false
+            }
+        ],
+        "obj2": [
+            {
+              "0": { "name": "predicate4", "idx": 4, "isValid": true },
+              "1": { "name": "predicate5", "idx": 5, "isValid": true },
+              "2": { "name": "predicate8", "idx": 8, "isValid": true },
+              "3": { "name": "predicate9", "idx": 9, "isValid": true },
+              "4": { "name": "predicate10", "idx": 10, "isValid": true },
+              "name": "PredicateGroup",
+              "length": 5,
+              "isValid": true
+            }
+          ]
+        } 
+        `;
+
+        expect(
+          JSON.parse(JSON.stringify(await validation.validate())),
+        ).toStrictEqual(JSON.parse(snapshot3));
+
+        predicates.forEach((predicate) =>
+          predicate.mockImplementation(() => true),
+        );
+
+        const snapshot4 = `
+       {
+        "isValid": true,
+        "obj3": [
+            {
+              "0": { "name": "predicate0", "idx": 0, "isValid": true },
+              "1": { "name": "predicate1", "idx": 1, "isValid": true },
+              "2": { "name": "predicate10", "idx": 10, "isValid": true },
+              "name": "PredicateGroup",
+              "length": 3,
+              "isValid": true
+            },
+            {
+              "0": { "name": "predicate6", "idx": 6, "isValid": true },
+              "1": { "name": "predicate7", "idx": 7, "isValid": true },
+              "2": { "name": "predicate8", "idx": 8, "isValid": true },
+              "3": { "name": "predicate9", "idx": 9, "isValid": true },
+              "4": { "name": "predicate10", "idx": 10, "isValid": true },
+              "name": "PredicateGroup",
+              "length": 5,
+              "isValid": true
+            }
+        ],
+        "obj1": [
+            {
+              "0": { "name": "predicate2", "idx": 2, "isValid": true },
+              "1": { "name": "predicate3", "idx": 3, "isValid": true },
+              "2": { "name": "predicate8", "idx": 8, "isValid": true },
+              "3": { "name": "predicate9", "idx": 9, "isValid": true },
+              "4": { "name": "predicate10", "idx": 10, "isValid": true },
+              "name": "PredicateGroup",
+              "length": 5,
+              "isValid": true
+            }
+        ],
+        "obj2": [
+            {
+              "0": { "name": "predicate4", "idx": 4, "isValid": true },
+              "1": { "name": "predicate5", "idx": 5, "isValid": true },
+              "2": { "name": "predicate8", "idx": 8, "isValid": true },
+              "3": { "name": "predicate9", "idx": 9, "isValid": true },
+              "4": { "name": "predicate10", "idx": 10, "isValid": true },
+              "name": "PredicateGroup",
+              "length": 5,
+              "isValid": true
+            }
+          ]
+        } 
+        `;
+
+        expect(
+          JSON.parse(JSON.stringify(await validation.validate())),
+        ).toStrictEqual(JSON.parse(snapshot4));
       },
     );
   });
