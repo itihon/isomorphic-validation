@@ -2,6 +2,7 @@ import ManyToManyMap from './many-to-many-map.js';
 import indexedName from '../utils/indexed-name.js';
 import ObserverAnd from './observer-and.js';
 import Predicate from './predicate.js';
+import preventPropNamesClash from '../helpers/prevent-prop-names-clash.js';
 
 export function PredicateGroupsRepresentation(obs = ObserverAnd()) {
   const pgs = ManyToManyMap();
@@ -76,8 +77,8 @@ export function ObservablePredicateRepresentation(
   fnName = '',
   anyData = {},
 ) {
-  return Object.defineProperties(
-    { ...anyData },
+  const representation = Object.defineProperties(
+    {},
     {
       isValid: { get: obs.getValue },
       toJSON: {
@@ -93,6 +94,10 @@ export function ObservablePredicateRepresentation(
       [Symbol.toStringTag]: { value: fnName },
     },
   );
+
+  preventPropNamesClash(anyData, representation);
+
+  return Object.assign(representation, anyData);
 }
 
 // !JSON representation should be generated in advance.

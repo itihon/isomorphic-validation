@@ -231,4 +231,64 @@ describe('e2e', () => {
       },
     );
   });
+
+  describe('anyData', () => {
+    it('should throw an error if anyData names clash with Predicate API', () => {
+      const v = Validation();
+      const getAllPropNames = (obj, acc = new Set()) => {
+        if (!obj) {
+          return acc;
+        }
+
+        const addToAcc = acc.add.bind(acc);
+
+        Object.getOwnPropertyNames(obj).forEach(addToAcc);
+        Object.getOwnPropertySymbols(obj).forEach(addToAcc);
+        getAllPropNames(Object.getPrototypeOf(obj), acc).forEach(addToAcc);
+
+        return acc;
+      };
+
+      const [...propNames] = getAllPropNames(Predicate(() => true));
+
+      propNames.forEach((propName) => {
+        expect(() => v.constraint(() => true, { [propName]: '' })).toThrow();
+      });
+
+      expect(() => v.constraint(() => true, { foo: 'foo' })).not.toThrow();
+    });
+
+    it('should pass anyData to validation result', async () => {
+      const v = Validation();
+      const predicateFoo = () => true;
+      const predicateBar = () => true;
+
+      const validatedCB = (res) => {
+        res.forEach((validator) => {
+          const name = validator[Symbol.toStringTag].slice(9);
+          expect(validator[`msg${name}`]).toBe(name.toLowerCase());
+        });
+      };
+
+      v.constraint(predicateFoo, { msgFoo: 'foo' });
+      v.constraint(predicateBar, { msgBar: 'bar' });
+      v.validated(validatedCB);
+
+      await v.validate();
+    });
+
+    it('should be accessible in the constraints property', async () => {
+      const v = Validation();
+      const predicateFoo = () => true;
+      const predicateBar = () => true;
+
+      v.constraint(predicateFoo, { msgFoo: 'foo' });
+      v.constraint(predicateBar, { msgBar: 'bar' });
+
+      v.constraints.forEach((validator) => {
+        const name = validator[Symbol.toStringTag].slice(9);
+        expect(validator[`msg${name}`]).toBe(name.toLowerCase());
+      });
+    });
+  });
 });

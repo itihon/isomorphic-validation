@@ -9,7 +9,6 @@ describe('ObservablePredicate', () => {
   );
   it.todo('+ Can be subscribed to. WRITTEN IN INTEGRATION TESTS');
 
-  it.todo('constructor: parameters: anyData');
   it.todo('console representation, op(,id)');
 
   it.todo(
