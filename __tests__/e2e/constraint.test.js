@@ -23,6 +23,26 @@ describe('e2e', () => {
 
     expect(() => Validation().constraint(() => true)).not.toThrow();
     expect(() => Validation().constraint(Predicate(() => true))).not.toThrow();
+
+    expect(() =>
+      Validation().constraint(Predicate(() => true).server.valid(() => {})),
+    ).not.toThrow();
+
+    expect(() =>
+      Validation().constraint(Predicate(() => true).client.valid(() => {})),
+    ).not.toThrow();
+
+    expect(() =>
+      Validation().constraint(
+        Predicate(() => true).server.valid(() => {}).client,
+      ),
+    ).not.toThrow();
+
+    expect(() =>
+      Validation().constraint(
+        Predicate(() => true).client.valid(() => {}).server,
+      ),
+    ).not.toThrow();
   });
 
   it('keepValid', async () => {

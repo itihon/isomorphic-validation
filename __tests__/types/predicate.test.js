@@ -30,6 +30,22 @@ describe('Predicate', () => {
 
     expect(() => Predicate(() => true)).not.toThrow();
     expect(() => Predicate(Predicate(() => true))).not.toThrow();
+
+    expect(() =>
+      Predicate(Predicate(() => true).server.valid(() => {}).client),
+    ).not.toThrow();
+
+    expect(() =>
+      Predicate(Predicate(() => true).client.valid(() => {}).server),
+    ).not.toThrow();
+
+    expect(() =>
+      Predicate(Predicate(() => true).server.valid(() => {})),
+    ).not.toThrow();
+
+    expect(() =>
+      Predicate(Predicate(() => true).client.valid(() => {})),
+    ).not.toThrow();
   });
 
   it('should unwrap a predicate function via valueOf being called twice', () => {
