@@ -140,6 +140,6 @@ export default function ObservablePredicate(
     onChanged: { value: obs.onChanged },
     onInvalid: { value: onInvalidCBs.push },
     name: { value: `${fnName}_OP` },
-    [Symbol.toStringTag]: { value: ObservablePredicate.name },
+    [Symbol.toStringTag]: { value: 'ObservablePredicate' },
   });
 }
