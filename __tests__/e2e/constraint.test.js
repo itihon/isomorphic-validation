@@ -2,14 +2,6 @@ import { expect, jest, it, describe, beforeEach } from '@jest/globals';
 import { Predicate, Validation } from '../../src/index.js';
 import { isEmail, isEmailNotBusy, isNotOneTimeEmail } from '../predicates.js';
 
-const syncPredicate = jest.fn((value) => value === 42);
-const asyncPredicate = jest.fn(
-  (value) =>
-    new Promise((res) => {
-      setTimeout(res, 1000, value === 42);
-    }),
-);
-
 const validatedObj = {
   value: 42,
 };
@@ -19,30 +11,6 @@ describe('e2e', () => {
     jest.clearAllMocks();
     validatedObj.value = 42;
   });
-
-  // this should have been removed in a3888f3 refactor(observable-predicates.js): remove valid state of Validation with no constraints
-  // it('should be valid, after having predicates added become invalid (unless they are optional)', () => {
-  //   const validation = Validation();
-  //   expect(validation.isValid).toBe(true);
-  //   validation.constraint(jest.fn());
-  //   expect(validation.isValid).toBe(false);
-  // });
-
-  // this feature is considered for removing
-  it.skip('is imposible to start an async predicate unless the previously launched is not finished', (done) => {
-    const testAsyncValidation = Validation(validatedObj);
-    testAsyncValidation.constraint(syncPredicate).constraint(asyncPredicate);
-
-    const interval = setInterval(testAsyncValidation.validate, 200);
-
-    setTimeout(() => {
-      clearInterval(interval);
-      done();
-
-      expect(syncPredicate).toHaveBeenCalledTimes(5);
-      expect(asyncPredicate).toHaveBeenCalledTimes(1);
-    }, 1200);
-  }, 2000);
 
   it('should accept only function or Predicate, otherwise throw an error', () => {
     const errMsg = 'Neither a function nor a Predicate was passed in.';
