@@ -4,7 +4,10 @@ export default function Functions(iterable = [][Symbol.iterator]()) {
   const fns = [...iterable].map(acceptOnlyFunction);
 
   function push(...args) {
-    Array.prototype.push.call(fns, ...args.map(acceptOnlyFunction));
+    if (!Array.prototype.push.call(fns, ...args.map(acceptOnlyFunction))) {
+      const { warn } = console;
+      warn('Expected functions to be passed in, received nothing.');
+    }
     return this;
   }
 

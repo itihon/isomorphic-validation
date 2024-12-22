@@ -67,7 +67,7 @@ export default function ObservablePredicate(
   const predicateFn = debounce && IS_CLIENT ? debounceP(fn, debounce) : fn;
 
   obs.onChanged((result) => validityCBs.change(result, validationResult));
-  items.forEach((item) => item.onRestored(...restoredCBs));
+  restoredCBs.forEach((cb) => items.forEach((item) => item.onRestored(cb)));
 
   function predicatePostExec(result, forbidInvalid, callID) {
     acceptOnlyBoolean(result);

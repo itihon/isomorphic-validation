@@ -771,6 +771,10 @@ describe('callbacks', () => {
       const predicate = Predicate(p);
       const validation = Validation();
 
+      jest.clearAllMocks();
+      const warn = jest.spyOn(console, 'warn').mockImplementation();
+
+      expect(() => predicate[method](null)).toThrow();
       expect(() => predicate[method]([cb1])).toThrow();
       expect(() => predicate[method]([])).toThrow();
       expect(() => predicate[method]('')).toThrow();
@@ -787,7 +791,12 @@ describe('callbacks', () => {
       expect(() => predicate[method](cb1, cb2, {})).toThrow();
       expect(() => predicate[method](cb1, cb2, false)).toThrow();
       expect(() => predicate[method](cb1, cb2, 42)).toThrow();
+      expect(() => predicate[method](cb1, null, 42)).toThrow();
 
+      expect(() => predicate[method]()).not.toThrow();
+      expect(warn.mock.calls).toStrictEqual([
+        ['Expected functions to be passed in, received nothing.'],
+      ]);
       expect(() => predicate[method](cb1)).not.toThrow();
       expect(() => predicate[method](cb1, cb2)).not.toThrow();
       expect(() => predicate[method](cb1, cb2, cb3)).not.toThrow();
@@ -796,6 +805,9 @@ describe('callbacks', () => {
 
       if (method !== 'restored') {
         // validation doesn't have this method
+        jest.clearAllMocks();
+
+        expect(() => validation[method](null)).toThrow();
         expect(() => validation[method]([cb1])).toThrow();
         expect(() => validation[method]([])).toThrow();
         expect(() => validation[method]('')).toThrow();
@@ -812,7 +824,12 @@ describe('callbacks', () => {
         expect(() => validation[method](cb1, cb2, {})).toThrow();
         expect(() => validation[method](cb1, cb2, false)).toThrow();
         expect(() => validation[method](cb1, cb2, 42)).toThrow();
+        expect(() => validation[method](cb1, null, 42)).toThrow();
 
+        expect(() => validation[method]()).not.toThrow();
+        expect(warn.mock.calls).toStrictEqual([
+          ['Expected functions to be passed in, received nothing.'],
+        ]);
         expect(() => validation[method](cb1)).not.toThrow();
         expect(() => validation[method](cb1, cb2)).not.toThrow();
         expect(() => validation[method](cb1, cb2, cb3)).not.toThrow();
@@ -823,6 +840,8 @@ describe('callbacks', () => {
           expect(cb2).toHaveBeenCalledTimes(4);
           expect(cb3).toHaveBeenCalledTimes(2);
         }
+
+        warn.mockRestore();
       }
     },
   );
