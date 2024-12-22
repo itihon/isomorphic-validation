@@ -50,15 +50,13 @@ describe('ObservablePredicates - a collection of instances of ObservablePredicat
       .run()
       .then((res) => expect(res).toStrictEqual([true]));
 
-    // ignored
-    ops
-      .add()
-      .add([])
-      .add(() => false)
-      .add({})
-      .add(null)
-      .add(42)
-      .add('42');
+    expect(() => ops.add()).toThrow();
+    expect(() => ops.add([])).toThrow();
+    expect(() => ops.add(() => false)).toThrow();
+    expect(() => ops.add({})).toThrow();
+    expect(() => ops.add(null)).toThrow();
+    expect(() => ops.add(42)).toThrow();
+    expect(() => ops.add('42')).toThrow();
 
     // added
     ops

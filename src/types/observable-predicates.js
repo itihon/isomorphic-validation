@@ -5,6 +5,7 @@ import runPredicatesQueue from '../helpers/run-predicates-queue.js';
 import CloneRegistry from './clone-registry.js';
 import ValidatableItem from './validatable-item.js';
 import { ObservablePredicatesRepresentation } from './representations.js';
+import acceptOnlyObservablePredicate from '../helpers/accept-only-observable-predicate.js';
 
 const glue = (predicate = ObservablePredicate(), gluedPredicates = []) => {
   if (gluedPredicates.length) {
@@ -44,7 +45,7 @@ export default function ObservablePredicates(
         { next = true } = {},
         gluedPredicates = [],
       ) {
-        if (!(predicate instanceof ObservablePredicate)) return this;
+        acceptOnlyObservablePredicate(predicate);
 
         obs.subscribe(predicate);
         predicates.push(glue(predicate, gluedPredicates));

@@ -14,6 +14,7 @@ import {
   PredicateGroupsRepresentation,
   ValidationResult,
 } from './representations.js';
+import acceptOnlyPredicate from '../helpers/accept-only-predicate.js';
 
 export default function ObservablePredicate(
   predicate = Predicate(),
@@ -24,7 +25,7 @@ export default function ObservablePredicate(
   anyData = {},
   validatableItem = ValidatableItem(), // an item the predicate will be associated with
 ) {
-  if (!(predicate instanceof Predicate)) return null;
+  acceptOnlyPredicate(predicate);
 
   let restoredCBs;
   let validityCBs;
@@ -113,8 +114,6 @@ export default function ObservablePredicate(
     () => false, // if the catch function is also faulty, return false and swallow the error
     () => obsPredicateTC.invalidate(), // invalidate on any error occurance
   );
-
-  Reflect.setPrototypeOf(obsPredicateTC, ObservablePredicate.prototype);
 
   return Object.defineProperties(obsPredicateTC, {
     toRepresentation: { value: () => representation },

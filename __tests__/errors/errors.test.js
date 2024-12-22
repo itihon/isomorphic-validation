@@ -78,7 +78,9 @@ describe.each([
     '$state: should catch validation state callback errors',
     async ({ state, isValid, constraint }) => {
       validation[state](vStateCallbackWithError).error(vCatchFn);
-      validation.constraint(constraint);
+      if (constraint) {
+        validation.constraint(constraint);
+      }
 
       forGroupAndClone(type);
 
@@ -161,7 +163,10 @@ describe.each([
     ])(
       '$state: should catch validation state callback errors',
       async ({ state, isValid, constraint }) => {
-        validation.constraint(constraint);
+        if (constraint) {
+          validation.constraint(constraint);
+        }
+
         validation[state](vStateCallbackWithError);
 
         forGroupAndClone(type);

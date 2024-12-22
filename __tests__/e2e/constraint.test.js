@@ -44,6 +44,19 @@ describe('e2e', () => {
     }, 1200);
   }, 2000);
 
+  it('should accept only function or Predicate, otherwise throw an error', () => {
+    const errMsg = 'Neither a function nor a Predicate was passed in.';
+
+    expect(() => Validation().constraint()).toThrowError(errMsg);
+    expect(() => Validation().constraint(null)).toThrowError(errMsg);
+    expect(() => Validation().constraint([])).toThrowError(errMsg);
+    expect(() => Validation().constraint({})).toThrowError(errMsg);
+    expect(() => Validation().constraint('')).toThrowError(errMsg);
+
+    expect(() => Validation().constraint(() => true)).not.toThrow();
+    expect(() => Validation().constraint(Predicate(() => true))).not.toThrow();
+  });
+
   it('keepValid', async () => {
     const isTens = jest.fn(
       (value) => Number(value) !== 0 && Number(value) % 10 === 0,

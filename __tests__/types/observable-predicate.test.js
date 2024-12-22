@@ -15,16 +15,16 @@ describe('ObservablePredicate', () => {
     '+ constructor: parameters: keepValid. WRITTEN IN E2E AND INTEGRATION TESTS',
   );
 
-  it('should accept predicate as the first parameter and return a function, otherwise return null', () => {
-    expect(ObservablePredicate()).toBe(null);
-    expect(ObservablePredicate({})).toBe(null);
-    expect(ObservablePredicate([])).toBe(null);
-    expect(ObservablePredicate('')).toBe(null);
-    expect(ObservablePredicate('asdf')).toBe(null);
-    expect(ObservablePredicate(42)).toBe(null);
-    expect(ObservablePredicate(class SomeClass {})).toBe(null);
+  it('should accept Predicate as the first parameter and return a function, otherwise throw an error', () => {
+    expect(() => ObservablePredicate()).toThrow();
+    expect(() => ObservablePredicate({})).toThrow();
+    expect(() => ObservablePredicate([])).toThrow();
+    expect(() => ObservablePredicate('')).toThrow();
+    expect(() => ObservablePredicate('asdf')).toThrow();
+    expect(() => ObservablePredicate(42)).toThrow();
+    expect(() => ObservablePredicate(class SomeClass {})).toThrow();
 
-    expect(ObservablePredicate(Predicate(() => {}))).not.toBe(null);
+    expect(() => ObservablePredicate(Predicate(() => false))).not.toThrow();
 
     expect(ObservablePredicate(Predicate(() => false))()).toBe(false);
     expect(ObservablePredicate(Predicate(() => true))()).toBe(true);

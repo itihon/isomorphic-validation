@@ -1,10 +1,10 @@
-import isFunction from '../utils/is-function.js';
+import acceptOnlyFunctionOrPredicate from '../helpers/accept-only-function-or-predicate.js';
 import makeIsomorphicAPI from '../utils/make-isomorphic-api.js';
 import Functions from './functions.js';
 import ValidityCallbacks from './validity-callbacks.js';
 
 export default function Predicate(fnOrPred) {
-  if (!isFunction(fnOrPred) && !(fnOrPred instanceof Predicate)) return null;
+  acceptOnlyFunctionOrPredicate(fnOrPred);
 
   let restoredCBs;
   let validityCBs;
@@ -28,8 +28,6 @@ export default function Predicate(fnOrPred) {
     // !consider for adding: deferred (or delayed), canceled???
     [Symbol.toStringTag]: Predicate.name,
   };
-
-  Reflect.setPrototypeOf(predicate, Predicate.prototype);
 
   return makeIsomorphicAPI(predicate);
 }

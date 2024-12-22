@@ -19,17 +19,17 @@ p1.valid(validCB)
 const p2 = Predicate(p1);
 
 describe('Predicate', () => {
-  it('should accept function or Predicate, return null otherwise', () => {
-    expect(Predicate()).toBe(null);
-    expect(Predicate({})).toBe(null);
-    expect(Predicate([])).toBe(null);
-    expect(Predicate('')).toBe(null);
-    expect(Predicate('asdf')).toBe(null);
-    expect(Predicate(42)).toBe(null);
-    expect(Predicate(class SomeClass {})).toBe(null);
+  it('should accept function or Predicate, throw an error otherwise', () => {
+    expect(() => Predicate()).toThrow();
+    expect(() => Predicate({})).toThrow();
+    expect(() => Predicate([])).toThrow();
+    expect(() => Predicate('')).toThrow();
+    expect(() => Predicate('asdf')).toThrow();
+    expect(() => Predicate(42)).toThrow();
+    expect(() => Predicate(class SomeClass {})).toThrow();
 
-    expect(p1).not.toBe(null);
-    expect(p2).not.toBe(null);
+    expect(() => Predicate(() => true)).not.toThrow();
+    expect(() => Predicate(Predicate(() => true))).not.toThrow();
   });
 
   it('should unwrap a predicate function via valueOf being called twice', () => {
