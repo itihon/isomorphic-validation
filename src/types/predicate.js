@@ -26,7 +26,7 @@ export default function Predicate(fnOrPred) {
     restored: restoredCBs.push,
     error: validityCBs.error,
     // !consider for adding: deferred (or delayed), canceled???
-    [Symbol.toStringTag]: Predicate.name,
+    [Symbol.toStringTag]: 'Predicate',
   };
 
   return makeIsomorphicAPI(predicate);
