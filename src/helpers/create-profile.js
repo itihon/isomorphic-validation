@@ -14,7 +14,10 @@ const bind = (form, fieldNames) => (validation, idx) =>
   validation.bind(form.elements[fieldNames[idx]]);
 
 const getItems = (validation) => validation.valueOf().items;
-const getPath = (validatableItem) => validatableItem.getPath();
+const toPathsAndInitValues = ([paths, initValues], validatableItem) => [
+  [...paths, validatableItem.getPath()],
+  [...initValues, validatableItem.getInitValue()],
+];
 const firstItemFromEntrie = ([, set]) => [...set][0];
 
 const assignValidations =
@@ -49,15 +52,20 @@ export default function createProfile(
   fieldNames = [],
   validations = [],
 ) {
-  const paths = []
+  const [paths, initValues] = []
     .concat(validations)
     .map(accepOnlyValidation)
     .map(getItems)
     .map(firstEntry)
     .map(firstItemFromEntrie)
-    .map(getPath);
+    .reduce(toPathsAndInitValues, [[], []]);
 
-  const validatableForm = ValidatableForm(selector, fieldNames, paths);
+  const validatableForm = ValidatableForm(
+    selector,
+    fieldNames,
+    paths,
+    initValues,
+  );
 
   const clonedValidations = []
     .concat(validations)

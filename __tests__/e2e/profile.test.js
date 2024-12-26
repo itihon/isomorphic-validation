@@ -653,11 +653,12 @@ describe('Validation.profile', () => {
   });
 
   it('should recreate a form fields structure by paths', async () => {
+    const toString = () => '';
     const validations = [
       Validation(),
       Validation({}, { path: 'value' }),
-      Validation({}, { path: 'files.0' }),
-      Validation({}, { path: 'files.1.size' }),
+      Validation({}, { path: 'files.0', initValue: { toString } }),
+      Validation({}, { path: 'files.1.size', initValue: 0 }),
     ].map((v) => v.constraint(isLongerThan(1)));
 
     const { form, validation } = Validation.profile(
@@ -670,6 +671,12 @@ describe('Validation.profile', () => {
     expect(Object.hasOwn(form.field1, 'value')).toBe(true);
     expect(Object.hasOwn(form.field2.files, '0')).toBe(true);
     expect(Object.hasOwn(form.field3.files[1], 'size')).toBe(true);
+
+    // initial values
+    expect(form.field0.value).toBe('');
+    expect(form.field1.value).toBe('');
+    expect(form.field2.files[0]).toStrictEqual({ toString });
+    expect(form.field3.files[1].size).toBe(0);
 
     await expect(validations[2].validate()).rejects.toThrowError(
       `There is no path 'files.0' in object {}`,
