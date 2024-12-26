@@ -144,6 +144,7 @@
         - [ ] Validation.group() and Validation.glue() methods should throw if nothing is passed in.
         - [ ] http://localhost:4321/isomorphic-validation-docs/api/validation/static-methods/glue/#validating-one-field-depending-on-another
         method .error() does not catch the error in state callbacks (target undefined)
+        - [ ] When errors occur in more than predicate (especially if one of the is async/deferred), only the first one is catched by the .error method of a `Validation`.
         - [ ] when a validatable object doesn't have a one level path it does not throw an error.
         Instead, undefined is passed to predicates. Validation({}, 'prop1').validate() - doesn't throw an error, Validation({}, 'prop1.prop2').validate() - throws an error.
         - [ ] typescript incorrectly infers the type of an imported validation which comes from array destructuring.
@@ -156,6 +157,7 @@
             check it!!!
         - [x] Optional predicates should be valid by default. Temporarily fixed. See the comment in observable-predicate.js REFACTORED.
         - [ ] The `.error()` method should accept an errorStateCallback in validation.d.ts and predicate.d.ts
+        - [ ] The iterator and the forEach method of the `.constraints`: incorrect types d.ts.
         - [x] A predicated added with the option keepValid=true runs started state callback twice (second time after the restored state callback)
 
     ## Notes
@@ -185,3 +187,5 @@
         - Once a predicate added with the parameter next=false gets valid, predicates added with the parameter "debounce" following after it start getting invoked, and after their deferred execution their state callbacks are called as many times as the debounced predicates were called even though the deferred execution was only one. The state callbacks invokation number of time probably should be considered as one invokation. So this behavious needs to be changed.
 
         - A predicate added with the parameter next=false when invalid first invalidates the predicates following after it causing their invalid state callbacks to be invoked and then causes its own invalid state callback to be invoked.
+
+        - When the `.validate()` method is invoked on a grouping `Validation` without a `target` being passed into it, state callbacks of its grouped single validations are called without their `targets` being assigned to their validation results, whereas when the `.validate()` method is invoked on a single `Validation` its target is assigned to its validation result. Should it be so?
