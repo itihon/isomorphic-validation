@@ -9,6 +9,10 @@ on:
   # push:
     # branches: ["master"]
 
+  # Runs on notification from the docs repository
+  repository_dispatch:
+    types: [docs_changed]
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
