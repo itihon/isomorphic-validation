@@ -19,7 +19,7 @@ export default function addObservablePredicate(
     // create ObservablePredicate the amount of groups number
     const gluedOPs = [...groups].map((predicateGroup) =>
       ObservablePredicate(
-        predicate,
+        Predicate(predicate),
         [...items.getAll()],
         keepValid,
         predicateGroup.isOptional(), // init state for an optional predicate
