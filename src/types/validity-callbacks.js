@@ -11,7 +11,6 @@ export default function ValidityCallbacks(
   initVal = false,
   CBs = ValidityCallbacks(false, {}),
 ) {
-  let cbArg = {};
   let isValid = initVal;
   let {
     validCBs,
@@ -41,23 +40,19 @@ export default function ValidityCallbacks(
   return {
     set(value = false) {
       if (value) {
-        // cbArg.type = 'valid';
         validCBs.run(argForValidCBs);
       } else {
-        // cbArg.type = 'invalid';
         invalidCBs.run(argForInvalidCBs);
       }
 
       isValid = value;
 
-      // cbArg.type = 'validated';
       validatedCBs.run(argForValidatedCBs);
 
       return isValid;
     },
     change(value = false) {
       isValid = value;
-      // cbArg.type = 'changed';
       changedCBs.run(argForChangedCBs);
       return isValid;
     },
@@ -73,14 +68,12 @@ export default function ValidityCallbacks(
       };
     },
     start() {
-      // cbArg.type = 'started';
       startedCBs.run(argForStartedCBs);
     },
     restore() {
       restoredCBs.run(argForRestoredCBs);
     },
     setArg(arg) {
-      cbArg = arg;
       [
         argForValidCBs,
         argForInvalidCBs,
@@ -89,12 +82,12 @@ export default function ValidityCallbacks(
         argForStartedCBs,
         argForRestoredCBs,
       ] = [
-        setPrototypeOf({ type: 'valid' }, cbArg),
-        setPrototypeOf({ type: 'invalid' }, cbArg),
-        setPrototypeOf({ type: 'changed' }, cbArg),
-        setPrototypeOf({ type: 'validated' }, cbArg),
-        setPrototypeOf({ type: 'started' }, cbArg),
-        setPrototypeOf({ type: 'restored' }, cbArg),
+        setPrototypeOf({ type: 'valid' }, arg),
+        setPrototypeOf({ type: 'invalid' }, arg),
+        setPrototypeOf({ type: 'changed' }, arg),
+        setPrototypeOf({ type: 'validated' }, arg),
+        setPrototypeOf({ type: 'started' }, arg),
+        setPrototypeOf({ type: 'restored' }, arg),
       ];
     },
     started: startedCBs.push,
