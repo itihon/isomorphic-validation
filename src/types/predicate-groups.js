@@ -17,7 +17,9 @@ export default function PredicateGroups(
   const view = representation.toRepresentation();
   const validationResult = ValidationResult(view);
 
-  obs.onChanged((result) => validityCBs.change(result, validationResult));
+  validityCBs.setArg(validationResult);
+
+  obs.onChanged((result) => validityCBs.change(result));
 
   return Object.defineProperties(
     {

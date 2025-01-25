@@ -48,14 +48,14 @@ export default function ValidationBuilder({
       validatableItems.forEach((item) => item.preserveValue(callID));
 
       // ! a better solution would be to run all grouping validations' started callbacks first
-      pgs.startCBs(pgs.result(target)); // run startCBs of the grouping validation first
+      pgs.startCBs(); // run startCBs of the grouping validation first
 
       const containedPgsSet =
         containedGroups.get(target) || containedGroups.getAll();
 
       containedPgsSet.forEach((containedPgs) => {
         if (containedPgs !== pgs) {
-          containedPgs.startCBs(containedPgs.result(target));
+          containedPgs.startCBs();
         }
       });
 
@@ -63,10 +63,7 @@ export default function ValidationBuilder({
         validatableItems.forEach((item) => item.clearValue(callID));
 
         containedPgsSet.forEach((containedPgs) => {
-          containedPgs.runCBs(
-            containedPgs.isValid,
-            containedPgs.result(target),
-          );
+          containedPgs.runCBs(containedPgs.isValid);
         });
 
         return Object.create(pgs.result(target), { isValid: { value: res } });

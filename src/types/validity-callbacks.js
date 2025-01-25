@@ -6,6 +6,7 @@ export default function ValidityCallbacks(
   initVal = false,
   CBs = ValidityCallbacks(false, {}),
 ) {
+  let cbArg = {};
   let isValid = initVal;
   let { validCBs, invalidCBs, changedCBs, validatedCBs, startedCBs, errorCBs } =
     CBs ? CBs.valueOf() : {};
@@ -18,26 +19,26 @@ export default function ValidityCallbacks(
   errorCBs = Functions(errorCBs);
 
   return {
-    set(value = false, cbArgs = {}) {
+    set(value = false) {
       if (value) {
-        cbArgs.type = 'valid';
-        validCBs.run(cbArgs);
+        cbArg.type = 'valid';
+        validCBs.run(cbArg);
       } else {
-        cbArgs.type = 'invalid';
-        invalidCBs.run(cbArgs);
+        cbArg.type = 'invalid';
+        invalidCBs.run(cbArg);
       }
 
       isValid = value;
 
-      cbArgs.type = 'validated';
-      validatedCBs.run(cbArgs);
+      cbArg.type = 'validated';
+      validatedCBs.run(cbArg);
 
       return isValid;
     },
-    change(value = false, cbArgs = {}) {
+    change(value = false) {
       isValid = value;
-      cbArgs.type = 'changed';
-      changedCBs.run(cbArgs);
+      cbArg.type = 'changed';
+      changedCBs.run(cbArg);
       return isValid;
     },
     valueOf() {
@@ -50,9 +51,12 @@ export default function ValidityCallbacks(
         errorCBs,
       };
     },
-    start(cbArgs = {}) {
-      cbArgs.type = 'started';
-      startedCBs.run(cbArgs);
+    start() {
+      cbArg.type = 'started';
+      startedCBs.run(cbArg);
+    },
+    setArg(arg) {
+      cbArg = arg;
     },
     started: startedCBs.push,
     valid: validCBs.push,
@@ -62,5 +66,8 @@ export default function ValidityCallbacks(
     catch: errorCBs.run,
     error: errorCBs.push,
     [Symbol.toStringTag]: ValidityCallbacks.name,
+    id: ValidityCallbacks.id++,
   };
 }
+
+ValidityCallbacks.id = 0;

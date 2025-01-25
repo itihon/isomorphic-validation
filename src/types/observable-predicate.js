@@ -36,11 +36,11 @@ export default function ObservablePredicate(
   const onInvalidCBs = Functions();
 
   const notifySubscribers = obs.update;
-  const setValidity = (value, cbArgs) => {
+  const setValidity = (value) => {
     if (!value) {
       onInvalidCBs.run();
     }
-    return validityCBs.set(value, cbArgs);
+    return validityCBs.set(value);
   };
 
   const representation = ObservablePredicateRepresentation(
@@ -65,9 +65,11 @@ export default function ObservablePredicate(
     target: { get: validatableItem.getObject },
   });
 
+  validityCBs.setArg(validationResult);
+
   const predicateFn = debounce && IS_CLIENT ? debounceP(fn, debounce) : fn;
 
-  obs.onChanged((result) => validityCBs.change(result, validationResult));
+  obs.onChanged((result) => validityCBs.change(result));
   restoredCBs.forEach((cb) => items.forEach((item) => item.onRestored(cb)));
 
   function predicatePostExec(result, forbidInvalid, callID) {
@@ -79,7 +81,7 @@ export default function ObservablePredicate(
         return obsPredicate(!forbidInvalid, callID, true);
       }
     }
-    return setValidity(result, validationResult);
+    return setValidity(result);
   }
 
   function obsPredicate(
@@ -89,7 +91,7 @@ export default function ObservablePredicate(
     skipOptional = false,
   ) {
     if (!revalidate) {
-      validityCBs.start(validationResult);
+      validityCBs.start();
     }
 
     if (skipOptional) {
@@ -120,7 +122,7 @@ export default function ObservablePredicate(
     invalidate: {
       value: () => {
         if (debounce) predicateFn.cancel(false);
-        return setValidity(notifySubscribers(false), validationResult);
+        return setValidity(notifySubscribers(false));
       },
     },
     clone: {

@@ -109,6 +109,12 @@ describe('Validation', () => {
       const vChangedCB = jest.fn();
       const vValidatedCB = jest.fn();
 
+      const vGlStartedCB = jest.fn();
+      const vGlValidCB = jest.fn();
+      const vGlInvalidCB = jest.fn();
+      const vGlChangedCB = jest.fn();
+      const vGlValidatedCB = jest.fn();
+
       const pStartedCB = jest.fn();
       const pValidCB = jest.fn();
       const pInvalidCB = jest.fn();
@@ -178,7 +184,13 @@ describe('Validation', () => {
       expect(validation.isValid).toBe(true);
       expect(validationCl.isValid).toBe(true);
       const validationGl = Validation.glue(validation, validationCl) // glued the original and the cloned
-        .constraint(Predicate(p2).invalid(pInvalidCB));
+        .constraint(Predicate(p2).invalid(pInvalidCB))
+        .started(vGlStartedCB)
+        .valid(vGlValidCB)
+        .invalid(vGlInvalidCB)
+        .changed(vGlChangedCB)
+        .validated(vGlValidatedCB);
+
       validationGl.validations.forEach((v) => v.invalid(vInvalidCB));
       await validationGl.validate(obj3);
 
@@ -187,6 +199,12 @@ describe('Validation', () => {
       expect(vInvalidCB).toHaveBeenCalledTimes(1);
       expect(vChangedCB).toHaveBeenCalledTimes(2); // called twice on the "glued" validations
       expect(vValidatedCB).toHaveBeenCalledTimes(1);
+
+      expect(vGlStartedCB).toHaveBeenCalledTimes(1);
+      expect(vGlValidCB).toHaveBeenCalledTimes(0);
+      expect(vGlInvalidCB).toHaveBeenCalledTimes(1);
+      expect(vGlChangedCB).toHaveBeenCalledTimes(0);
+      expect(vGlValidatedCB).toHaveBeenCalledTimes(1);
 
       expect(pStartedCB).toHaveBeenCalledTimes(1);
       expect(pValidCB).toHaveBeenCalledTimes(1);
@@ -199,6 +217,10 @@ describe('Validation', () => {
       expect(vChangedCB.mock.calls[0][0].target).toBe(obj2);
       expect(vChangedCB.mock.calls[1][0].target).toBe(obj3);
       expect(vValidatedCB.mock.calls[0][0].target).toBe(obj3);
+
+      expect(vGlStartedCB.mock.calls[0][0].target).toBe(obj3);
+      expect(vGlInvalidCB.mock.calls[0][0].target).toBe(obj3);
+      expect(vGlValidatedCB.mock.calls[0][0].target).toBe(obj3);
 
       expect(pStartedCB.mock.calls[0][0].target).toBe(obj3);
       expect(pValidCB.mock.calls[0][0].target).toBe(obj3);
@@ -217,20 +239,30 @@ describe('Validation', () => {
       expect(vChangedCB).toHaveBeenCalledTimes(2); // validationCl changes 2 times, first the "glued" predicate p2 invoked on the original validation changes it
       expect(vValidatedCB).toHaveBeenCalledTimes(2);
 
+      expect(vGlStartedCB).toHaveBeenCalledTimes(1);
+      expect(vGlValidCB).toHaveBeenCalledTimes(0);
+      expect(vGlInvalidCB).toHaveBeenCalledTimes(1);
+      expect(vGlChangedCB).toHaveBeenCalledTimes(0);
+      expect(vGlValidatedCB).toHaveBeenCalledTimes(1);
+
       expect(pStartedCB).toHaveBeenCalledTimes(2);
       expect(pValidCB).toHaveBeenCalledTimes(0);
       expect(pInvalidCB).toHaveBeenCalledTimes(0);
       expect(pChangedCB).toHaveBeenCalledTimes(2);
       expect(pValidatedCB).toHaveBeenCalledTimes(2);
 
-      expect(vStartedCB.mock.calls[0][0].target).toBe(undefined);
-      expect(vStartedCB.mock.calls[1][0].target).toBe(undefined);
-      expect(vInvalidCB.mock.calls[0][0].target).toBe(undefined);
-      expect(vInvalidCB.mock.calls[1][0].target).toBe(undefined);
-      expect(vChangedCB.mock.calls[0][0].target).toBe(undefined);
-      expect(vChangedCB.mock.calls[1][0].target).toBe(undefined);
-      expect(vValidatedCB.mock.calls[0][0].target).toBe(undefined);
-      expect(vValidatedCB.mock.calls[1][0].target).toBe(undefined);
+      expect(vStartedCB.mock.calls[0][0].target).toBe(obj2);
+      expect(vStartedCB.mock.calls[1][0].target).toBe(obj3);
+      expect(vInvalidCB.mock.calls[0][0].target).toBe(obj2);
+      expect(vInvalidCB.mock.calls[1][0].target).toBe(obj3);
+      expect(vChangedCB.mock.calls[0][0].target).toBe(obj3); // p2 executed in the original validation runs its counterpart in validatinCl: { p1: true, p2: false } --> { p1: true, p2: true }
+      expect(vChangedCB.mock.calls[1][0].target).toBe(obj3); // when both predicates have been executed in validationCl: { p1: true, p2: true } --> { p1: false, p2: true }
+      expect(vValidatedCB.mock.calls[0][0].target).toBe(obj2);
+      expect(vValidatedCB.mock.calls[1][0].target).toBe(obj3);
+
+      expect(vGlStartedCB.mock.calls[0][0].target).toBe(undefined);
+      expect(vGlInvalidCB.mock.calls[0][0].target).toBe(undefined);
+      expect(vGlValidatedCB.mock.calls[0][0].target).toBe(undefined);
 
       expect(pStartedCB.mock.calls[0][0].target).toBe(obj2);
       expect(pStartedCB.mock.calls[1][0].target).toBe(obj3);

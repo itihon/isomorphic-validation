@@ -135,15 +135,19 @@ describe('ValidityCallbacks', () => {
       .changed(changedCB)
       .validated(validatedCB);
 
-    CBs.set(true, args1);
-    CBs.change(true, args1);
+    CBs.setArg(args1);
+
+    CBs.set(true);
+    CBs.change(true);
     expect(validCB.mock.calls).toStrictEqual([[args1]]);
     expect(invalidCB.mock.calls).toStrictEqual([]);
     expect(changedCB.mock.calls).toStrictEqual([[args1]]);
     expect(validatedCB.mock.calls).toStrictEqual([[args1]]);
 
-    CBs.set(false, args2);
-    CBs.change(false, args2);
+    CBs.setArg(args2);
+
+    CBs.set(false);
+    CBs.change(false);
     expect(validCB.mock.calls).toStrictEqual([[args1]]);
     expect(invalidCB.mock.calls).toStrictEqual([[args2]]);
     expect(changedCB.mock.calls).toStrictEqual([[args1], [args2]]);
