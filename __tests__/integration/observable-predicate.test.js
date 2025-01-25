@@ -196,7 +196,6 @@ describe('ObservablePredicate, Predicate, ValidatableItem, ObserverAnd', () => {
     expect(changedCB1).toHaveBeenCalledTimes(3); // !!called twice,
     expect(validatedCB1).toHaveBeenCalledTimes(2);
     expect(restoredCB1).toHaveBeenCalledTimes(1);
-    // MOVE: restored cbs from ValidatableItem to ValidityCallbacks
     expect(toProtos(restoredCB1.mock.calls)).toStrictEqual(
       toProtos(validatedCB1.mock.calls[1]),
     );

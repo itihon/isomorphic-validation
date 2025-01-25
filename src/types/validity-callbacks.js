@@ -13,20 +13,29 @@ export default function ValidityCallbacks(
 ) {
   let cbArg = {};
   let isValid = initVal;
-  let { validCBs, invalidCBs, changedCBs, validatedCBs, startedCBs, errorCBs } =
-    CBs ? CBs.valueOf() : {};
+  let {
+    validCBs,
+    invalidCBs,
+    changedCBs,
+    validatedCBs,
+    startedCBs,
+    restoredCBs,
+    errorCBs,
+  } = CBs ? CBs.valueOf() : {};
 
   let argForValidCBs;
   let argForInvalidCBs;
   let argForChangedCBs;
   let argForValidatedCBs;
   let argForStartedCBs;
+  let argForRestoredCBs;
 
   validCBs = Functions(validCBs);
   invalidCBs = Functions(invalidCBs);
   changedCBs = Functions(changedCBs);
   validatedCBs = Functions(validatedCBs);
   startedCBs = Functions(startedCBs);
+  restoredCBs = Functions(restoredCBs);
   errorCBs = Functions(errorCBs);
 
   return {
@@ -59,12 +68,16 @@ export default function ValidityCallbacks(
         changedCBs,
         validatedCBs,
         startedCBs,
+        restoredCBs,
         errorCBs,
       };
     },
     start() {
       // cbArg.type = 'started';
       startedCBs.run(argForStartedCBs);
+    },
+    restore() {
+      restoredCBs.run(argForRestoredCBs);
     },
     setArg(arg) {
       cbArg = arg;
@@ -74,12 +87,14 @@ export default function ValidityCallbacks(
         argForChangedCBs,
         argForValidatedCBs,
         argForStartedCBs,
+        argForRestoredCBs,
       ] = [
         setPrototypeOf({ type: 'valid' }, cbArg),
         setPrototypeOf({ type: 'invalid' }, cbArg),
         setPrototypeOf({ type: 'changed' }, cbArg),
         setPrototypeOf({ type: 'validated' }, cbArg),
         setPrototypeOf({ type: 'started' }, cbArg),
+        setPrototypeOf({ type: 'restored' }, cbArg),
       ];
     },
     started: startedCBs.push,
@@ -87,6 +102,7 @@ export default function ValidityCallbacks(
     invalid: invalidCBs.push,
     changed: changedCBs.push,
     validated: validatedCBs.push,
+    restored: restoredCBs.push,
     catch: errorCBs.run,
     error: errorCBs.push,
     [Symbol.toStringTag]: ValidityCallbacks.name,

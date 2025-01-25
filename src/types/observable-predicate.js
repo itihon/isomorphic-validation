@@ -27,10 +27,9 @@ export default function ObservablePredicate(
 ) {
   acceptOnlyPredicate(predicate);
 
-  let restoredCBs;
   let validityCBs;
 
-  const fn = ({ restoredCBs, validityCBs } = predicate.valueOf()).valueOf();
+  const fn = ({ validityCBs } = predicate.valueOf()).valueOf();
   const fnName = fn.name || indexedName('predicate');
   const obs = ObserverAnd(initState); // optional predicates are valid by default
   const onInvalidCBs = Functions();
@@ -70,13 +69,14 @@ export default function ObservablePredicate(
   const predicateFn = debounce && IS_CLIENT ? debounceP(fn, debounce) : fn;
 
   obs.onChanged((result) => validityCBs.change(result));
-  restoredCBs.forEach((cb) => items.forEach((item) => item.onRestored(cb)));
 
   function predicatePostExec(result, forbidInvalid, callID) {
     acceptOnlyBoolean(result);
     notifySubscribers(result);
     if (forbidInvalid) {
-      if (ValidatableItem.keepValid(items, validationResult)) {
+      if (ValidatableItem.keepValid(items, result)) {
+        validityCBs.restore();
+
         items.forEach((item) => item.preserveValue(callID));
         return obsPredicate(!forbidInvalid, callID, true);
       }

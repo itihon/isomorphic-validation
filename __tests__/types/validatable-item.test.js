@@ -5,10 +5,6 @@ const obj1 = { value: 1 };
 const obj2 = { value: 2 };
 const obj3 = { value: 3 };
 
-const onRestoredCB1 = jest.fn();
-const onRestoredCB2 = jest.fn();
-const onRestoredCB3 = jest.fn();
-
 describe('ValidatableItem', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -54,158 +50,53 @@ describe('ValidatableItem', () => {
     expect(vi2.getValue()).toBe(2);
   });
 
-  test('keepValid, saveValue, restoreValue, initVal, onRestored with cbArgs', () => {
+  test('keepValid, saveValue, restoreValue, initVal', () => {
     const initVal1 = 'initial value 1';
     const initVal2 = 'initial value 2';
 
     const vi1 = ValidatableItem(obj1, 'value', initVal1);
     const vi2 = ValidatableItem(obj2, 'value', initVal2);
 
-    vi1.onRestored(onRestoredCB1);
-    vi2.onRestored(onRestoredCB2);
-
     expect(vi1.getValue()).toBe(1);
     expect(vi2.getValue()).toBe(2);
 
-    expect(
-      ValidatableItem.keepValid([vi1, vi2], {
-        isValid: false,
-        desc: 'restored 1',
-      }),
-    ).toBe(true);
+    expect(ValidatableItem.keepValid([vi1, vi2], false)).toBe(true);
     expect(vi1.getValue()).toBe(initVal1);
     expect(vi2.getValue()).toBe(initVal2);
-    expect(onRestoredCB1).toHaveBeenCalledTimes(1);
-    expect(onRestoredCB2).toHaveBeenCalledTimes(1);
-    expect(onRestoredCB1).lastCalledWith({
-      isValid: false,
-      desc: 'restored 1',
-      type: 'restored',
-    });
-    expect(onRestoredCB2).lastCalledWith({
-      isValid: false,
-      desc: 'restored 1',
-      type: 'restored',
-    });
 
-    expect(
-      ValidatableItem.keepValid([vi1, vi2], {
-        isValid: false,
-        desc: 'restored 2',
-        type: 'restored',
-      }),
-    ).toBe(true);
+    expect(ValidatableItem.keepValid([vi1, vi2], false)).toBe(true);
     expect(vi1.getValue()).toBe(initVal1);
     expect(vi2.getValue()).toBe(initVal2);
-    expect(onRestoredCB1).toHaveBeenCalledTimes(2);
-    expect(onRestoredCB2).toHaveBeenCalledTimes(2);
-    expect(onRestoredCB1).lastCalledWith({
-      isValid: false,
-      desc: 'restored 2',
-      type: 'restored',
-    });
-    expect(onRestoredCB2).lastCalledWith({
-      isValid: false,
-      desc: 'restored 2',
-      type: 'restored',
-    });
 
     obj1.value = 42;
     obj2.value = 'meaning of life';
-    expect(
-      ValidatableItem.keepValid([vi1, vi2], { isValid: true, desc: 'saved 1' }),
-    ).toBe(false);
+    expect(ValidatableItem.keepValid([vi1, vi2], true)).toBe(false);
     expect(vi1.getValue()).toBe(42);
     expect(vi2.getValue()).toBe('meaning of life');
-    expect(onRestoredCB1).toHaveBeenCalledTimes(2);
-    expect(onRestoredCB2).toHaveBeenCalledTimes(2);
-    expect(onRestoredCB1).lastCalledWith({
-      isValid: false,
-      desc: 'restored 2',
-      type: 'restored',
-    });
-    expect(onRestoredCB2).lastCalledWith({
-      isValid: false,
-      desc: 'restored 2',
-      type: 'restored',
-    });
 
     obj1.value = 7;
     obj2.value = 'lucky number';
-    expect(
-      ValidatableItem.keepValid([vi1, vi2], {
-        isValid: false,
-        desc: 'restored 3',
-      }),
-    ).toBe(true);
+    expect(ValidatableItem.keepValid([vi1, vi2], false)).toBe(true);
     expect(vi1.getValue()).toBe(42);
     expect(vi2.getValue()).toBe('meaning of life');
-    expect(onRestoredCB1).toHaveBeenCalledTimes(3);
-    expect(onRestoredCB2).toHaveBeenCalledTimes(3);
-    expect(onRestoredCB1).lastCalledWith({
-      isValid: false,
-      desc: 'restored 3',
-      type: 'restored',
-    });
-    expect(onRestoredCB2).lastCalledWith({
-      isValid: false,
-      desc: 'restored 3',
-      type: 'restored',
-    });
 
     obj1.value = initVal1;
     obj2.value = initVal2;
-    expect(
-      ValidatableItem.keepValid([vi1, vi2], {
-        isValid: false,
-        desc: 'restored 4',
-      }),
-    ).toBe(true);
+    expect(ValidatableItem.keepValid([vi1, vi2], false)).toBe(true);
     expect(vi1.getValue()).toBe(initVal1);
     expect(vi2.getValue()).toBe(initVal2);
-    expect(onRestoredCB1).toHaveBeenCalledTimes(4);
-    expect(onRestoredCB2).toHaveBeenCalledTimes(4);
-    expect(onRestoredCB1).lastCalledWith({
-      isValid: false,
-      desc: 'restored 4',
-      type: 'restored',
-    });
-    expect(onRestoredCB2).lastCalledWith({
-      isValid: false,
-      desc: 'restored 4',
-      type: 'restored',
-    });
 
     obj1.value = 42;
     obj2.value = 'meaning of life';
-    expect(
-      ValidatableItem.keepValid([vi1], { isValid: false, desc: 'restored 5' }),
-    ).toBe(true);
+    expect(ValidatableItem.keepValid([vi1], false)).toBe(true);
     expect(vi1.getValue()).toBe(initVal1);
     expect(vi2.getValue()).toBe('meaning of life');
-    expect(onRestoredCB1).toHaveBeenCalledTimes(5);
-    expect(onRestoredCB2).toHaveBeenCalledTimes(4);
-    expect(onRestoredCB1).lastCalledWith({
-      isValid: false,
-      desc: 'restored 5',
-      type: 'restored',
-    });
-    expect(onRestoredCB2).lastCalledWith({
-      isValid: false,
-      desc: 'restored 4',
-      type: 'restored',
-    });
   });
 
   it('should clone an instance', () => {
     const vi1 = ValidatableItem(obj1, 'value', '');
-    vi1.onRestored(onRestoredCB1);
-
     const vi2 = vi1.clone();
-    vi2.onRestored(onRestoredCB2);
-
     const vi3 = vi2.clone();
-    vi3.onRestored(onRestoredCB3);
 
     expect(vi1).not.toBe(vi2);
     expect(vi1).not.toBe(vi3);
@@ -214,32 +105,14 @@ describe('ValidatableItem', () => {
     obj1.value = 42;
     ValidatableItem.keepValid([vi1]);
     expect(obj1.value).toBe('');
-    expect(onRestoredCB1).toHaveBeenCalledTimes(1);
-    expect(onRestoredCB2).toHaveBeenCalledTimes(0);
-    expect(onRestoredCB3).toHaveBeenCalledTimes(0);
 
     obj1.value = 42;
     ValidatableItem.keepValid([vi2]);
     expect(obj1.value).toBe('');
-    // onRestoredCBs should not be cloned via ValidatableItem,
-    // they are cloned via ObservablePredicate().clone() -> Predicate().clone()
-    // expect(onRestoredCB1).toHaveBeenCalledTimes(2);
-    expect(onRestoredCB1).toHaveBeenCalledTimes(1);
-    expect(onRestoredCB2).toHaveBeenCalledTimes(1);
-    expect(onRestoredCB3).toHaveBeenCalledTimes(0);
 
     obj1.value = 42;
     ValidatableItem.keepValid([vi3]);
     expect(obj1.value).toBe('');
-    // onRestoredCBs should not be cloned via ValidatableItem,
-    // they are cloned via ObservablePredicate().clone() -> Predicate().clone()
-    // expect(onRestoredCB1).toHaveBeenCalledTimes(3);
-    expect(onRestoredCB1).toHaveBeenCalledTimes(1);
-    // onRestoredCBs should not be cloned via ValidatableItem,
-    // they are cloned via ObservablePredicate().clone() -> Predicate().clone()
-    // expect(onRestoredCB2).toHaveBeenCalledTimes(2);
-    expect(onRestoredCB2).toHaveBeenCalledTimes(1);
-    expect(onRestoredCB3).toHaveBeenCalledTimes(1);
 
     expect(vi1.clone()).not.toBe(vi1);
     expect(vi1.clone()).not.toBe(vi1.clone()); // after having removed memoization
@@ -248,11 +121,9 @@ describe('ValidatableItem', () => {
 
   it('should change the validated object of an instance', () => {
     const vi1 = ValidatableItem(obj1, 'value');
-    vi1.onRestored(onRestoredCB1);
     // expect(ValidatableItem(obj1, 'value')).toBe(vi1);
 
     const vi2 = vi1.clone();
-    vi2.onRestored(onRestoredCB2);
     // expect(ValidatableItem(obj1, 'value')).toBe(vi1);
     expect(ValidatableItem(obj1, 'value')).not.toBe(vi2);
     expect(ValidatableItem(obj1, 'value')).not.toBe(vi2);

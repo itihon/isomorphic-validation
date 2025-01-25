@@ -53,12 +53,11 @@ describe('Predicate', () => {
     expect(p2.valueOf().valueOf()).toBe(predicateFn);
   });
 
-  it('should unwrap restoredCBs and validityCBs after the first call of valueOf', () => {
-    const { restoredCBs, validityCBs } = p2.valueOf();
+  it('should unwrap validityCBs after the first call of valueOf', () => {
+    const { validityCBs } = p2.valueOf();
     const { validCBs, invalidCBs, changedCBs, validatedCBs } =
       validityCBs.valueOf();
 
-    expect(restoredCBs).toContain(restoredCB);
     expect(validCBs).toContain(validCB);
     expect(invalidCBs).toContain(invalidCB);
     expect(changedCBs).toContain(changedCB);

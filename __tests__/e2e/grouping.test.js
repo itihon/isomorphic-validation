@@ -1183,8 +1183,6 @@ describe('callbacks', () => {
       expect(toProtos(validCB1.mock.calls)).toStrictEqual(
         toProtos(validatedCB1.mock.calls),
       );
-
-      // MOVE: restored cbs from ValidatableItem to ValidityCallbacks
       expect(toProtos(validatedCB1.mock.calls)).toStrictEqual(
         toProtos(restoredCB1.mock.calls),
       );

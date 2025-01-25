@@ -1,27 +1,16 @@
 import getByPath from '../utils/get-by-path.js';
 import setByPath from '../utils/set-by-path.js';
-import Functions from './functions.js';
 
-ValidatableItem.keepValid = (
-  items = [],
-  validationResult = { isValid: false },
-) => {
-  const { isValid } = validationResult;
+ValidatableItem.keepValid = (items = [], isValid = false) => {
   if (isValid === true) {
     items.forEach((item) => item.saveValue());
   } else {
-    items.forEach((item) => item.restoreValue(validationResult));
+    items.forEach((item) => item.restoreValue());
   }
   return !isValid;
 };
 
-function ValidatableItem(
-  obj = {},
-  path = '',
-  initVal = undefined,
-  onRestoredCBs = Functions(),
-) {
-  const ownOnRestoredCBs = Functions(onRestoredCBs);
+function ValidatableItem(obj = {}, path = '', initVal = undefined) {
   const values = new Map();
   const delim = '.';
 
@@ -54,7 +43,7 @@ function ValidatableItem(
     saveValue: () => {
       savedValue = getByPath(ownObj, ownPath, delim, isPath);
     },
-    restoreValue: (cbArgs = {}) => {
+    restoreValue: () => {
       const isInitValue =
         isInitVal === undefined
           ? getByPath(ownObj, ownPath, delim, isPath) === ownInitVal
@@ -65,8 +54,6 @@ function ValidatableItem(
       } else {
         savedValue = ownInitVal;
       }
-      cbArgs.type = 'restored';
-      ownOnRestoredCBs.run(cbArgs);
     },
     preserveValue(key = Symbol('ValidatableItem.value')) {
       const currValue = getByPath(ownObj, ownPath, delim, isPath);
@@ -82,7 +69,6 @@ function ValidatableItem(
       return isInitVal;
     },
     clone: () => ValidatableItem(ownObj, ownPath, ownInitVal),
-    onRestored: ownOnRestoredCBs.push,
     [Symbol.toStringTag]: ValidatableItem.name,
   };
 }
