@@ -4,6 +4,7 @@ import ObserverAnd from '../../src/types/observer-and.js';
 import ObservablePredicate from '../../src/types/observable-predicate.js';
 import Predicate from '../../src/types/predicate.js';
 import ValidatableItem from '../../src/types/validatable-item.js';
+import { toProtos } from '../helpers.js';
 
 const obj1 = { value: 'Firstname' };
 const obj2 = { value: 'Lastname' };
@@ -195,7 +196,10 @@ describe('ObservablePredicate, Predicate, ValidatableItem, ObserverAnd', () => {
     expect(changedCB1).toHaveBeenCalledTimes(3); // !!called twice,
     expect(validatedCB1).toHaveBeenCalledTimes(2);
     expect(restoredCB1).toHaveBeenCalledTimes(1);
-    expect(restoredCB1).lastCalledWith(...validatedCB1.mock.calls[1]);
+    // MOVE: restored cbs from ValidatableItem to ValidityCallbacks
+    expect(toProtos(restoredCB1.mock.calls)).toStrictEqual(
+      toProtos(validatedCB1.mock.calls[1]),
+    );
     expect(oa.getValue()).toBe(true);
     expect(onChangedCB).toHaveBeenCalledTimes(7); // !!called twice, notified subscribers twice
   });

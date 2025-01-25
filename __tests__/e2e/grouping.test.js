@@ -8,6 +8,8 @@ import {
 } from '@jest/globals';
 import { Validation, Predicate } from '../../src/index.js';
 
+import { toProtos } from '../helpers.js';
+
 const a = { value: 'obj a' };
 const b = { value: 'obj b' };
 const d = { value: 'obj d' };
@@ -931,15 +933,15 @@ describe('callbacks', () => {
       expect(new Set(cbsOrder.valid).size).toBe(12);
       expect(new Set(cbsOrder.validated).size).toBe(12);
 
-      // callbacks have been invoked with the same argument
+      // callbacks have been invoked with arguments with the same prototype
       cbsOrder.validated.forEach((cbName) => {
         const [, vName] = cbName.split('_');
         const validCalls = cbs[`valid_${vName}`].mock.calls;
         const validatedCalls = cbs[`validated_${vName}`].mock.calls;
         const changedCalls = cbs[`changed_${vName}`].mock.calls;
 
-        expect(validCalls).toStrictEqual(validatedCalls);
-        expect(validatedCalls).toStrictEqual(changedCalls);
+        expect(toProtos(validCalls)).toStrictEqual(toProtos(validatedCalls));
+        expect(toProtos(validatedCalls)).toStrictEqual(toProtos(changedCalls));
       });
 
       const validation2 = isCloned ? Validation.clone(origVF) : origVF;
@@ -998,13 +1000,13 @@ describe('callbacks', () => {
         'validated_VF',
       ]);
 
-      // callbacks have been invoked with the same argument
+      // callbacks have been invoked with arguments with the same prototype
       cbsOrder.invalid.forEach((cbName) => {
         const [, vName] = cbName.split('_');
         const invalidCalls = cbs[`invalid_${vName}`].mock.calls;
         const validatedCalls = cbs[`validated_${vName}`].mock.calls;
 
-        expect(invalidCalls).toStrictEqual(validatedCalls);
+        expect(toProtos(invalidCalls)).toStrictEqual(toProtos(validatedCalls));
       });
     },
   );
@@ -1148,9 +1150,13 @@ describe('callbacks', () => {
       expect(validatedCB1).toHaveBeenCalledTimes(1);
       expect(restoredCB1).toHaveBeenCalledTimes(0);
 
-      // callbacks have been invoked with the same argument
-      expect(validCB1.mock.calls).toStrictEqual(validatedCB1.mock.calls);
-      expect(validatedCB1.mock.calls).toStrictEqual(changedCB1.mock.calls);
+      // callbacks have been invoked with arguments with the same prototype
+      expect(toProtos(validCB1.mock.calls)).toStrictEqual(
+        toProtos(validatedCB1.mock.calls),
+      );
+      expect(toProtos(validatedCB1.mock.calls)).toStrictEqual(
+        toProtos(changedCB1.mock.calls),
+      );
 
       // check ValidationResult target
       expect(validCB1.mock.calls[0][0].target).toBe(isAdded ? x : b);
@@ -1173,9 +1179,15 @@ describe('callbacks', () => {
       expect(validatedCB1).toHaveBeenCalledTimes(1);
       expect(restoredCB1).toHaveBeenCalledTimes(1);
 
-      // callbacks have been invoked with the same argument
-      expect(validCB1.mock.calls).toStrictEqual(validatedCB1.mock.calls);
-      expect(validatedCB1.mock.calls).toStrictEqual(restoredCB1.mock.calls);
+      // callbacks have been invoked with arguments with the same prototype
+      expect(toProtos(validCB1.mock.calls)).toStrictEqual(
+        toProtos(validatedCB1.mock.calls),
+      );
+
+      // MOVE: restored cbs from ValidatableItem to ValidityCallbacks
+      expect(toProtos(validatedCB1.mock.calls)).toStrictEqual(
+        toProtos(restoredCB1.mock.calls),
+      );
 
       // check ValidationResult target
       expect(validCB1.mock.calls[0][0].target).toBe(isAdded ? x : b);
@@ -1202,8 +1214,10 @@ describe('callbacks', () => {
       expect(validatedCB2).toHaveBeenCalledTimes(1);
       expect(restoredCB2).toHaveBeenCalledTimes(0);
 
-      // callbacks have been invoked with the same argument
-      expect(validatedCB2.mock.calls).toStrictEqual(invalidCB2.mock.calls);
+      // callbacks have been invoked with arguments with the same prototype
+      expect(toProtos(validatedCB2.mock.calls)).toStrictEqual(
+        toProtos(invalidCB2.mock.calls),
+      );
 
       // check ValidationResult target
       expect(validatedCB2.mock.calls[0][0].target).toBe(a);

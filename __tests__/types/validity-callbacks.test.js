@@ -1,5 +1,6 @@
 import { expect, it, describe, beforeEach, jest } from '@jest/globals';
 import ValidityCallbacks from '../../src/types/validity-callbacks.js';
+import { toProtos } from '../helpers.js';
 
 const validCB = jest.fn();
 const invalidCB = jest.fn();
@@ -139,19 +140,19 @@ describe('ValidityCallbacks', () => {
 
     CBs.set(true);
     CBs.change(true);
-    expect(validCB.mock.calls).toStrictEqual([[args1]]);
-    expect(invalidCB.mock.calls).toStrictEqual([]);
-    expect(changedCB.mock.calls).toStrictEqual([[args1]]);
-    expect(validatedCB.mock.calls).toStrictEqual([[args1]]);
+    expect(toProtos(validCB.mock.calls)).toStrictEqual([args1]);
+    expect(toProtos(invalidCB.mock.calls)).toStrictEqual([]);
+    expect(toProtos(changedCB.mock.calls)).toStrictEqual([args1]);
+    expect(toProtos(validatedCB.mock.calls)).toStrictEqual([args1]);
 
     CBs.setArg(args2);
 
     CBs.set(false);
     CBs.change(false);
-    expect(validCB.mock.calls).toStrictEqual([[args1]]);
-    expect(invalidCB.mock.calls).toStrictEqual([[args2]]);
-    expect(changedCB.mock.calls).toStrictEqual([[args1], [args2]]);
-    expect(validatedCB.mock.calls).toStrictEqual([[args1], [args2]]);
+    expect(toProtos(validCB.mock.calls)).toStrictEqual([args1]);
+    expect(toProtos(invalidCB.mock.calls)).toStrictEqual([args2]);
+    expect(toProtos(changedCB.mock.calls)).toStrictEqual([args1, args2]);
+    expect(toProtos(validatedCB.mock.calls)).toStrictEqual([args1, args2]);
   });
 
   it('should clone an instance passed as the second parameter', () => {

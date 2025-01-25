@@ -1,5 +1,10 @@
 import Functions from './functions.js';
 
+const setPrototypeOf = (obj, proto) => {
+  Reflect.setPrototypeOf(obj, proto);
+  return obj;
+};
+
 // !refactor to ValidityEvents
 // set() -> emit()
 export default function ValidityCallbacks(
@@ -11,6 +16,12 @@ export default function ValidityCallbacks(
   let { validCBs, invalidCBs, changedCBs, validatedCBs, startedCBs, errorCBs } =
     CBs ? CBs.valueOf() : {};
 
+  let argForValidCBs;
+  let argForInvalidCBs;
+  let argForChangedCBs;
+  let argForValidatedCBs;
+  let argForStartedCBs;
+
   validCBs = Functions(validCBs);
   invalidCBs = Functions(invalidCBs);
   changedCBs = Functions(changedCBs);
@@ -21,24 +32,24 @@ export default function ValidityCallbacks(
   return {
     set(value = false) {
       if (value) {
-        cbArg.type = 'valid';
-        validCBs.run(cbArg);
+        // cbArg.type = 'valid';
+        validCBs.run(argForValidCBs);
       } else {
-        cbArg.type = 'invalid';
-        invalidCBs.run(cbArg);
+        // cbArg.type = 'invalid';
+        invalidCBs.run(argForInvalidCBs);
       }
 
       isValid = value;
 
-      cbArg.type = 'validated';
-      validatedCBs.run(cbArg);
+      // cbArg.type = 'validated';
+      validatedCBs.run(argForValidatedCBs);
 
       return isValid;
     },
     change(value = false) {
       isValid = value;
-      cbArg.type = 'changed';
-      changedCBs.run(cbArg);
+      // cbArg.type = 'changed';
+      changedCBs.run(argForChangedCBs);
       return isValid;
     },
     valueOf() {
@@ -52,11 +63,24 @@ export default function ValidityCallbacks(
       };
     },
     start() {
-      cbArg.type = 'started';
-      startedCBs.run(cbArg);
+      // cbArg.type = 'started';
+      startedCBs.run(argForStartedCBs);
     },
     setArg(arg) {
       cbArg = arg;
+      [
+        argForValidCBs,
+        argForInvalidCBs,
+        argForChangedCBs,
+        argForValidatedCBs,
+        argForStartedCBs,
+      ] = [
+        setPrototypeOf({ type: 'valid' }, cbArg),
+        setPrototypeOf({ type: 'invalid' }, cbArg),
+        setPrototypeOf({ type: 'changed' }, cbArg),
+        setPrototypeOf({ type: 'validated' }, cbArg),
+        setPrototypeOf({ type: 'started' }, cbArg),
+      ];
     },
     started: startedCBs.push,
     valid: validCBs.push,
@@ -66,8 +90,5 @@ export default function ValidityCallbacks(
     catch: errorCBs.run,
     error: errorCBs.push,
     [Symbol.toStringTag]: ValidityCallbacks.name,
-    id: ValidityCallbacks.id++,
   };
 }
-
-ValidityCallbacks.id = 0;

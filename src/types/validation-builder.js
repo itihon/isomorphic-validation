@@ -66,7 +66,10 @@ export default function ValidationBuilder({
           containedPgs.runCBs(containedPgs.isValid);
         });
 
-        return Object.create(pgs.result(target), { isValid: { value: res } });
+        return Object.create(pgs.result(target), {
+          isValid: { value: res },
+          type: { value: 'validated' },
+        });
       });
     },
 
