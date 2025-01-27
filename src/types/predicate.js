@@ -9,7 +9,7 @@ export default function Predicate(fnOrPred) {
 
   const fn = ({ validityCBs } = fnOrPred.valueOf()).valueOf();
 
-  validityCBs = ValidityCallbacks(false, validityCBs);
+  validityCBs = ValidityCallbacks(validityCBs);
 
   const predicate = {
     valueOf() {

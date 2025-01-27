@@ -15,8 +15,8 @@ describe('ValidityCallbacks', () => {
     validatedCB.mockClear();
   });
 
-  it('should set initial value', () => {
-    let CBs = ValidityCallbacks(true);
+  it('should run callbacks', () => {
+    let CBs = ValidityCallbacks();
     CBs.valid(validCB)
       .invalid(invalidCB)
       .changed(changedCB)
@@ -35,7 +35,7 @@ describe('ValidityCallbacks', () => {
     expect(validatedCB).toHaveBeenCalledTimes(2);
 
     expect(CBs.set(false)).toBe(false);
-    expect(CBs.change(false)).toBe(false);
+    CBs.change();
     expect(validCB).toHaveBeenCalledTimes(2);
     expect(invalidCB).toHaveBeenCalledTimes(1);
     expect(changedCB).toHaveBeenCalledTimes(1);
@@ -48,7 +48,7 @@ describe('ValidityCallbacks', () => {
       .validated(validatedCB);
 
     expect(CBs.set(true)).toBe(true);
-    expect(CBs.change(true)).toBe(true);
+    CBs.change();
     expect(validCB).toHaveBeenCalledTimes(3);
     expect(invalidCB).toHaveBeenCalledTimes(1);
     expect(changedCB).toHaveBeenCalledTimes(2);
@@ -61,52 +61,51 @@ describe('ValidityCallbacks', () => {
     expect(validatedCB).toHaveBeenCalledTimes(5);
 
     expect(CBs.set(false)).toBe(false);
-    expect(CBs.change(false)).toBe(false);
+    CBs.change();
     expect(validCB).toHaveBeenCalledTimes(4);
     expect(invalidCB).toHaveBeenCalledTimes(2);
     expect(changedCB).toHaveBeenCalledTimes(3);
     expect(validatedCB).toHaveBeenCalledTimes(6);
   });
 
-  it('should accept anything as the second argument and pass callbacks through if wrapped in another ValidityCallbacks', () => {
+  it('should accept anything as the first argument and pass callbacks through if wrapped in another ValidityCallbacks', () => {
     const CBs1 = ValidityCallbacks();
     CBs1.valid(validCB)
       .invalid(invalidCB)
       .changed(changedCB)
       .validated(validatedCB);
 
-    const results = [
+    const callbacks = [
       ValidityCallbacks(),
-      ValidityCallbacks(false, null),
-      ValidityCallbacks(false),
-      ValidityCallbacks(false, 'asdf'),
-      ValidityCallbacks(false, 42),
-      ValidityCallbacks(false, { a: 42 }),
-      ValidityCallbacks(false, {}),
-      ValidityCallbacks(false, () => {}),
-      ValidityCallbacks(false, ['asdf']),
-      ValidityCallbacks(false, []),
-      ValidityCallbacks(false, CBs1),
-    ]
+      ValidityCallbacks(null),
+      ValidityCallbacks(),
+      ValidityCallbacks('asdf'),
+      ValidityCallbacks(42),
+      ValidityCallbacks({ a: 42 }),
+      ValidityCallbacks({}),
+      ValidityCallbacks(() => {}),
+      ValidityCallbacks(['asdf']),
+      ValidityCallbacks([]),
+      ValidityCallbacks(CBs1),
+    ];
+
+    callbacks
       .map((CBs) =>
         CBs.valid(validCB)
           .invalid(invalidCB)
           .changed(changedCB)
           .validated(validatedCB),
       )
-      .map((CBs) => {
-        const CBsCloned = ValidityCallbacks(false, CBs);
+      .forEach((CBs) => {
+        const CBsCloned = ValidityCallbacks(CBs);
         CBsCloned.set(true);
-        return CBsCloned.change(true);
+        CBsCloned.change();
       });
 
-    expect(results).toStrictEqual(
-      Array.from({ length: results.length }, () => true),
-    );
-    expect(validCB).toHaveBeenCalledTimes(results.length + 1);
+    expect(validCB).toHaveBeenCalledTimes(callbacks.length + 1);
     expect(invalidCB).toHaveBeenCalledTimes(0);
-    expect(changedCB).toHaveBeenCalledTimes(results.length + 1);
-    expect(validatedCB).toHaveBeenCalledTimes(results.length + 1);
+    expect(changedCB).toHaveBeenCalledTimes(callbacks.length + 1);
+    expect(validatedCB).toHaveBeenCalledTimes(callbacks.length + 1);
   });
 
   it('should expose callbacks via valueOf', () => {
@@ -116,7 +115,7 @@ describe('ValidityCallbacks', () => {
       .changed(changedCB)
       .validated(validatedCB);
 
-    const CBs2 = ValidityCallbacks(false, CBs1);
+    const CBs2 = ValidityCallbacks(CBs1);
 
     const { validCBs, invalidCBs, changedCBs, validatedCBs } = CBs2.valueOf();
 
@@ -139,7 +138,7 @@ describe('ValidityCallbacks', () => {
     CBs.setArg(args1);
 
     CBs.set(true);
-    CBs.change(true);
+    CBs.change();
     expect(toProtos(validCB.mock.calls)).toStrictEqual([args1]);
     expect(toProtos(invalidCB.mock.calls)).toStrictEqual([]);
     expect(toProtos(changedCB.mock.calls)).toStrictEqual([args1]);
@@ -148,14 +147,14 @@ describe('ValidityCallbacks', () => {
     CBs.setArg(args2);
 
     CBs.set(false);
-    CBs.change(false);
+    CBs.change();
     expect(toProtos(validCB.mock.calls)).toStrictEqual([args1]);
     expect(toProtos(invalidCB.mock.calls)).toStrictEqual([args2]);
     expect(toProtos(changedCB.mock.calls)).toStrictEqual([args1, args2]);
     expect(toProtos(validatedCB.mock.calls)).toStrictEqual([args1, args2]);
   });
 
-  it('should clone an instance passed as the second parameter', () => {
+  it('should clone an instance passed as the first parameter', () => {
     const validCB1 = jest.fn();
     const invalidCB1 = jest.fn();
     const changedCB1 = jest.fn();
@@ -173,7 +172,7 @@ describe('ValidityCallbacks', () => {
       .changed(changedCB1)
       .validated(validatedCB1);
 
-    const CBs2 = ValidityCallbacks(false, CBs1);
+    const CBs2 = ValidityCallbacks(CBs1);
 
     CBs2.valid(validCB2)
       .invalid(invalidCB2)
@@ -181,7 +180,7 @@ describe('ValidityCallbacks', () => {
       .validated(validatedCB2);
 
     CBs1.set(true);
-    CBs1.change(true);
+    CBs1.change();
 
     expect(validCB1).toHaveBeenCalledTimes(1);
     expect(invalidCB1).toHaveBeenCalledTimes(0);
@@ -194,7 +193,7 @@ describe('ValidityCallbacks', () => {
     expect(validatedCB2).toHaveBeenCalledTimes(0);
 
     CBs2.set(true);
-    CBs2.change(true);
+    CBs2.change();
 
     expect(validCB1).toHaveBeenCalledTimes(2);
     expect(invalidCB1).toHaveBeenCalledTimes(0);

@@ -7,11 +7,7 @@ const setPrototypeOf = (obj, proto) => {
 
 // !refactor to ValidityEvents
 // set() -> emit()
-export default function ValidityCallbacks(
-  initVal = false,
-  CBs = ValidityCallbacks(false, {}),
-) {
-  let isValid = initVal;
+export default function ValidityCallbacks(CBs = ValidityCallbacks({})) {
   let {
     validCBs,
     invalidCBs,
@@ -45,27 +41,12 @@ export default function ValidityCallbacks(
         invalidCBs.run(argForInvalidCBs);
       }
 
-      isValid = value;
-
       validatedCBs.run(argForValidatedCBs);
 
-      return isValid;
+      return value;
     },
-    change(value = false) {
-      isValid = value;
+    change() {
       changedCBs.run(argForChangedCBs);
-      return isValid;
-    },
-    valueOf() {
-      return {
-        validCBs,
-        invalidCBs,
-        changedCBs,
-        validatedCBs,
-        startedCBs,
-        restoredCBs,
-        errorCBs,
-      };
     },
     start() {
       startedCBs.run(argForStartedCBs);
@@ -89,6 +70,17 @@ export default function ValidityCallbacks(
         setPrototypeOf({ type: 'started' }, arg),
         setPrototypeOf({ type: 'restored' }, arg),
       ];
+    },
+    valueOf() {
+      return {
+        validCBs,
+        invalidCBs,
+        changedCBs,
+        validatedCBs,
+        startedCBs,
+        restoredCBs,
+        errorCBs,
+      };
     },
     started: startedCBs.push,
     valid: validCBs.push,

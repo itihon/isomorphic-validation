@@ -19,7 +19,7 @@ export default function PredicateGroups(
 
   validityCBs.setArg(validationResult);
 
-  obs.onChanged((result) => validityCBs.change(result));
+  obs.onChanged(validityCBs.change);
 
   return Object.defineProperties(
     {
@@ -51,7 +51,7 @@ export default function PredicateGroups(
       clone(registry = CloneRegistry()) {
         const newPgs = PredicateGroups(
           undefined,
-          ValidityCallbacks(false, validityCBs),
+          ValidityCallbacks(validityCBs),
         );
 
         pgs
