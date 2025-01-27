@@ -1,5 +1,5 @@
 import { expect, it, describe, beforeEach, jest } from '@jest/globals';
-import ValidityCallbacks from '../../src/types/validity-callbacks.js';
+import StateCallbacks from '../../src/types/state-callbacks.js';
 import { toProtos } from '../helpers.js';
 
 const validCB = jest.fn();
@@ -7,7 +7,7 @@ const invalidCB = jest.fn();
 const changedCB = jest.fn();
 const validatedCB = jest.fn();
 
-describe('ValidityCallbacks', () => {
+describe('StateCallbacks', () => {
   beforeEach(() => {
     validCB.mockClear();
     invalidCB.mockClear();
@@ -16,7 +16,7 @@ describe('ValidityCallbacks', () => {
   });
 
   it('should run callbacks', () => {
-    let CBs = ValidityCallbacks();
+    let CBs = StateCallbacks();
     CBs.valid(validCB)
       .invalid(invalidCB)
       .changed(changedCB)
@@ -41,7 +41,7 @@ describe('ValidityCallbacks', () => {
     expect(changedCB).toHaveBeenCalledTimes(1);
     expect(validatedCB).toHaveBeenCalledTimes(3);
 
-    CBs = ValidityCallbacks();
+    CBs = StateCallbacks();
     CBs.valid(validCB)
       .invalid(invalidCB)
       .changed(changedCB)
@@ -68,25 +68,25 @@ describe('ValidityCallbacks', () => {
     expect(validatedCB).toHaveBeenCalledTimes(6);
   });
 
-  it('should accept anything as the first argument and pass callbacks through if wrapped in another ValidityCallbacks', () => {
-    const CBs1 = ValidityCallbacks();
+  it('should accept anything as the first argument and pass callbacks through if wrapped in another StateCallbacks', () => {
+    const CBs1 = StateCallbacks();
     CBs1.valid(validCB)
       .invalid(invalidCB)
       .changed(changedCB)
       .validated(validatedCB);
 
     const callbacks = [
-      ValidityCallbacks(),
-      ValidityCallbacks(null),
-      ValidityCallbacks(),
-      ValidityCallbacks('asdf'),
-      ValidityCallbacks(42),
-      ValidityCallbacks({ a: 42 }),
-      ValidityCallbacks({}),
-      ValidityCallbacks(() => {}),
-      ValidityCallbacks(['asdf']),
-      ValidityCallbacks([]),
-      ValidityCallbacks(CBs1),
+      StateCallbacks(),
+      StateCallbacks(null),
+      StateCallbacks(),
+      StateCallbacks('asdf'),
+      StateCallbacks(42),
+      StateCallbacks({ a: 42 }),
+      StateCallbacks({}),
+      StateCallbacks(() => {}),
+      StateCallbacks(['asdf']),
+      StateCallbacks([]),
+      StateCallbacks(CBs1),
     ];
 
     callbacks
@@ -97,7 +97,7 @@ describe('ValidityCallbacks', () => {
           .validated(validatedCB),
       )
       .forEach((CBs) => {
-        const CBsCloned = ValidityCallbacks(CBs);
+        const CBsCloned = StateCallbacks(CBs);
         CBsCloned.set(true);
         CBsCloned.change();
       });
@@ -109,13 +109,13 @@ describe('ValidityCallbacks', () => {
   });
 
   it('should expose callbacks via valueOf', () => {
-    const CBs1 = ValidityCallbacks();
+    const CBs1 = StateCallbacks();
     CBs1.valid(validCB)
       .invalid(invalidCB)
       .changed(changedCB)
       .validated(validatedCB);
 
-    const CBs2 = ValidityCallbacks(CBs1);
+    const CBs2 = StateCallbacks(CBs1);
 
     const { validCBs, invalidCBs, changedCBs, validatedCBs } = CBs2.valueOf();
 
@@ -128,7 +128,7 @@ describe('ValidityCallbacks', () => {
   it('should pass arguments to callbacks', () => {
     const args1 = ['arguments', 1];
     const args2 = { prop1: 'arguments', prop: 2 };
-    const CBs = ValidityCallbacks();
+    const CBs = StateCallbacks();
 
     CBs.valid(validCB)
       .invalid(invalidCB)
@@ -165,14 +165,14 @@ describe('ValidityCallbacks', () => {
     const changedCB2 = jest.fn();
     const validatedCB2 = jest.fn();
 
-    const CBs1 = ValidityCallbacks();
+    const CBs1 = StateCallbacks();
 
     CBs1.valid(validCB1)
       .invalid(invalidCB1)
       .changed(changedCB1)
       .validated(validatedCB1);
 
-    const CBs2 = ValidityCallbacks(CBs1);
+    const CBs2 = StateCallbacks(CBs1);
 
     CBs2.valid(validCB2)
       .invalid(invalidCB2)

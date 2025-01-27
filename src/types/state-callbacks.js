@@ -7,7 +7,7 @@ const setPrototypeOf = (obj, proto) => {
 
 // !refactor to ValidityEvents
 // set() -> emit()
-export default function ValidityCallbacks(CBs = ValidityCallbacks({})) {
+export default function StateCallbacks(CBs = StateCallbacks({})) {
   let {
     validCBs,
     invalidCBs,
@@ -90,6 +90,6 @@ export default function ValidityCallbacks(CBs = ValidityCallbacks({})) {
     restored: restoredCBs.push,
     catch: errorCBs.run,
     error: errorCBs.push,
-    [Symbol.toStringTag]: ValidityCallbacks.name,
+    [Symbol.toStringTag]: StateCallbacks.name,
   };
 }

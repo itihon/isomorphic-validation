@@ -27,9 +27,9 @@ export default function ObservablePredicate(
 ) {
   acceptOnlyPredicate(predicate);
 
-  let validityCBs;
+  let stateCBs;
 
-  const fn = ({ validityCBs } = predicate.valueOf()).valueOf();
+  const fn = ({ stateCBs } = predicate.valueOf()).valueOf();
   const fnName = fn.name || indexedName('predicate');
   const obs = ObserverAnd(initState); // optional predicates are valid by default
   const onInvalidCBs = Functions();
@@ -39,7 +39,7 @@ export default function ObservablePredicate(
     if (!value) {
       onInvalidCBs.run();
     }
-    return validityCBs.set(value);
+    return stateCBs.set(value);
   };
 
   const representation = ObservablePredicateRepresentation(
@@ -64,18 +64,18 @@ export default function ObservablePredicate(
     target: { get: validatableItem.getObject },
   });
 
-  validityCBs.setArg(validationResult);
+  stateCBs.setArg(validationResult);
 
   const predicateFn = debounce && IS_CLIENT ? debounceP(fn, debounce) : fn;
 
-  obs.onChanged(validityCBs.change);
+  obs.onChanged(stateCBs.change);
 
   function predicatePostExec(result, forbidInvalid, callID) {
     acceptOnlyBoolean(result);
     notifySubscribers(result);
     if (forbidInvalid) {
       if (ValidatableItem.keepValid(items, result)) {
-        validityCBs.restore();
+        stateCBs.restore();
 
         items.forEach((item) => item.preserveValue(callID));
         return obsPredicate(!forbidInvalid, callID, true);
@@ -91,7 +91,7 @@ export default function ObservablePredicate(
     skipOptional = false,
   ) {
     if (!revalidate) {
-      validityCBs.start();
+      stateCBs.start();
     }
 
     if (skipOptional) {
@@ -111,8 +111,8 @@ export default function ObservablePredicate(
 
   const obsPredicateTC = tryCatch(
     obsPredicate,
-    validityCBs.catch, // the catch function
-    () => validityCBs.valueOf().errorCBs.length, // enable the catch function if error state callbacks were added
+    stateCBs.catch, // the catch function
+    () => stateCBs.valueOf().errorCBs.length, // enable the catch function if error state callbacks were added
     () => false, // if the catch function is also faulty, return false and swallow the error
     () => obsPredicateTC.invalidate(), // invalidate on any error occurance
   );

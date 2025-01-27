@@ -1,5 +1,5 @@
 import ObserverAnd from './observer-and.js';
-import ValidityCallbacks from './validity-callbacks.js';
+import StateCallbacks from './state-callbacks.js';
 import ManyToManyMap from './many-to-many-map.js';
 import ObservablePredicates from './observable-predicates.js';
 import CloneRegistry from './clone-registry.js';
@@ -10,16 +10,16 @@ import {
 
 export default function PredicateGroups(
   pgs = ManyToManyMap(),
-  validityCBs = ValidityCallbacks(),
+  stateCBs = StateCallbacks(),
 ) {
   const obs = ObserverAnd();
   const representation = PredicateGroupsRepresentation(obs);
   const view = representation.toRepresentation();
   const validationResult = ValidationResult(view);
 
-  validityCBs.setArg(validationResult);
+  stateCBs.setArg(validationResult);
 
-  obs.onChanged(validityCBs.change);
+  obs.onChanged(stateCBs.change);
 
   return Object.defineProperties(
     {
@@ -49,10 +49,7 @@ export default function PredicateGroups(
       },
 
       clone(registry = CloneRegistry()) {
-        const newPgs = PredicateGroups(
-          undefined,
-          ValidityCallbacks(validityCBs),
-        );
+        const newPgs = PredicateGroups(undefined, StateCallbacks(stateCBs));
 
         pgs
           .map((group) => registry.cloneOnce(group, registry))
@@ -68,7 +65,7 @@ export default function PredicateGroups(
       },
 
       enableCatch() {
-        return validityCBs.valueOf().errorCBs.length;
+        return stateCBs.valueOf().errorCBs.length;
       },
 
       result(target) {
@@ -77,15 +74,15 @@ export default function PredicateGroups(
       },
 
       toRepresentation: representation.toRepresentation,
-      valid: validityCBs.valid,
-      invalid: validityCBs.invalid,
-      changed: validityCBs.changed,
-      validated: validityCBs.validated,
-      started: validityCBs.started,
-      error: validityCBs.error,
-      catchCBs: validityCBs.catch,
-      startCBs: validityCBs.start,
-      runCBs: validityCBs.set,
+      valid: stateCBs.valid,
+      invalid: stateCBs.invalid,
+      changed: stateCBs.changed,
+      validated: stateCBs.validated,
+      started: stateCBs.started,
+      error: stateCBs.error,
+      catchCBs: stateCBs.catch,
+      startCBs: stateCBs.start,
+      runCBs: stateCBs.set,
       map: pgs.map,
       forEach: pgs.forEach,
       mergeWith: pgs.mergeWith,
