@@ -7,27 +7,27 @@ const setPrototypeOf = (obj, proto) => {
 
 export default function StateCallbacks(CBs = StateCallbacks({})) {
   let {
+    startedCBs,
     validCBs,
     invalidCBs,
     changedCBs,
     validatedCBs,
-    startedCBs,
     restoredCBs,
     errorCBs,
   } = CBs ? CBs.valueOf() : {};
 
+  let argForStartedCBs;
   let argForValidCBs;
   let argForInvalidCBs;
   let argForChangedCBs;
   let argForValidatedCBs;
-  let argForStartedCBs;
   let argForRestoredCBs;
 
+  startedCBs = Functions(startedCBs);
   validCBs = Functions(validCBs);
   invalidCBs = Functions(invalidCBs);
   changedCBs = Functions(changedCBs);
   validatedCBs = Functions(validatedCBs);
-  startedCBs = Functions(startedCBs);
   restoredCBs = Functions(restoredCBs);
   errorCBs = Functions(errorCBs);
 
@@ -52,28 +52,28 @@ export default function StateCallbacks(CBs = StateCallbacks({})) {
     },
     setArg(arg) {
       [
+        argForStartedCBs,
         argForValidCBs,
         argForInvalidCBs,
         argForChangedCBs,
         argForValidatedCBs,
-        argForStartedCBs,
         argForRestoredCBs,
       ] = [
+        setPrototypeOf({ type: 'started' }, arg),
         setPrototypeOf({ type: 'valid' }, arg),
         setPrototypeOf({ type: 'invalid' }, arg),
         setPrototypeOf({ type: 'changed' }, arg),
         setPrototypeOf({ type: 'validated' }, arg),
-        setPrototypeOf({ type: 'started' }, arg),
         setPrototypeOf({ type: 'restored' }, arg),
       ];
     },
     valueOf() {
       return {
+        startedCBs,
         validCBs,
         invalidCBs,
         changedCBs,
         validatedCBs,
-        startedCBs,
         restoredCBs,
         errorCBs,
       };
