@@ -5,8 +5,6 @@ const setPrototypeOf = (obj, proto) => {
   return obj;
 };
 
-// !refactor to ValidityEvents
-// set() -> emit()
 export default function StateCallbacks(CBs = StateCallbacks({})) {
   let {
     validCBs,
@@ -34,24 +32,22 @@ export default function StateCallbacks(CBs = StateCallbacks({})) {
   errorCBs = Functions(errorCBs);
 
   return {
-    set(value = false) {
-      if (value) {
-        validCBs.run(argForValidCBs);
-      } else {
-        invalidCBs.run(argForInvalidCBs);
-      }
-
-      validatedCBs.run(argForValidatedCBs);
-
-      return value;
-    },
-    change() {
-      changedCBs.run(argForChangedCBs);
-    },
-    start() {
+    runStarted() {
       startedCBs.run(argForStartedCBs);
     },
-    restore() {
+    runValid() {
+      validCBs.run(argForValidCBs);
+    },
+    runInvalid() {
+      invalidCBs.run(argForInvalidCBs);
+    },
+    runChanged() {
+      changedCBs.run(argForChangedCBs);
+    },
+    runValidated() {
+      validatedCBs.run(argForValidatedCBs);
+    },
+    runRestored() {
       restoredCBs.run(argForRestoredCBs);
     },
     setArg(arg) {
@@ -88,8 +84,8 @@ export default function StateCallbacks(CBs = StateCallbacks({})) {
     changed: changedCBs.push,
     validated: validatedCBs.push,
     restored: restoredCBs.push,
-    catch: errorCBs.run,
     error: errorCBs.push,
-    [Symbol.toStringTag]: StateCallbacks.name,
+    runError: errorCBs.run,
+    [Symbol.toStringTag]: 'StateCallbacks',
   };
 }

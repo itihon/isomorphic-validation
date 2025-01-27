@@ -1,6 +1,7 @@
 import { expect, it, describe, beforeEach, jest } from '@jest/globals';
 import StateCallbacks from '../../src/types/state-callbacks.js';
 import { toProtos } from '../helpers.js';
+import makeRunStateCBsFn from '../../src/helpers/make-run-state-cbs-fn.js';
 
 const validCB = jest.fn();
 const invalidCB = jest.fn();
@@ -22,20 +23,22 @@ describe('StateCallbacks', () => {
       .changed(changedCB)
       .validated(validatedCB);
 
-    expect(CBs.set(true)).toBe(true);
+    const runStateCBs = makeRunStateCBsFn(CBs);
+
+    expect(runStateCBs(true)).toBe(true);
     expect(validCB).toHaveBeenCalledTimes(1);
     expect(invalidCB).toHaveBeenCalledTimes(0);
     expect(changedCB).toHaveBeenCalledTimes(0);
     expect(validatedCB).toHaveBeenCalledTimes(1);
 
-    expect(CBs.set(true)).toBe(true);
+    expect(runStateCBs(true)).toBe(true);
     expect(validCB).toHaveBeenCalledTimes(2);
     expect(invalidCB).toHaveBeenCalledTimes(0);
     expect(changedCB).toHaveBeenCalledTimes(0);
     expect(validatedCB).toHaveBeenCalledTimes(2);
 
-    expect(CBs.set(false)).toBe(false);
-    CBs.change();
+    expect(runStateCBs(false)).toBe(false);
+    CBs.runChanged();
     expect(validCB).toHaveBeenCalledTimes(2);
     expect(invalidCB).toHaveBeenCalledTimes(1);
     expect(changedCB).toHaveBeenCalledTimes(1);
@@ -47,21 +50,21 @@ describe('StateCallbacks', () => {
       .changed(changedCB)
       .validated(validatedCB);
 
-    expect(CBs.set(true)).toBe(true);
-    CBs.change();
+    expect(runStateCBs(true)).toBe(true);
+    CBs.runChanged();
     expect(validCB).toHaveBeenCalledTimes(3);
     expect(invalidCB).toHaveBeenCalledTimes(1);
     expect(changedCB).toHaveBeenCalledTimes(2);
     expect(validatedCB).toHaveBeenCalledTimes(4);
 
-    expect(CBs.set(true)).toBe(true);
+    expect(runStateCBs(true)).toBe(true);
     expect(validCB).toHaveBeenCalledTimes(4);
     expect(invalidCB).toHaveBeenCalledTimes(1);
     expect(changedCB).toHaveBeenCalledTimes(2);
     expect(validatedCB).toHaveBeenCalledTimes(5);
 
-    expect(CBs.set(false)).toBe(false);
-    CBs.change();
+    expect(runStateCBs(false)).toBe(false);
+    CBs.runChanged();
     expect(validCB).toHaveBeenCalledTimes(4);
     expect(invalidCB).toHaveBeenCalledTimes(2);
     expect(changedCB).toHaveBeenCalledTimes(3);
@@ -98,8 +101,9 @@ describe('StateCallbacks', () => {
       )
       .forEach((CBs) => {
         const CBsCloned = StateCallbacks(CBs);
-        CBsCloned.set(true);
-        CBsCloned.change();
+        const runStateCBs = makeRunStateCBsFn(CBsCloned);
+        runStateCBs(true);
+        CBsCloned.runChanged();
       });
 
     expect(validCB).toHaveBeenCalledTimes(callbacks.length + 1);
@@ -137,8 +141,10 @@ describe('StateCallbacks', () => {
 
     CBs.setArg(args1);
 
-    CBs.set(true);
-    CBs.change();
+    const runStateCBs = makeRunStateCBsFn(CBs);
+
+    runStateCBs(true);
+    CBs.runChanged();
     expect(toProtos(validCB.mock.calls)).toStrictEqual([args1]);
     expect(toProtos(invalidCB.mock.calls)).toStrictEqual([]);
     expect(toProtos(changedCB.mock.calls)).toStrictEqual([args1]);
@@ -146,8 +152,8 @@ describe('StateCallbacks', () => {
 
     CBs.setArg(args2);
 
-    CBs.set(false);
-    CBs.change();
+    runStateCBs(false);
+    CBs.runChanged();
     expect(toProtos(validCB.mock.calls)).toStrictEqual([args1]);
     expect(toProtos(invalidCB.mock.calls)).toStrictEqual([args2]);
     expect(toProtos(changedCB.mock.calls)).toStrictEqual([args1, args2]);
@@ -179,8 +185,11 @@ describe('StateCallbacks', () => {
       .changed(changedCB2)
       .validated(validatedCB2);
 
-    CBs1.set(true);
-    CBs1.change();
+    const runStateCBs1 = makeRunStateCBsFn(CBs1);
+    const runStateCBs2 = makeRunStateCBsFn(CBs2);
+
+    runStateCBs1(true);
+    CBs1.runChanged();
 
     expect(validCB1).toHaveBeenCalledTimes(1);
     expect(invalidCB1).toHaveBeenCalledTimes(0);
@@ -192,8 +201,8 @@ describe('StateCallbacks', () => {
     expect(changedCB2).toHaveBeenCalledTimes(0);
     expect(validatedCB2).toHaveBeenCalledTimes(0);
 
-    CBs2.set(true);
-    CBs2.change();
+    runStateCBs2(true);
+    CBs2.runChanged();
 
     expect(validCB1).toHaveBeenCalledTimes(2);
     expect(invalidCB1).toHaveBeenCalledTimes(0);

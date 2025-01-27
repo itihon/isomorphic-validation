@@ -7,6 +7,7 @@ import {
   PredicateGroupsRepresentation,
   ValidationResult,
 } from './representations.js';
+import makeRunStateCBsFn from '../helpers/make-run-state-cbs-fn.js';
 
 export default function PredicateGroups(
   pgs = ManyToManyMap(),
@@ -19,7 +20,7 @@ export default function PredicateGroups(
 
   stateCBs.setArg(validationResult);
 
-  obs.onChanged(stateCBs.change);
+  obs.onChanged(stateCBs.runChanged);
 
   return Object.defineProperties(
     {
@@ -80,9 +81,9 @@ export default function PredicateGroups(
       validated: stateCBs.validated,
       started: stateCBs.started,
       error: stateCBs.error,
-      catchCBs: stateCBs.catch,
-      startCBs: stateCBs.start,
-      runCBs: stateCBs.set,
+      catchCBs: stateCBs.runError,
+      startCBs: stateCBs.runStarted,
+      runCBs: makeRunStateCBsFn(stateCBs),
       map: pgs.map,
       forEach: pgs.forEach,
       mergeWith: pgs.mergeWith,

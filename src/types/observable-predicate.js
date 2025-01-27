@@ -15,6 +15,7 @@ import {
   ValidationResult,
 } from './representations.js';
 import acceptOnlyPredicate from '../helpers/accept-only-predicate.js';
+import makeRunStateCBsFn from '../helpers/make-run-state-cbs-fn.js';
 
 export default function ObservablePredicate(
   predicate = Predicate(),
@@ -35,11 +36,12 @@ export default function ObservablePredicate(
   const onInvalidCBs = Functions();
 
   const notifySubscribers = obs.update;
+  const runStateCBs = makeRunStateCBsFn(stateCBs);
   const setValidity = (value) => {
     if (!value) {
       onInvalidCBs.run();
     }
-    return stateCBs.set(value);
+    return runStateCBs(value);
   };
 
   const representation = ObservablePredicateRepresentation(
@@ -68,14 +70,14 @@ export default function ObservablePredicate(
 
   const predicateFn = debounce && IS_CLIENT ? debounceP(fn, debounce) : fn;
 
-  obs.onChanged(stateCBs.change);
+  obs.onChanged(stateCBs.runChanged);
 
   function predicatePostExec(result, forbidInvalid, callID) {
     acceptOnlyBoolean(result);
     notifySubscribers(result);
     if (forbidInvalid) {
       if (ValidatableItem.keepValid(items, result)) {
-        stateCBs.restore();
+        stateCBs.runRestored();
 
         items.forEach((item) => item.preserveValue(callID));
         return obsPredicate(!forbidInvalid, callID, true);
@@ -91,7 +93,7 @@ export default function ObservablePredicate(
     skipOptional = false,
   ) {
     if (!revalidate) {
-      stateCBs.start();
+      stateCBs.runStarted();
     }
 
     if (skipOptional) {
@@ -111,7 +113,7 @@ export default function ObservablePredicate(
 
   const obsPredicateTC = tryCatch(
     obsPredicate,
-    stateCBs.catch, // the catch function
+    stateCBs.runError, // the catch function
     () => stateCBs.valueOf().errorCBs.length, // enable the catch function if error state callbacks were added
     () => false, // if the catch function is also faulty, return false and swallow the error
     () => obsPredicateTC.invalidate(), // invalidate on any error occurance
