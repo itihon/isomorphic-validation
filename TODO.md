@@ -95,7 +95,6 @@
         - [ ] consider using the .isValid property of a group in the .run method of PredicateGroups in order to avoid iterating over the result loop. Like this:
                 id !== undefined ? obs.isValid : group.isValid;
         const predicateGroups = id !== undefined ? pgs.get(id) : pgs.getAll();
-        - [ ] consider renaming ValidityCallbacks to ValidityEvents
         - [x] Validation.group, Validation.glue to accept validations divided by comma
         - [x] consider moving out the keepValid functionality from ObservablePredicate to ValidatableItem as a decorator after the according e2e tests are written:
             ValidatableItem.keepValid(ObservablePredicate()) or
