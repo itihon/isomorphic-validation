@@ -6,7 +6,7 @@ import accepOnlyValidation from './accept-only-validation.js';
 
 export default function makeGroupValidationsFn(TYPE = GROUPED) {
   return function groupValidations(Validations = [], ...rest) {
-    const pgs = PredicateGroups();
+    const pgs = PredicateGroups(undefined, undefined, TYPE);
     const items = ManyToManyMap();
     const containedGroups = ManyToManyMap();
     const validations = [

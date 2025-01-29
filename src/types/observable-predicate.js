@@ -24,7 +24,7 @@ export default function ObservablePredicate(
   initState = false,
   debounce = 0,
   anyData = {},
-  validatableItem = ValidatableItem(), // an item the predicate will be associated with
+  validatableItem = ValidatableItem(), // an item the predicate will be associated with, for setting validation result target
 ) {
   acceptOnlyPredicate(predicate);
 

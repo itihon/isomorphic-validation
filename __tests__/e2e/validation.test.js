@@ -9,6 +9,57 @@ import {
 import { Predicate, Validation } from '../../src/index.js';
 import { isGreaterThan } from '../predicates';
 
+const makeTestCB = (cbType = '') => {
+  let expectedTargets = {};
+  let id = 0;
+
+  const cb = ({ target, type }) => {
+    const targets = expectedTargets[type];
+    const { log } = console;
+
+    if (targets === undefined) {
+      throw new Error(
+        `${cbType}:${id} ${type} cb has not been expected to be called`,
+      );
+    }
+
+    if (targets.length === 0) {
+      throw new Error(
+        `${cbType}:${id} ${type} cb has been called more times than expected`,
+      );
+    }
+
+    try {
+      expect(target).toBe(targets.pop());
+    } catch (err) {
+      log(`${cbType}:${id} ${type} ${JSON.stringify(expectedTargets)}`);
+      throw new Error(err);
+    }
+  };
+
+  const setExpectedTargets = (targets /* = { type: [] } */, ID = id + 1) => {
+    Object.entries(expectedTargets).forEach(([type, targetsArr = []]) => {
+      if (targetsArr.length > 0) {
+        throw new Error(
+          `${cbType}:${id} ${type} cb array of the previous setting has not been exhausted.
+            Left expected targets: ${JSON.stringify(expectedTargets)}
+            Current ID: ${ID}, passed targets: ${JSON.stringify(targets)}`,
+        );
+      }
+    });
+
+    expectedTargets = Object.fromEntries(
+      Object.entries(targets).map(([type, targetsArr = []]) => [
+        type,
+        targetsArr.reverse(),
+      ]),
+    );
+    id = ID;
+  };
+
+  return [cb, setExpectedTargets];
+};
+
 let res;
 
 const obj1 = { value: 1 };
@@ -103,23 +154,27 @@ describe('Validation', () => {
       const p1 = jest.fn(() => true);
       const p2 = jest.fn(() => false);
 
-      const vStartedCB = jest.fn();
-      const vValidCB = jest.fn();
-      const vInvalidCB = jest.fn();
-      const vChangedCB = jest.fn();
-      const vValidatedCB = jest.fn();
+      const [vCB, vSetExpectedTargets] = makeTestCB('v');
+      const [vGlCB, vGlSetExpectedTargets] = makeTestCB('vGl');
+      const [pCB, pSetExpectedTargets] = makeTestCB('p');
 
-      const vGlStartedCB = jest.fn();
-      const vGlValidCB = jest.fn();
-      const vGlInvalidCB = jest.fn();
-      const vGlChangedCB = jest.fn();
-      const vGlValidatedCB = jest.fn();
+      const vStartedCB = jest.fn(vCB);
+      const vValidCB = jest.fn(vCB);
+      const vInvalidCB = jest.fn(vCB);
+      const vChangedCB = jest.fn(vCB);
+      const vValidatedCB = jest.fn(vCB);
 
-      const pStartedCB = jest.fn();
-      const pValidCB = jest.fn();
-      const pInvalidCB = jest.fn();
-      const pChangedCB = jest.fn();
-      const pValidatedCB = jest.fn();
+      const vGlStartedCB = jest.fn(vGlCB);
+      const vGlValidCB = jest.fn(vGlCB);
+      const vGlInvalidCB = jest.fn(vGlCB);
+      const vGlChangedCB = jest.fn(vGlCB);
+      const vGlValidatedCB = jest.fn(vGlCB);
+
+      const pStartedCB = jest.fn(pCB);
+      const pValidCB = jest.fn(pCB);
+      const pInvalidCB = jest.fn(pCB);
+      const pChangedCB = jest.fn(pCB);
+      const pValidatedCB = jest.fn(pCB);
 
       const validation = Validation(obj1) // bound to obj1 during creation
         .constraint(
@@ -136,6 +191,18 @@ describe('Validation', () => {
 
       jest.clearAllMocks();
       validation.bind(obj2); // bound to obj2
+      vSetExpectedTargets({
+        started: [obj2],
+        valid: [obj2],
+        changed: [obj2],
+        validated: [obj2],
+      });
+      pSetExpectedTargets({
+        started: [obj2],
+        valid: [obj2],
+        changed: [obj2],
+        validated: [obj2],
+      });
       await validation.validate();
 
       expect(vStartedCB.mock.calls[0][0].target).toBe(obj2);
@@ -150,6 +217,18 @@ describe('Validation', () => {
 
       jest.clearAllMocks();
       const validationCl = Validation.clone(validation); // cloned bound to obj2
+      vSetExpectedTargets({
+        started: [obj2],
+        valid: [obj2],
+        changed: [obj2],
+        validated: [obj2],
+      });
+      pSetExpectedTargets({
+        started: [obj2],
+        valid: [obj2],
+        changed: [obj2],
+        validated: [obj2],
+      });
       await validationCl.validate();
 
       expect(vStartedCB.mock.calls[0][0].target).toBe(obj2);
@@ -164,11 +243,43 @@ describe('Validation', () => {
 
       // invalidate before the next validation
       p1.mockImplementationOnce(() => false);
+      vSetExpectedTargets({
+        started: [obj2],
+        changed: [obj2],
+        validated: [obj2],
+      });
+      pSetExpectedTargets({
+        started: [obj2],
+        changed: [obj2],
+        validated: [obj2],
+      });
       await validationCl.validate();
 
       jest.clearAllMocks();
       validationCl.bind(obj3); // cloned bound to obj3
+      vSetExpectedTargets({
+        started: [obj3],
+        valid: [obj3],
+        changed: [obj3],
+        validated: [obj3],
+      });
+      pSetExpectedTargets({
+        started: [obj3],
+        valid: [obj3],
+        changed: [obj3],
+        validated: [obj3],
+      });
       await validationCl.validate();
+
+      // vStartedCB.mockImplementation(() => {});
+      // vValidCB.mockImplementation(() => {});
+      // vChangedCB.mockImplementation(() => {});
+      // vValidatedCB.mockImplementation(() => {});
+
+      expect(vStartedCB).toHaveBeenCalledTimes(1);
+      expect(vValidCB).toHaveBeenCalledTimes(1);
+      expect(vChangedCB).toHaveBeenCalledTimes(1);
+      expect(vValidatedCB).toHaveBeenCalledTimes(1);
 
       expect(vStartedCB.mock.calls[0][0].target).toBe(obj3);
       expect(vValidCB.mock.calls[0][0].target).toBe(obj3);
@@ -183,27 +294,63 @@ describe('Validation', () => {
       jest.clearAllMocks();
       expect(validation.isValid).toBe(true);
       expect(validationCl.isValid).toBe(true);
+
+      // because next is adding a constraint to both already "valid" validations
+      // which will invalidate them and cause running changed callbacks
+      vSetExpectedTargets({
+        changed: [obj2, obj3],
+      });
+      vGlSetExpectedTargets({
+        changed: [undefined],
+      });
+
       const validationGl = Validation.glue(validation, validationCl) // glued the original and the cloned
-        .constraint(Predicate(p2).invalid(pInvalidCB))
         .started(vGlStartedCB)
         .valid(vGlValidCB)
         .invalid(vGlInvalidCB)
         .changed(vGlChangedCB)
-        .validated(vGlValidatedCB);
+        .validated(vGlValidatedCB)
+        .constraint(Predicate(p2).invalid(pInvalidCB));
+
+      // called twice on the "glued" validations after adding the constraint
+      expect(vChangedCB).toHaveBeenCalledTimes(2);
+      expect(vGlChangedCB).toHaveBeenCalledTimes(1);
+      expect(vChangedCB.mock.calls[0][0].target).toBe(obj2);
+      expect(vChangedCB.mock.calls[1][0].target).toBe(obj3);
+      expect(validation.isValid).toBe(false);
+      expect(validationCl.isValid).toBe(false);
 
       validationGl.validations.forEach((v) => v.invalid(vInvalidCB));
+
+      vSetExpectedTargets({
+        started: [obj3],
+        invalid: [obj3],
+        validated: [obj3],
+      });
+      vGlSetExpectedTargets({
+        started: [obj3],
+        invalid: [obj3],
+        validated: [obj3],
+      });
+      pSetExpectedTargets({
+        started: [obj3],
+        valid: [obj3],
+        invalid: [obj3, obj2],
+        validated: [obj3],
+      });
       await validationGl.validate(obj3);
+
+      expect(validation.isValid).toBe(false);
+      expect(validationCl.isValid).toBe(false);
 
       expect(vStartedCB).toHaveBeenCalledTimes(1);
       expect(vValidCB).toHaveBeenCalledTimes(0);
       expect(vInvalidCB).toHaveBeenCalledTimes(1);
-      expect(vChangedCB).toHaveBeenCalledTimes(2); // called twice on the "glued" validations
       expect(vValidatedCB).toHaveBeenCalledTimes(1);
 
       expect(vGlStartedCB).toHaveBeenCalledTimes(1);
       expect(vGlValidCB).toHaveBeenCalledTimes(0);
       expect(vGlInvalidCB).toHaveBeenCalledTimes(1);
-      expect(vGlChangedCB).toHaveBeenCalledTimes(0);
       expect(vGlValidatedCB).toHaveBeenCalledTimes(1);
 
       expect(pStartedCB).toHaveBeenCalledTimes(1);
@@ -214,8 +361,6 @@ describe('Validation', () => {
 
       expect(vStartedCB.mock.calls[0][0].target).toBe(obj3);
       expect(vInvalidCB.mock.calls[0][0].target).toBe(obj3);
-      expect(vChangedCB.mock.calls[0][0].target).toBe(obj2);
-      expect(vChangedCB.mock.calls[1][0].target).toBe(obj3);
       expect(vValidatedCB.mock.calls[0][0].target).toBe(obj3);
 
       expect(vGlStartedCB.mock.calls[0][0].target).toBe(obj3);
@@ -231,6 +376,22 @@ describe('Validation', () => {
       jest.clearAllMocks();
       p1.mockImplementation(() => false);
       p2.mockImplementation(() => true);
+      vSetExpectedTargets({
+        started: [obj2, obj3],
+        invalid: [obj2, obj3],
+        changed: [obj3, obj3],
+        validated: [obj2, obj3],
+      });
+      vGlSetExpectedTargets({
+        started: [undefined],
+        invalid: [undefined],
+        validated: [undefined],
+      });
+      pSetExpectedTargets({
+        started: [obj2, obj3],
+        changed: [obj2, obj3],
+        validated: [obj2, obj3],
+      });
       await validationGl.validate();
 
       expect(vStartedCB).toHaveBeenCalledTimes(2);

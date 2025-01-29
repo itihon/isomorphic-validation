@@ -15,8 +15,6 @@ export default function ValidationBuilder({
   TYPE = SINGLE,
   validations = [],
 } = {}) {
-  let ownTarget = TYPE === SINGLE ? firstEntry(items)[0] : undefined;
-
   const api = makeValidationHandlerFn(null)({
     constraint(
       validator = Predicate(),
@@ -36,7 +34,7 @@ export default function ValidationBuilder({
       return this;
     },
 
-    validate(target = ownTarget) {
+    validate(target) {
       // all items will be preserved regardless of the target
       // not the most optimal way, but fixes the bug with validating a glued validation
       // by target through a grouping validation
@@ -46,6 +44,10 @@ export default function ValidationBuilder({
       const callID = Symbol('callID');
 
       validatableItems.forEach((item) => item.preserveValue(callID));
+
+      if (TYPE !== SINGLE) {
+        pgs.setGroupTarget(target);
+      }
 
       // ! a better solution would be to run all grouping validations' started callbacks first
       pgs.startCBs(); // run startCBs of the grouping validation first
@@ -66,7 +68,7 @@ export default function ValidationBuilder({
           containedPgs.runCBs(containedPgs.isValid);
         });
 
-        return Object.create(pgs.result(target), {
+        return Object.create(pgs.result(), {
           isValid: { value: res },
           type: { value: 'validated' },
         });
@@ -91,8 +93,6 @@ export default function ValidationBuilder({
       items.changeKey(oldObj, newObj);
       pgs.changeKey(oldObj, newObj);
       containedGroups.changeKey(oldObj, newObj);
-
-      [ownTarget] = firstEntry(items);
 
       return this;
     },
