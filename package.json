@@ -6,23 +6,37 @@
   "bin": {
     "isomorphic-validation": "bin/index.js"
   },
-  "main": "dist/cjs/index.cjs.js",
-  "module": "dist/esm/index.esm.js",
-  "browser": "dist/esm/index.esm.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "browser": "dist/esm/index.js",
   "files": [
     "dist",
     "bin",
     "types"
   ],
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./helpers": {
+      "types": "./types/helpers.d.ts",
+      "import": "./dist/esm/index.helpers.js",
+      "require": "./dist/cjs/index.helpers.js"
+    }
+  },
   "types": "types/index.d.ts",
   "scripts": {
     "prepublishOnly": "npm run build",
     "format:check": "prettier --check \"{src,__tests__}/**/*.{js,mjs}\"",
     "format:write": "prettier --write \"{src,__tests__}/**/*.{js,mjs}\"",
     "lint": "eslint --fix .",
-    "build:esm": "rollup src/index.js --file dist/esm/index.esm.js --format esm",
-    "build:cjs": "rollup src/index.js --file dist/cjs/index.cjs.js --format cjs",
-    "build": "npm run build:esm && npm run build:cjs",
+    "build:esm": "rollup src/index.js --file dist/esm/index.js --format esm",
+    "build:cjs": "rollup src/index.js --file dist/cjs/index.js --format cjs",
+    "build:esm:helpers": "rollup src/index.helpers.js --dir dist/esm/ --format esm --preserveModules",
+    "build:cjs:helpers": "rollup src/index.helpers.js --dir dist/cjs/ --format cjs --preserveModules",
+    "build": "npm run build:esm && npm run build:cjs && npm run build:esm:helpers && npm run build:cjs:helpers",
     "commit": "git-cz",
     "test:server": "jest --testPathIgnorePatterns=\"__tests__.*client\\.test\\.js\" --env=\"node\"",
     "test:client": "jest --testPathPattern=\"__tests__.*client\\.test\\.js\" --env=\"jsdom\"",
