@@ -763,7 +763,7 @@ describe('callbacks', () => {
     { method: 'restored' },
     { method: 'error' },
   ])(
-    '$method: should accept only functions as state callbacks and throw an error otherwise',
+    '$method: should accept only functions or arrays of functions as state callbacks and throw an error otherwise',
     async ({ method }) => {
       const cb1 = jest.fn();
       const cb2 = jest.fn();
@@ -777,31 +777,41 @@ describe('callbacks', () => {
       const warn = jest.spyOn(console, 'warn').mockImplementation();
 
       expect(() => predicate[method](null)).toThrow();
-      expect(() => predicate[method]([cb1])).toThrow();
-      expect(() => predicate[method]([])).toThrow();
       expect(() => predicate[method]('')).toThrow();
       expect(() => predicate[method]({})).toThrow();
       expect(() => predicate[method](false)).toThrow();
       expect(() => predicate[method](42)).toThrow();
-      expect(() => predicate[method](cb1, [])).toThrow();
       expect(() => predicate[method](cb1, '')).toThrow();
       expect(() => predicate[method](cb1, {})).toThrow();
       expect(() => predicate[method](cb1, false)).toThrow();
       expect(() => predicate[method](cb1, 42)).toThrow();
-      expect(() => predicate[method](cb1, cb2, [])).toThrow();
       expect(() => predicate[method](cb1, cb2, '')).toThrow();
       expect(() => predicate[method](cb1, cb2, {})).toThrow();
+      expect(() => predicate[method](cb1, cb2, [''])).toThrow();
+      expect(() => predicate[method](cb1, [[cb2], {}])).toThrow();
+      expect(() => predicate[method](cb1, [cb2, [false]])).toThrow();
+      expect(() => predicate[method]([[null]], cb1)).toThrow();
       expect(() => predicate[method](cb1, cb2, false)).toThrow();
       expect(() => predicate[method](cb1, cb2, 42)).toThrow();
       expect(() => predicate[method](cb1, null, 42)).toThrow();
 
       expect(() => predicate[method]()).not.toThrow();
-      expect(warn.mock.calls).toStrictEqual([
-        ['Expected functions to be passed in, received nothing.'],
-      ]);
+      expect(() => predicate[method]([])).not.toThrow();
+      expect(() => predicate[method]([[]])).not.toThrow();
       expect(() => predicate[method](cb1)).not.toThrow();
       expect(() => predicate[method](cb1, cb2)).not.toThrow();
       expect(() => predicate[method](cb1, cb2, cb3)).not.toThrow();
+      expect(() => predicate[method](cb1, [[cb2], cb3])).not.toThrow();
+      expect(() => predicate[method]([cb1, [cb2]], cb3)).not.toThrow();
+      expect(() => predicate[method]([cb1])).not.toThrow();
+      expect(() => predicate[method](cb1, [])).not.toThrow();
+      expect(() => predicate[method](cb1, cb2, [])).not.toThrow();
+
+      expect(warn.mock.calls).toStrictEqual([
+        ['Expected functions to be passed in, received nothing.'],
+        ['Expected functions to be passed in, received nothing.'],
+        ['Expected functions to be passed in, received nothing.'],
+      ]);
 
       validation.constraint(predicate);
 
@@ -810,37 +820,47 @@ describe('callbacks', () => {
         jest.clearAllMocks();
 
         expect(() => validation[method](null)).toThrow();
-        expect(() => validation[method]([cb1])).toThrow();
-        expect(() => validation[method]([])).toThrow();
         expect(() => validation[method]('')).toThrow();
         expect(() => validation[method]({})).toThrow();
         expect(() => validation[method](false)).toThrow();
         expect(() => validation[method](42)).toThrow();
-        expect(() => validation[method](cb1, [])).toThrow();
         expect(() => validation[method](cb1, '')).toThrow();
         expect(() => validation[method](cb1, {})).toThrow();
         expect(() => validation[method](cb1, false)).toThrow();
         expect(() => validation[method](cb1, 42)).toThrow();
-        expect(() => validation[method](cb1, cb2, [])).toThrow();
         expect(() => validation[method](cb1, cb2, '')).toThrow();
         expect(() => validation[method](cb1, cb2, {})).toThrow();
+        expect(() => validation[method](cb1, cb2, [''])).toThrow();
+        expect(() => validation[method](cb1, [[cb2], {}])).toThrow();
+        expect(() => validation[method](cb1, [cb2, [false]])).toThrow();
+        expect(() => validation[method]([[null]], cb1)).toThrow();
         expect(() => validation[method](cb1, cb2, false)).toThrow();
         expect(() => validation[method](cb1, cb2, 42)).toThrow();
         expect(() => validation[method](cb1, null, 42)).toThrow();
 
         expect(() => validation[method]()).not.toThrow();
-        expect(warn.mock.calls).toStrictEqual([
-          ['Expected functions to be passed in, received nothing.'],
-        ]);
+        expect(() => validation[method]([])).not.toThrow();
+        expect(() => validation[method]([[]])).not.toThrow();
         expect(() => validation[method](cb1)).not.toThrow();
         expect(() => validation[method](cb1, cb2)).not.toThrow();
         expect(() => validation[method](cb1, cb2, cb3)).not.toThrow();
+        expect(() => validation[method](cb1, [[cb2], cb3])).not.toThrow();
+        expect(() => validation[method]([cb1, [cb2]], cb3)).not.toThrow();
+        expect(() => validation[method]([cb1])).not.toThrow();
+        expect(() => validation[method](cb1, [])).not.toThrow();
+        expect(() => validation[method](cb1, cb2, [])).not.toThrow();
+
+        expect(warn.mock.calls).toStrictEqual([
+          ['Expected functions to be passed in, received nothing.'],
+          ['Expected functions to be passed in, received nothing.'],
+          ['Expected functions to be passed in, received nothing.'],
+        ]);
 
         if (method !== 'invalid' && method !== 'error') {
           await validation.validate();
-          expect(cb1).toHaveBeenCalledTimes(6);
-          expect(cb2).toHaveBeenCalledTimes(4);
-          expect(cb3).toHaveBeenCalledTimes(2);
+          expect(cb1).toHaveBeenCalledTimes(16);
+          expect(cb2).toHaveBeenCalledTimes(10);
+          expect(cb3).toHaveBeenCalledTimes(6);
         }
 
         warn.mockRestore();
