@@ -3,11 +3,11 @@ import acceptOnlyFunction from '../helpers/accept-only-function.js';
 export default function Functions(iterable = [][Symbol.iterator]()) {
   const fns = [...iterable].map(acceptOnlyFunction);
 
-  function push(fnsToAdd = [], ...rest) {
+  function push(...fnsToAdd) {
     if (
       !Array.prototype.push.call(
         fns,
-        ...[fnsToAdd].concat(rest).flat(Infinity).map(acceptOnlyFunction),
+        ...fnsToAdd.flat(Infinity).map(acceptOnlyFunction),
       )
     ) {
       const { warn } = console;

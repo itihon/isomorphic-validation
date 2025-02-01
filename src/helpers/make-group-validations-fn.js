@@ -5,13 +5,13 @@ import ValidationBuilder from '../types/validation-builder.js';
 import accepOnlyValidation from './accept-only-validation.js';
 
 export default function makeGroupValidationsFn(TYPE = GROUPED) {
-  return function groupValidations(Validations = [], ...rest) {
+  return function groupValidations(...validationsToAdd) {
     const pgs = PredicateGroups(undefined, undefined, TYPE);
     const items = ManyToManyMap();
     const containedGroups = ManyToManyMap();
-    const validations = [
-      ...new Set([Validations].concat(rest).flat(Infinity)),
-    ].map(accepOnlyValidation);
+    const validations = [...new Set(validationsToAdd.flat(Infinity))].map(
+      accepOnlyValidation,
+    );
 
     validations
       .map((validation) => {
