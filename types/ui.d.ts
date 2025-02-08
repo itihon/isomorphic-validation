@@ -1,5 +1,7 @@
 import { ValidationResult } from "./validation-result";
+import { Predicate } from "./predicate";
 
+type ValidatorEntry = [any, Predicate];
 type ValidityStateValues = { true: any, false: any, anyValue?: any };
 type SetEffectFn = (validationResult: ValidationResult) => void;
 type CancelEffectFn = () => void;
@@ -42,6 +44,20 @@ type SetEffectByValidityFn = SetEffectByValidityFn1
 declare module "isomorphic-validation/ui" {
     declare namespace UI {
         /**
+         * Returns the first entry of "invalid" validator and validatable object
+         * @param {ValidationRsult} validationResult - A validation result passed into a [state callback](https://itihon.github.io/isomorphic-validation/concept/state-callbacks/) or returned from [Validation().validate()](https://itihon.github.io/isomorphic-validation/api/validation/instance-methods/validate/) method
+         * @returns {ValidatorEntry}
+         */
+        declare function firstInvalid(validationResult: ValidationResult): ValidatorEntry 
+
+        /**
+         * Returns all entries of "invalid" validators and validatable objects
+         * @param {ValidationRsult} validationResult - A validation result passed into a [state callback](https://itihon.github.io/isomorphic-validation/concept/state-callbacks/) or returned from [Validation().validate()](https://itihon.github.io/isomorphic-validation/api/validation/instance-methods/validate/) method
+         * @returns {Array<ValidatorEntry>}
+         */
+        declare function allInvalid(validationResult: ValidationResult): Array<ValidatorEntry> 
+
+        /**
          * Creates a function which performs a delayed effect depending on validity.
          * @param effectFn - A function which will be called by the `set` function and cancelled by the `cancel` function.
          * @param defaultStateValues - An object with default state values, will be passed into the `effectFn` function if not overriden.
@@ -55,6 +71,7 @@ declare module "isomorphic-validation/ui" {
          * Sets a class name for an element depending on valididy.
          */
         declare const setClassByValidity: SetEffectByValidityFn;
+
         /**
          * Sets an outline for an element depending on valididy.
          */

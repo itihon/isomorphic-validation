@@ -20,11 +20,6 @@
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js"
     },
-    "./helpers": {
-      "types": "./types/helpers.d.ts",
-      "import": "./dist/esm/index.helpers.js",
-      "require": "./dist/cjs/index.helpers.js"
-    },
     "./ui": {
       "types": "./types/ui.d.ts",
       "import": "./dist/esm/index.ui.js",
@@ -41,9 +36,7 @@
     "build:cjs": "rollup src/index.js --file dist/cjs/index.js --format cjs",
     "build:esm:ui": "rollup src/index.ui.js --dir dist/esm/ --format esm --preserveModules",
     "build:cjs:ui": "rollup src/index.ui.js --dir dist/cjs/ --format cjs --preserveModules",
-    "build:esm:helpers": "rollup src/index.helpers.js --dir dist/esm/ --format esm --preserveModules",
-    "build:cjs:helpers": "rollup src/index.helpers.js --dir dist/cjs/ --format cjs --preserveModules",
-    "build": "npm run build:esm && npm run build:cjs && npm run build:esm:ui && npm run build:cjs:ui && npm run build:esm:helpers && npm run build:cjs:helpers",
+    "build": "npm run build:esm && npm run build:cjs && npm run build:esm:ui && npm run build:cjs:ui",
     "commit": "git-cz",
     "test:server": "jest --testPathIgnorePatterns=\"__tests__.*client\\.test\\.js\" --env=\"node\"",
     "test:client": "jest --testPathPattern=\"__tests__.*client\\.test\\.js\" --env=\"jsdom\"",

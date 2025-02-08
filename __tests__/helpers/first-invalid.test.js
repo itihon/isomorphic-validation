@@ -1,5 +1,5 @@
 import { it, describe, expect } from '@jest/globals';
-import { firstInvalid } from '../../src/index.helpers.js';
+import { firstInvalid } from '../../src/index.ui.js';
 import { Validation } from '../../src/index.js';
 
 describe('firstInvalid', () => {

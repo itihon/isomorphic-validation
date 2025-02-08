@@ -1,9 +1,9 @@
 import { it, describe, expect } from '@jest/globals';
-import { allInvalid } from '../../src/index.helpers.js';
+import { allInvalid } from '../../src/index.ui.js';
 import { Validation } from '../../src/index.js';
 
 describe('allInvalid', () => {
-  it('should return all invalid validator', async () => {
+  it('should return all invalid validators', async () => {
     const obj1 = { value: '1' };
     const obj2 = { value: '2' };
     const obj3 = { value: '3' };
