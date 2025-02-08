@@ -19,9 +19,9 @@ const setByValidity = (
       [undefined, defaultStateValues],
     );
 
-    let timeout;
+    const timeouts = new Map();
 
-    const effectFnWrapper = ({ target, isValid }) => {
+    const set = ({ target, isValid }) => {
       const element = htmlElement || target;
 
       if (!element) {
@@ -29,21 +29,31 @@ const setByValidity = (
           `Target element for ${effectFn.name}: was not set. The effect function will not be called.`,
         );
       } else {
-        effectFn(element, stateValues, isValid);
+        clearTimeout(timeouts.get(element));
+        timeouts.set(
+          element,
+          setTimeout(
+            effectFn,
+            stateValues[isValid].delay,
+            element,
+            stateValues,
+            isValid,
+          ),
+        );
       }
     };
 
-    const set = (validationResult) => {
-      const { isValid } = validationResult;
-      clearTimeout(timeout);
-      timeout = setTimeout(
-        effectFnWrapper,
-        stateValues[isValid].delay,
-        validationResult,
-      );
-    };
+    const cancel = ({ target }) => {
+      const element = htmlElement || target;
 
-    const cancel = () => clearInterval(timeout);
+      if (!element) {
+        warn(
+          `Target element for ${effectFn.name}: was not set. The effect function will not be cancelled.`,
+        );
+      } else {
+        clearTimeout(timeouts.get(element));
+      }
+    };
 
     return [cancel, set];
   };
