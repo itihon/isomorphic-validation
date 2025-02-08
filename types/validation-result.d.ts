@@ -1,4 +1,6 @@
-export type ValidationResult = typeof ValidationResultAPI;
+import { Validator } from "./predicate";
+
+export type ValidationResult = typeof ValidationResultAPI & Map<any, Validator>;
 
 declare namespace ValidationResultAPI {
     let isValid: boolean;

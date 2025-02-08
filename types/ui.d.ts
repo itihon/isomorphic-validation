@@ -1,7 +1,7 @@
 import { ValidationResult } from "./validation-result";
-import { Predicate } from "./predicate";
+import { Validator } from "./predicate";
 
-type ValidatorEntry = [any, Predicate];
+type ValidatorEntry = [any, Validator];
 type ValidityStateValues = { true: any, false: any, anyValue?: any };
 type SetEffectFn = (validationResult: ValidationResult) => void;
 type CancelEffectFn = () => void;

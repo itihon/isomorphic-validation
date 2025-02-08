@@ -1,5 +1,5 @@
 import { ValidationResult } from './validation-result';
-import { Predicate } from './predicate';
+import { Predicate, Validator } from './predicate';
 import { stateCallback, predicateFn } from './shared';
 
 export type Validation = typeof ValidationAPI;
@@ -28,7 +28,7 @@ declare namespace ValidationAPI {
     /**
      * A map with validatable objects as keys and sets of constraints as values.
      */
-    let constraints: Map<object, Set<Array<Predicate>>>;
+    let constraints: Map<any, Validator>;
     /**
      * An array of grouped (nested) validations.
      */

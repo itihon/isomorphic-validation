@@ -1,6 +1,12 @@
 import { stateCallback } from './shared';
 
 export type Predicate = typeof PredicateAPI;
+export type Validator = { 
+    /**
+     * Current validity state of the validator.
+     */
+    isValid: boolean 
+} & Predicate;
 
 declare namespace PredicateAPI {
     /**
