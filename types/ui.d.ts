@@ -76,6 +76,16 @@ declare module "isomorphic-validation/ui" {
          * Sets an outline for an element depending on valididy.
          */
         declare const applyOutline: SetEffectByValidityFn;
+
+        /**
+         * Sets a background color of an element depending on valididy.
+         */
+        declare const applyBackground: SetEffectByValidityFn;
+
+        /**
+         * Sets the 'disabled' attribute of an element depending on valididy.
+         */
+        declare const applyAccess: SetEffectByValidityFn;
     }
 
     export = UI;
