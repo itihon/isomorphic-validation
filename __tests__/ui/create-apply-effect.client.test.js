@@ -229,4 +229,177 @@ describe('createApplyEffect', () => {
       '1 0',
     ]);
   });
+
+  it('should cancel delayed effects for a ceratain target', async () => {
+    const htmlElement1 = document.createElement('div');
+    const htmlElement2 = document.createElement('div');
+    const delay1 = 10;
+    const delay2 = 20;
+    const valuesObj = {
+      true: {
+        delay: delay1,
+        value: ['1 1', '2 1', '3 1', '4 1', '5 1', '6 1', '7 1'],
+      },
+      false: {
+        delay: delay2,
+        value: ['1 0', '2 0', '3 0', '4 0', '5 0', '6 0', '7 0'],
+      },
+    };
+
+    const results = [];
+
+    const effectFn = (element, stateValues, isValid) => {
+      results.push(stateValues[isValid].value.pop());
+      stateValues[!isValid].value.pop();
+      expect(element).toBe(isValid ? htmlElement1 : htmlElement2);
+    };
+
+    const applyEffect = createApplyEffect(effectFn);
+
+    const [cancel, set] = applyEffect(valuesObj);
+
+    set({ isValid: true, target: htmlElement1 });
+    await wait(delay1 / 2);
+    expect(results).toStrictEqual([]);
+    await wait(delay1 / 2);
+    expect(results).toStrictEqual(['7 1']);
+
+    // calling the cancel function
+    set({ isValid: true, target: htmlElement1 });
+    await wait(delay1 / 2);
+    expect(results).toStrictEqual(['7 1']);
+    cancel({ target: htmlElement1 });
+    await wait(delay1 / 2);
+    expect(results).toStrictEqual(['7 1']);
+
+    set({ isValid: false, target: htmlElement2 });
+    await wait(delay2 / 2);
+    expect(results).toStrictEqual(['7 1']);
+    await wait(delay2 / 2);
+    expect(results).toStrictEqual(['7 1', '6 0']);
+
+    set({ isValid: false, target: htmlElement2 });
+    await wait(delay2 / 2);
+    expect(results).toStrictEqual(['7 1', '6 0']);
+    await wait(delay2 / 2);
+    expect(results).toStrictEqual(['7 1', '6 0', '5 0']);
+
+    // repetetive calls of the set function
+    set({ isValid: false, target: htmlElement2 });
+    await wait(delay2 / 2);
+    set({ isValid: false, target: htmlElement2 });
+    await wait(delay2 / 2);
+    set({ isValid: false, target: htmlElement2 });
+    await wait(delay2 / 2);
+    expect(results).toStrictEqual(['7 1', '6 0', '5 0']);
+    await wait(delay2 / 2);
+    expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 0']);
+
+    set({ isValid: true, target: htmlElement1 });
+    await wait(delay1 / 2);
+    expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 0']);
+    await wait(delay1 / 2);
+    expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 0', '3 1']);
+
+    set({ isValid: false, target: htmlElement2 });
+    await wait(delay2 / 2);
+    expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 0', '3 1']);
+    await wait(delay2 / 2);
+    expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 0', '3 1', '2 0']);
+
+    // calling the cancel function
+    set({ isValid: true, target: htmlElement1 });
+    await wait(delay1 / 2);
+    expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 0', '3 1', '2 0']);
+    cancel({ target: htmlElement1 });
+    await wait(delay1 / 2);
+    expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 0', '3 1', '2 0']);
+
+    // repetetive calls of the set function and then calling the cancel function
+    set({ isValid: true, target: htmlElement1 });
+    await wait(delay1 / 2);
+    expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 0', '3 1', '2 0']);
+    set({ isValid: false, target: htmlElement2 });
+    await wait(delay2 / 2);
+    expect(results).toStrictEqual([
+      '7 1',
+      '6 0',
+      '5 0',
+      '4 0',
+      '3 1',
+      '2 0',
+      '1 1',
+    ]);
+    set({ isValid: true, target: htmlElement1 });
+    await wait(delay1 / 2);
+    expect(results).toStrictEqual([
+      '7 1',
+      '6 0',
+      '5 0',
+      '4 0',
+      '3 1',
+      '2 0',
+      '1 1',
+    ]);
+    cancel({ target: htmlElement1 });
+    cancel({ target: htmlElement2 });
+    await wait(delay1 + delay2);
+    expect(results).toStrictEqual([
+      '7 1',
+      '6 0',
+      '5 0',
+      '4 0',
+      '3 1',
+      '2 0',
+      '1 1',
+    ]);
+
+    set({ isValid: true, target: htmlElement1 });
+    await wait(delay1 / 2);
+    expect(results).toStrictEqual([
+      '7 1',
+      '6 0',
+      '5 0',
+      '4 0',
+      '3 1',
+      '2 0',
+      '1 1',
+    ]);
+    cancel({ target: htmlElement1 });
+    await wait(delay1 / 2);
+    expect(results).toStrictEqual([
+      '7 1',
+      '6 0',
+      '5 0',
+      '4 0',
+      '3 1',
+      '2 0',
+      '1 1',
+    ]);
+
+    set({ isValid: false, target: htmlElement2 });
+    await wait(delay2 / 2);
+    expect(results).toStrictEqual([
+      '7 1',
+      '6 0',
+      '5 0',
+      '4 0',
+      '3 1',
+      '2 0',
+      '1 1',
+    ]);
+    cancel({ target: htmlElement2 });
+    await wait(delay2);
+    expect(results).toStrictEqual([
+      '7 1',
+      '6 0',
+      '5 0',
+      '4 0',
+      '3 1',
+      '2 0',
+      '1 1',
+    ]);
+  });
+
+  it.todo('should log a warning if the target element is not set');
 });
