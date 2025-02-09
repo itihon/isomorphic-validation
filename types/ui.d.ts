@@ -62,7 +62,7 @@ declare module "isomorphic-validation/ui" {
          * @param effectFn - A function which will be called by the `set` function and cancelled by the `cancel` function.
          * @param defaultStateValues - An object with default state values, will be passed into the `effectFn` function if not overriden.
          */
-        declare function setByValidity(
+        declare function createApplyEffect(
             effectFn: EffectFunction, 
             defaultStateValues: ValidityStateValues
         ): SetEffectByValidityFn;
@@ -70,12 +70,12 @@ declare module "isomorphic-validation/ui" {
         /**
          * Sets a class name for an element depending on valididy.
          */
-        declare const setClassByValidity: SetEffectByValidityFn;
+        declare const applyClass: SetEffectByValidityFn;
 
         /**
          * Sets an outline for an element depending on valididy.
          */
-        declare const setOutlineByValidity: SetEffectByValidityFn;
+        declare const applyOutline: SetEffectByValidityFn;
     }
 
     export = UI;

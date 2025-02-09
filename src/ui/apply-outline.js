@@ -1,12 +1,12 @@
-import setByValidity from './set-by-validity';
+import createApplyEffect from './create-apply-effect';
 
 const setOutlineEffect = (element, outlines, isValid) => {
   element.style.outline = outlines[isValid];
 };
 
-const setOutlineByValidity = setByValidity(setOutlineEffect, {
+const applyOutline = createApplyEffect(setOutlineEffect, {
   true: '1px solid green',
   false: '1px solid red',
 });
 
-export default setOutlineByValidity;
+export default applyOutline;

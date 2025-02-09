@@ -1,6 +1,6 @@
 export { default as firstInvalid } from './ui/first-invalid.js';
 export { default as allInvalid } from './ui/all-invalid.js';
-export { default as setByValidity } from './ui/set-by-validity.js';
-export { default as setClassByValidity } from './ui/set-class-by-validity.js';
-export { default as setOutlineByValidity } from './ui/set-outline-by-validity.js';
-export { default as setOutlineByValidity2 } from './ui/set-outline-by-validity2.js';
+export { default as createApplyEffect } from './ui/create-apply-effect.js';
+export { default as applyClass } from './ui/apply-class.js';
+export { default as applyOutline } from './ui/apply-outline.js';
+export { default as applyOutline2 } from './ui/apply-outline2.js';

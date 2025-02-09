@@ -1,4 +1,4 @@
-import setByValidity from './set-by-validity';
+import createApplyEffect from './create-apply-effect';
 
 const setClassEffect = (element, classNames, isValid) => {
   const classNameToRemove = classNames[!isValid];
@@ -8,9 +8,9 @@ const setClassEffect = (element, classNames, isValid) => {
   if (classNameToAdd) element.classList.add(classNameToAdd);
 };
 
-const setClassByValidity = setByValidity(setClassEffect, {
+const applyClass = createApplyEffect(setClassEffect, {
   true: 'valid',
   false: 'invalid',
 });
 
-export default setClassByValidity;
+export default applyClass;

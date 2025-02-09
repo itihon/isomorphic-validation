@@ -3,15 +3,15 @@
  */
 import { describe, it, expect } from '@jest/globals';
 import { Validation } from '../../src/index.js';
-import setOutlineByValidity from '../../src/ui/set-outline-by-validity.js';
+import applyOutline from '../../src/ui/apply-outline.js';
 
-describe('setOutlineByValidity', () => {
+describe('applyOutline', () => {
   it('should add an outline by validity', async () => {
     const inputElement = document.createElement('input');
     const isMeaningOfLife = (value) => value === '42';
     const v = Validation(inputElement)
       .constraint(isMeaningOfLife)
-      .validated(setOutlineByValidity());
+      .validated(applyOutline());
 
     expect(inputElement.style.outline).toBe('');
 
@@ -38,7 +38,7 @@ describe('setOutlineByValidity', () => {
     const outlines = { true: '', false: '1px solid red' };
     const v = Validation(inputElement)
       .constraint(isMeaningOfLife)
-      .validated(setOutlineByValidity(outlines));
+      .validated(applyOutline(outlines));
 
     expect(inputElement.style.outline).toBe('');
 
@@ -69,7 +69,7 @@ describe('setOutlineByValidity', () => {
     const outlines = { true: '1px solid green', false: '' };
     const v = Validation(inputElement)
       .constraint(isMeaningOfLife)
-      .validated(setOutlineByValidity(outlines));
+      .validated(applyOutline(outlines));
 
     expect(inputElement.style.outline).toBe('');
 

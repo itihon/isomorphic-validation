@@ -3,15 +3,15 @@
  */
 import { describe, it, expect } from '@jest/globals';
 import { Validation } from '../../src/index.js';
-import setClassByValidity from '../../src/ui/set-class-by-validity.js';
+import applyClass from '../../src/ui/apply-class.js';
 
-describe('setClassByValidity', () => {
+describe('applyClass', () => {
   it('should add a class name to the classList by validity', async () => {
     const inputElement = document.createElement('input');
     const isMeaningOfLife = (value) => value === '42';
     const v = Validation(inputElement)
       .constraint(isMeaningOfLife)
-      .validated(setClassByValidity());
+      .validated(applyClass());
 
     expect(inputElement.classList.contains('valid')).toBe(false);
     expect(inputElement.classList.contains('invalid')).toBe(false);
@@ -43,7 +43,7 @@ describe('setClassByValidity', () => {
     const classNames = { true: '', false: 'invalid' };
     const v = Validation(inputElement)
       .constraint(isMeaningOfLife)
-      .validated(setClassByValidity(classNames));
+      .validated(applyClass(classNames));
 
     expect(inputElement.classList.contains('valid')).toBe(false);
     expect(inputElement.classList.contains('invalid')).toBe(false);
@@ -80,7 +80,7 @@ describe('setClassByValidity', () => {
     const classNames = { true: 'valid', false: '' };
     const v = Validation(inputElement)
       .constraint(isMeaningOfLife)
-      .validated(setClassByValidity(classNames));
+      .validated(applyClass(classNames));
 
     expect(inputElement.classList.contains('valid')).toBe(false);
     expect(inputElement.classList.contains('invalid')).toBe(false);

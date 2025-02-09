@@ -2,17 +2,17 @@
  * @jest-environment jsdom
  */
 import { describe, expect, it } from '@jest/globals';
-import setByValidity from '../../src/ui/set-by-validity';
+import createApplyEffect from '../../src/ui/create-apply-effect';
 import wait from '../../src/utils/wait';
 
-describe('setByValidity', () => {
+describe('createApplyEffect', () => {
   it('accept a function as the first parameter and throw an error otherwise', () => {
-    expect(() => setByValidity(() => {})).not.toThrow();
-    expect(() => setByValidity()).toThrow();
-    expect(() => setByValidity({})).toThrow();
-    expect(() => setByValidity(class {})).toThrow();
-    expect(() => setByValidity(null)).toThrow();
-    expect(() => setByValidity([])).toThrow();
+    expect(() => createApplyEffect(() => {})).not.toThrow();
+    expect(() => createApplyEffect()).toThrow();
+    expect(() => createApplyEffect({})).toThrow();
+    expect(() => createApplyEffect(class {})).toThrow();
+    expect(() => createApplyEffect(null)).toThrow();
+    expect(() => createApplyEffect([])).toThrow();
   });
 
   it('should return a function which accepts optional arguments in any order', () => {
@@ -27,7 +27,7 @@ describe('setByValidity', () => {
       expect(isValid).toBe(Boolean(effectFnCallCount++ % 2));
     };
 
-    const setEffectByValidity = setByValidity(effectFn);
+    const setEffectByValidity = createApplyEffect(effectFn);
 
     [
       [htmlElement, valuesObj],
@@ -63,7 +63,7 @@ describe('setByValidity', () => {
       expect(isValid).toBe(Boolean(effectFnCallCount++ % 2));
     };
 
-    const setEffectByValidity = setByValidity(effectFn);
+    const setEffectByValidity = createApplyEffect(effectFn);
 
     [
       [htmlElement, valuesObj1],
@@ -99,7 +99,7 @@ describe('setByValidity', () => {
       expect(isValid).toBe(Boolean(effectFnCallCount++ % 2));
     };
 
-    const setEffectByValidity = setByValidity(effectFn, defaultStateValues);
+    const setEffectByValidity = createApplyEffect(effectFn, defaultStateValues);
 
     [
       [htmlElement1], // default
@@ -137,7 +137,7 @@ describe('setByValidity', () => {
       results.push(Array.prototype.pop.call(stateValues)[isValid]);
     };
 
-    const setEffectByValidity = setByValidity(effectFn);
+    const setEffectByValidity = createApplyEffect(effectFn);
 
     const [cancel, set] = setEffectByValidity(valuesObjs, delay, htmlElement);
 

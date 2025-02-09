@@ -3,7 +3,7 @@ import parseArgsByTypes from '../utils/parse-args-by-types';
 
 const { warn } = console;
 
-const setByValidity = (
+const createApplyEffect = (
   effectFn,
   defaultStateValues = {
     true: { delay: 0, value: null },
@@ -61,4 +61,4 @@ const setByValidity = (
   return setEffectByValidity;
 };
 
-export default setByValidity;
+export default createApplyEffect;
