@@ -27,19 +27,19 @@ describe('createApplyEffect', () => {
       expect(isValid).toBe(Boolean(effectFnCallCount++ % 2));
     };
 
-    const setEffectByValidity = createApplyEffect(effectFn);
+    const applyEffect = createApplyEffect(effectFn);
 
     [
       [htmlElement, valuesObj],
       [valuesObj, htmlElement],
-      [valuesObj, 0, htmlElement],
-      [htmlElement, 0, valuesObj],
-      [valuesObj, htmlElement, 0],
-      [htmlElement, valuesObj, 0],
-      [0, valuesObj, htmlElement],
-      [0, htmlElement, valuesObj],
+      [valuesObj, htmlElement],
+      [htmlElement, valuesObj],
+      [valuesObj, htmlElement],
+      [htmlElement, valuesObj],
+      [valuesObj, htmlElement],
+      [htmlElement, valuesObj],
     ].forEach((args, idx) => {
-      const [, set] = setEffectByValidity(...args);
+      const [, set] = applyEffect(...args);
       set({ isValid: Boolean(idx % 2) });
     });
   });
@@ -63,19 +63,19 @@ describe('createApplyEffect', () => {
       expect(isValid).toBe(Boolean(effectFnCallCount++ % 2));
     };
 
-    const setEffectByValidity = createApplyEffect(effectFn);
+    const applyEffect = createApplyEffect(effectFn);
 
     [
       [htmlElement, valuesObj1],
       [valuesObj2],
-      [valuesObj1, 0, htmlElement],
-      [0, valuesObj2],
-      [valuesObj1, htmlElement, 0],
-      [htmlElement, valuesObj1, 0],
-      [0, valuesObj2],
-      [0, htmlElement, valuesObj1],
+      [valuesObj1, htmlElement],
+      [valuesObj2],
+      [valuesObj1, htmlElement],
+      [htmlElement, valuesObj1],
+      [valuesObj2],
+      [htmlElement, valuesObj1],
     ].forEach((args, idx) => {
-      const [, set] = setEffectByValidity(...args);
+      const [, set] = applyEffect(...args);
       set({ isValid: Boolean(idx % 2), target: targetElement });
     });
   });
@@ -99,20 +99,20 @@ describe('createApplyEffect', () => {
       expect(isValid).toBe(Boolean(effectFnCallCount++ % 2));
     };
 
-    const setEffectByValidity = createApplyEffect(effectFn, defaultStateValues);
+    const applyEffect = createApplyEffect(effectFn, defaultStateValues);
 
     [
       [htmlElement1], // default
       [defaultStateValues, htmlElement1], // overriden with the default
       [htmlElement2, overridenStateValues],
-      [0, htmlElement1], // default
-      [overridenStateValues, 0, htmlElement2],
-      [htmlElement1, 0], // default
-      [htmlElement2, overridenStateValues, 0],
-      [0, overridenStateValues, htmlElement2],
-      [0, htmlElement2, overridenStateValues],
+      [htmlElement1], // default
+      [overridenStateValues, htmlElement2],
+      [htmlElement1], // default
+      [htmlElement2, overridenStateValues],
+      [overridenStateValues, htmlElement2],
+      [htmlElement2, overridenStateValues],
     ].forEach((args, idx) => {
-      const [, set] = setEffectByValidity(...args);
+      const [, set] = applyEffect(...args);
       set({ isValid: Boolean(idx % 2), target: htmlElement2 });
     });
   });
@@ -120,26 +120,27 @@ describe('createApplyEffect', () => {
   it('should cancel delayed effects', async () => {
     const htmlElement = document.createElement('div');
     const delay = 10;
-    const valuesObjs = {
-      0: { true: '1 1', false: '1 0' },
-      1: { true: '2 1', false: '2 0' },
-      2: { true: '3 1', false: '3 0' },
-      3: { true: '4 1', false: '4 0' },
-      4: { true: '5 1', false: '5 0' },
-      5: { true: '6 1', false: '6 0' },
-      6: { true: '7 1', false: '7 0' },
-      length: 7,
+    const valuesObj = {
+      true: {
+        delay,
+        value: ['1 1', '2 1', '3 1', '4 1', '5 1', '6 1', '7 1'],
+      },
+      false: {
+        delay,
+        value: ['1 0', '2 0', '3 0', '4 0', '5 0', '6 0', '7 0'],
+      },
     };
 
     const results = [];
 
     const effectFn = (element, stateValues, isValid) => {
-      results.push(Array.prototype.pop.call(stateValues)[isValid]);
+      results.push(stateValues[isValid].value.pop());
+      stateValues[!isValid].value.pop();
     };
 
-    const setEffectByValidity = createApplyEffect(effectFn);
+    const applyEffect = createApplyEffect(effectFn);
 
-    const [cancel, set] = setEffectByValidity(valuesObjs, delay, htmlElement);
+    const [cancel, set] = applyEffect(valuesObj, htmlElement);
 
     set({ isValid: true });
     await wait(delay / 2);
@@ -151,7 +152,7 @@ describe('createApplyEffect', () => {
     set({ isValid: true });
     await wait(delay / 2);
     expect(results).toStrictEqual(['7 1']);
-    cancel();
+    cancel({ target: htmlElement });
     await wait(delay / 2);
     expect(results).toStrictEqual(['7 1']);
 
@@ -190,7 +191,7 @@ describe('createApplyEffect', () => {
     set({ isValid: true });
     await wait(delay / 2);
     expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 1', '3 0']);
-    cancel();
+    cancel({ target: htmlElement });
     await wait(delay / 2);
     expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 1', '3 0']);
 
@@ -204,7 +205,7 @@ describe('createApplyEffect', () => {
     set({ isValid: true });
     await wait(delay / 2);
     expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 1', '3 0']);
-    cancel();
+    cancel({ target: htmlElement });
     await wait(delay / 2);
     expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 1', '3 0']);
 

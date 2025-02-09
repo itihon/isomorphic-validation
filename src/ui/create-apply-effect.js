@@ -5,20 +5,23 @@ const { warn } = console;
 
 const createApplyEffect = (
   effectFn,
-  defaultStateValues = { true: true, false: false },
+  defaultStateValues = {
+    true: { delay: 0, value: null },
+    false: { delay: 0, value: null },
+  },
 ) => {
   acceptOnlyFunction(effectFn);
 
   const setEffectByValidity = (...args) => {
-    const [htmlElement, delay, stateValues] = parseArgsByTypes(
+    const [htmlElement, stateValues] = parseArgsByTypes(
       args,
-      [HTMLElement, Number, Object],
-      [undefined, 0, defaultStateValues],
+      [HTMLElement, Object],
+      [undefined, defaultStateValues],
     );
 
-    let timeout;
+    const timeouts = new Map();
 
-    const effectFnWrapper = ({ target, isValid }) => {
+    const set = ({ target, isValid }) => {
       const element = htmlElement || target;
 
       if (!element) {
@@ -26,20 +29,31 @@ const createApplyEffect = (
           `Target element for ${effectFn.name}: was not set. The effect function will not be called.`,
         );
       } else {
-        effectFn(element, stateValues, isValid);
+        clearTimeout(timeouts.get(element));
+        timeouts.set(
+          element,
+          setTimeout(
+            effectFn,
+            stateValues[isValid].delay,
+            element,
+            stateValues,
+            isValid,
+          ),
+        );
       }
     };
 
-    const set = (validationResult) => {
-      if (delay) {
-        clearTimeout(timeout);
-        timeout = setTimeout(effectFnWrapper, delay, validationResult);
+    const cancel = ({ target }) => {
+      const element = htmlElement || target;
+
+      if (!element) {
+        warn(
+          `Target element for ${effectFn.name}: was not set. The effect function will not be cancelled.`,
+        );
       } else {
-        effectFnWrapper(validationResult);
+        clearTimeout(timeouts.get(element));
       }
     };
-
-    const cancel = () => clearInterval(timeout);
 
     return [cancel, set];
   };
