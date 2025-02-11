@@ -10,6 +10,8 @@ const supportedTags = new Set([
   'input',
 ]);
 
+const { hasOwnProperty } = Object.prototype;
+
 const setAccessEffect = (element, accesses, isValid) => {
   if (!supportedTags.has(element.localName)) {
     const { warn } = console;
@@ -17,12 +19,15 @@ const setAccessEffect = (element, accesses, isValid) => {
       `The element ${element.localName} doesn't support the 'disabled' attribute.`,
     );
   }
-  element.disabled = accesses[isValid].value;
+  element.disabled = hasOwnProperty.call(accesses, 'disabled')
+    ? accesses.disabled
+    : accesses[isValid].value;
 };
 
 const applyAccess = createApplyEffect(setAccessEffect, {
   true: { delay: 0, value: false },
   false: { delay: 0, value: true },
+  /* disabled: false/true, // enabled/disabled regardless of validity */
 });
 
 export default applyAccess;
