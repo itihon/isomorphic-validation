@@ -13,11 +13,13 @@ const createApplyEffect = (
   acceptOnlyFunction(effectFn);
 
   const setEffectByValidity = (...args) => {
-    const [htmlElement, stateValues] = parseArgsByTypes(
+    const [htmlElement, stateValuesObj] = parseArgsByTypes(
       args,
       [HTMLElement, Object],
-      [undefined, defaultStateValues],
+      [undefined, undefined],
     );
+
+    const stateValues = { ...defaultStateValues, ...stateValuesObj };
 
     const timeouts = new Map();
 

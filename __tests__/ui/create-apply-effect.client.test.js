@@ -22,7 +22,7 @@ describe('createApplyEffect', () => {
 
     const effectFn = (element, stateValues, isValid) => {
       expect(element).toBe(htmlElement);
-      expect(stateValues).toBe(valuesObj);
+      expect(stateValues).toStrictEqual(valuesObj);
 
       expect(isValid).toBe(Boolean(effectFnCallCount++ % 2));
     };
@@ -89,11 +89,11 @@ describe('createApplyEffect', () => {
 
     const effectFn = (element, stateValues, isValid) => {
       if (element === htmlElement1) {
-        expect(stateValues).toBe(defaultStateValues);
+        expect(stateValues).toStrictEqual(defaultStateValues);
       }
 
       if (element === htmlElement2) {
-        expect(stateValues).toBe(overridenStateValues);
+        expect(stateValues).toStrictEqual(overridenStateValues);
       }
 
       expect(isValid).toBe(Boolean(effectFnCallCount++ % 2));
