@@ -1,6 +1,6 @@
 import createApplyEffect from './create-apply-effect';
 
-const setClassEffect = (element, classNames, isValid) => {
+const setClassEffect = (element, classNames, { isValid }) => {
   const classNameToRemove = classNames[!isValid].value;
   const classNameToAdd = classNames[isValid].value;
 

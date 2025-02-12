@@ -23,7 +23,8 @@ const createApplyEffect = (
 
     const timeouts = new Map();
 
-    const set = ({ target, isValid }) => {
+    const set = (validationResult) => {
+      const { target, isValid } = validationResult;
       const element = htmlElement || target;
 
       if (!element) {
@@ -39,7 +40,7 @@ const createApplyEffect = (
             stateValues[isValid].delay,
             element,
             stateValues,
-            isValid,
+            validationResult,
           ),
         );
       }

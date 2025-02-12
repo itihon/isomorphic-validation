@@ -20,7 +20,7 @@ describe('createApplyEffect', () => {
     const valuesObj = { true: '', false: '' };
     let effectFnCallCount = 0;
 
-    const effectFn = (element, stateValues, isValid) => {
+    const effectFn = (element, stateValues, { isValid }) => {
       expect(element).toBe(htmlElement);
       expect(stateValues).toStrictEqual(valuesObj);
 
@@ -51,7 +51,7 @@ describe('createApplyEffect', () => {
     const valuesObj2 = { true: '', false: '' };
     let effectFnCallCount = 0;
 
-    const effectFn = (element, stateValues, isValid) => {
+    const effectFn = (element, stateValues, { isValid }) => {
       if (stateValues === valuesObj1) {
         expect(element).toBe(htmlElement);
       }
@@ -87,7 +87,7 @@ describe('createApplyEffect', () => {
     const overridenStateValues = { true: 'one', false: 'two' };
     let effectFnCallCount = 0;
 
-    const effectFn = (element, stateValues, isValid) => {
+    const effectFn = (element, stateValues, { isValid }) => {
       if (element === htmlElement1) {
         expect(stateValues).toStrictEqual(defaultStateValues);
       }
@@ -133,7 +133,7 @@ describe('createApplyEffect', () => {
 
     const results = [];
 
-    const effectFn = (element, stateValues, isValid) => {
+    const effectFn = (element, stateValues, { isValid }) => {
       results.push(stateValues[isValid].value.pop());
       stateValues[!isValid].value.pop();
     };
@@ -248,7 +248,7 @@ describe('createApplyEffect', () => {
 
     const results = [];
 
-    const effectFn = (element, stateValues, isValid) => {
+    const effectFn = (element, stateValues, { isValid }) => {
       results.push(stateValues[isValid].value.pop());
       stateValues[!isValid].value.pop();
       expect(element).toBe(isValid ? htmlElement1 : htmlElement2);

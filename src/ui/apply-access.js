@@ -12,7 +12,7 @@ const supportedTags = new Set([
 
 const { hasOwnProperty } = Object.prototype;
 
-const setAccessEffect = (element, accesses, isValid) => {
+const setAccessEffect = (element, accesses, { isValid }) => {
   if (!supportedTags.has(element.localName)) {
     const { warn } = console;
     warn(

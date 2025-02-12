@@ -1,6 +1,6 @@
 import createApplyEffect from './create-apply-effect.js';
 
-const setOutlineEffect = (element, outlines, isValid) => {
+const setOutlineEffect = (element, outlines, { isValid }) => {
   element.style.outline = outlines[isValid].value;
 };
 

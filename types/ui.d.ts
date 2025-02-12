@@ -7,7 +7,9 @@ type SetEffectFn = (validationResult: ValidationResult) => void;
 type CancelEffectFn = () => void;
 type EffectControlFns = [CancelEffectFn, SetEffectFn];
 type EffectFunction = (
-    element: HTMLElement, stateValues: ValidityStateValues, isValid: boolean
+    element: HTMLElement, 
+    stateValues: ValidityStateValues, 
+    validationResult: ValidationResult
 ) => void;
 
 type SetEffectByValidityFn1 = (

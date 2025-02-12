@@ -1,6 +1,6 @@
 import createApplyEffect from './create-apply-effect.js';
 
-const setBackgroundEffect = (element, backgrounds, isValid) => {
+const setBackgroundEffect = (element, backgrounds, { isValid }) => {
   element.style.background = backgrounds[isValid].value;
 };
 
