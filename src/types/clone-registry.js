@@ -1,14 +1,16 @@
+import retrieveIfHasOrCreate from '../utils/retrieve-if-has-or-create.js';
+
 export default function CloneRegistry() {
   const cloneRegistry = new Map();
-  const retrieveIfHas = (item, factoryFn) =>
-    cloneRegistry.get(item) || cloneRegistry.set(item, factoryFn()).get(item);
 
   return {
     cloneOnce(item, registry) {
-      return retrieveIfHas(item, () => item.clone(registry));
+      return retrieveIfHasOrCreate(cloneRegistry, item, () =>
+        item.clone(registry),
+      );
     },
     cloneMapOnce(items = [], registry = CloneRegistry()) {
-      return retrieveIfHas(items, () =>
+      return retrieveIfHasOrCreate(cloneRegistry, items, () =>
         items.map((item) => registry.cloneOnce(item, registry)),
       );
     },
