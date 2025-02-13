@@ -1,8 +1,8 @@
 {
   "name": "isomorphic-validation",
   "version": "0.7.3",
-  "description": "Isomorphic javascript form and data validation library.",
-  "homepage": "https://itihon.github.io/isomorphic-validation",
+  "description": "Isomorphic javascript form validation library.",
+  "homepage": "https://itihon.github.io/isomorphic-validation/",
   "bin": {
     "isomorphic-validation": "bin/index.js"
   },
