@@ -8,3 +8,4 @@ export { default as applyClass } from './ui/apply-class.js';
 export { default as applyOutline } from './ui/apply-outline.js';
 export { default as applyBackground } from './ui/apply-background.js';
 export { default as applyAccess } from './ui/apply-access.js';
+export { default as applyBox } from './ui/apply-box.js';

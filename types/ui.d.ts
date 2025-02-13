@@ -112,6 +112,11 @@ declare module "isomorphic-validation/ui" {
          * Sets the 'disabled' attribute of an element depending on valididy.
          */
         declare const applyAccess: SetEffectByValidityFn;
+        
+        /**
+         * Creates a box with content adjacent to an element depending on valididy.
+         */
+        declare const applyBox: SetEffectByValidityFn;
     }
 
     export = UI;
