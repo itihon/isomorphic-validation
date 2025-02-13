@@ -44,6 +44,8 @@ type SetEffectByValidityFn = SetEffectByValidityFn1
     & SetEffectByValidityFn5
     & SetEffectByValidityFn6;
 
+type ErrorRendererFn = (entry: [obj: object, content: string], idx: number) => string;
+
 declare module "isomorphic-validation/ui" {
     declare namespace UI {
         /**
@@ -59,6 +61,13 @@ declare module "isomorphic-validation/ui" {
          * @returns {Array<ValidatorEntry>}
          */
         declare function allInvalid(validationResult: ValidationResult): Array<ValidatorEntry> 
+
+        /**
+         * Creates a state callback function for rendering a message of the first "invalid" validator in the passed in validation result
+         * @param msgPropName - A property name of a validator message
+         * @param rendererFn - A function that renders an entry of object and content to an HTML string
+         */
+        declare function renderFirstError(msgPropName?: string, rendererFn?: ErrorRendererFn): stateCallback 
 
         /**
          * A function wrapper that allows to use a state callback function as an event handler
