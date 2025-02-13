@@ -70,6 +70,13 @@ declare module "isomorphic-validation/ui" {
         declare function renderFirstError(msgPropName?: string, rendererFn?: ErrorRendererFn): stateCallback 
 
         /**
+         * Creates a state callback function for rendering messages of all "invalid" validators in the passed in validation result
+         * @param msgPropName - A property name of a validator message
+         * @param rendererFn - A function that renders an entry of object and content to an HTML string
+         */
+        declare function renderAllErrors(msgPropName?: string, rendererFn?: ErrorRendererFn): stateCallback 
+
+        /**
          * A function wrapper that allows to use a state callback function as an event handler
          * @param stateCallback - A state callback function wich accepts ValidationResult as the argument
          * @param isValid - Validity value with witch the state callback function will be called
