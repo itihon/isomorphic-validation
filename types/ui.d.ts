@@ -1,5 +1,6 @@
 import { ValidationResult } from "./validation-result";
 import { Validator } from "./predicate";
+import { stateCallback } from "./shared";
 
 type ValidatorEntry = [any, Validator];
 type ValidityStateValues = { true: any, false: any, anyValue?: any };
@@ -58,6 +59,13 @@ declare module "isomorphic-validation/ui" {
          * @returns {Array<ValidatorEntry>}
          */
         declare function allInvalid(validationResult: ValidationResult): Array<ValidatorEntry> 
+
+        /**
+         * A function wrapper that allows to use a state callback function as an event handler
+         * @param stateCallback - A state callback function wich accepts ValidationResult as the argument
+         * @param isValid - Validity value with witch the state callback function will be called
+         */
+        declare function toEventHandler(stateCallback: stateCallback, isValid?: boolean): EventListener 
 
         /**
          * Creates a function which performs a delayed effect depending on validity.
