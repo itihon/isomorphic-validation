@@ -75,6 +75,13 @@ declare module "isomorphic-validation/ui" {
          * @param rendererFn - A function that renders an entry of object and content to an HTML string
          */
         declare function renderAllErrors(msgPropName?: string, rendererFn?: ErrorRendererFn): stateCallback 
+        
+        /**
+         * Creates a state callback function for rendering the specified property of all validators in the passed in validation result
+         * @param propName - A property name of a validator
+         * @param rendererFn - A function that renders an entry of object and content to an HTML string
+         */
+        declare function renderProperty(propName?: string, rendererFn?: ErrorRendererFn): stateCallback 
 
         /**
          * A function wrapper that allows to use a state callback function as an event handler

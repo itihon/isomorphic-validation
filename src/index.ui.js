@@ -2,6 +2,7 @@ export { default as firstInvalid } from './ui/first-invalid.js';
 export { default as allInvalid } from './ui/all-invalid.js';
 export { default as renderFirstError } from './ui/render-first-error.js';
 export { default as renderAllErrors } from './ui/render-all-errors.js';
+export { default as renderProperty } from './ui/render-property.js';
 export { default as toEventHandler } from './ui/to-event-handler.js';
 export { default as createApplyEffect } from './ui/create-apply-effect.js';
 export { default as applyClass } from './ui/apply-class.js';
