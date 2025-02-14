@@ -5,7 +5,7 @@ const positionElementRelativeTo = (
   orienteer,
   element,
   position = 'LEVEL_RIGHT_BESIDE',
-  mode = 'MAX',
+  mode = 'MIN_SIDE',
 ) => {
   const orienteerRect = orienteer.getBoundingClientRect();
   const elementSize = Math.min(orienteerRect.width, orienteerRect.height);
@@ -94,12 +94,12 @@ const positionElementRelativeTo = (
   }
 
   switch (mode) {
-    case 'MIN':
+    case 'MIN_SIDE':
       element.style.width = `${elementSize}px`;
       element.style.height = `${elementSize}px`;
       break;
 
-    case 'MAX':
+    case 'MAX_SIDE':
       element.style.width = `${orienteerRect.width}px`;
       break;
 
@@ -184,7 +184,7 @@ const applyBox = createApplyEffect(setBoxEffect, {
   true: { delay: 0, value: '' },
   false: { delay: 0, value: '' },
   position: 'LEVEL_RIGHT_BESIDE',
-  mode: 'MIN',
+  mode: 'MIN_SIDE',
   id: 'apply_box_0',
 });
 
