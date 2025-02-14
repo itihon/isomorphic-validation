@@ -1,6 +1,6 @@
 import { ValidationResult } from './validation-result';
 import { Predicate, Validator } from './predicate';
-import { StateCallback, predicateFn } from './shared';
+import { StateCallback, PredicateFn } from './shared';
 
 export type Validation = typeof ValidationAPI;
 export type mapperFn = (req: object, form: object) => any;
@@ -84,7 +84,7 @@ declare namespace ValidationAPI {
     /**
      * Adds a constraint to the validation.
      *  @overload
-     *  @param {predicateFn} predicate - A predicate function.
+     *  @param {PredicateFn} predicate - A predicate function.
      *  @param {object} options
      *  @param {Boolean} [options.next=true] - When false, the next predicate will not be executed if the current one returns false.
      *  @param {Number} [options.debounce=0] - Time in ms.
@@ -93,7 +93,7 @@ declare namespace ValidationAPI {
      *  @param {any} [options.anyData] - Any additional data, will be accessible in the validation constraints collection and a validation result.
      *  @returns {Validation}
      */
-    function constraint(predicate: predicateFn, options?: {
+    function constraint(predicate: PredicateFn, options?: {
         next?: boolean;
         debounce?: number;
         keepValid?: boolean;

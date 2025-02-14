@@ -1,4 +1,5 @@
 import { Predicate } from './predicate';
+import { PredicateFn } from './shared';
 import { Validation } from './validation';
 import { ValidationProfile } from './validation-profile';
 
@@ -54,10 +55,10 @@ declare module "isomorphic-validation" {
         /**
          * Creates a predicate object.
          * @overload
-         * @param {predicateFn} predicateFn - A predicate function to be wrapped.
+         * @param {PredicateFn} predicateFn - A predicate function to be wrapped.
          * @returns {Predicate}
          */
-        declare function Predicate(predicateFn: () => Boolean): Predicate
+        declare function Predicate(predicateFn: PredicateFn): Predicate
 
         /**
          * Creates a predicate object.
