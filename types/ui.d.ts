@@ -14,35 +14,15 @@ type EffectFunction = (
 ) => void;
 
 type SetEffectByValidityFn1 = (
-    htmlElement?: HTMLElement, delay?: number, stateValues?: ValidityStateValues
+    htmlElement?: HTMLElement, stateValues?: ValidityStateValues
 ) => EffectControlFns;
 
 type SetEffectByValidityFn2 = (
-    delay?: number, htmlElement?: HTMLElement, stateValues?: ValidityStateValues
-) => EffectControlFns;
-
-type SetEffectByValidityFn3 = (
-    delay?: number, stateValues?: ValidityStateValues, htmlElement?: HTMLElement 
-) => EffectControlFns;
-
-type SetEffectByValidityFn4 = (
-    htmlElement?: HTMLElement, stateValues?: ValidityStateValues, delay?: number
-) => EffectControlFns;
-
-type SetEffectByValidityFn5 = (
-    stateValues?: ValidityStateValues, htmlElement?: HTMLElement, delay?: number
-) => EffectControlFns;
-
-type SetEffectByValidityFn6 = (
-    stateValues?: ValidityStateValues, delay?: number, htmlElement?: HTMLElement
+    stateValues?: ValidityStateValues, htmlElement?: HTMLElement
 ) => EffectControlFns;
 
 type SetEffectByValidityFn = SetEffectByValidityFn1 
-    & SetEffectByValidityFn2
-    & SetEffectByValidityFn3
-    & SetEffectByValidityFn4
-    & SetEffectByValidityFn5
-    & SetEffectByValidityFn6;
+    & SetEffectByValidityFn2;
 
 type RendererFn = (entry: [obj: object, content: string], idx: number) => string;
 
