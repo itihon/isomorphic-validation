@@ -4,7 +4,7 @@ import retrieveIfHasOrCreate from '../utils/retrieve-if-has-or-create.js';
 const positionElementRelativeTo = (
   orienteer,
   element,
-  position = 'OR',
+  position = 'LEVEL_RIGHT_BESIDE',
   mode = 'MAX',
 ) => {
   const orienteerRect = orienteer.getBoundingClientRect();
@@ -14,77 +14,77 @@ const positionElementRelativeTo = (
   let modY = 0;
 
   switch (position) {
-    case 'OLUC':
+    case 'ABOVE_LEFT_BESIDE':
       modX = -elementSize;
       modY = -elementSize;
       break;
 
-    case 'OLU':
+    case 'ABOVE_LEFT':
       modX = 0;
       modY = -elementSize;
       break;
 
-    case 'OCU':
+    case 'ABOVE_CENTER':
       modX = orienteerRect.width / 2 - elementSize / 2;
       modY = -elementSize;
       break;
 
-    case 'ORU':
+    case 'ABOVE_RIGHT':
       modX = orienteerRect.width - elementSize;
       modY = -elementSize;
       break;
 
-    case 'ORUC':
+    case 'ABOVE_RIGHT_BESIDE':
       modX = orienteerRect.width;
       modY = -elementSize;
       break;
 
-    case 'OL':
+    case 'LEVEL_LEFT_BESIDE':
       modX = -elementSize;
       modY = 0;
       break;
 
-    case 'IL':
+    case 'LEVEL_LEFT':
       modX = 0;
       modY = 0;
       break;
 
-    case 'IC':
+    case 'LEVEL_CENTER':
       modX = orienteerRect.width / 2 - elementSize / 2;
       modY = 0;
       break;
 
-    case 'IR':
+    case 'LEVEL_RIGHT':
       modX = orienteerRect.width - elementSize;
       modY = 0;
       break;
 
-    case 'OR':
+    case 'LEVEL_RIGHT_BESIDE':
       modX = orienteerRect.width;
       modY = 0;
       break;
 
-    case 'OLDC':
+    case 'BELOW_LEFT_BESIDE':
       modX = -elementSize;
       modY = elementSize;
       break;
 
-    case 'OLD':
+    case 'BELOW_LEFT':
       modX = 0;
       modY = elementSize;
       break;
 
-    case 'OCD':
+    case 'BELOW_CENTER':
       modX = orienteerRect.width / 2 - elementSize / 2;
       modY = elementSize;
       break;
 
-    case 'ORD':
+    case 'BELOW_RIGHT':
       modX = orienteerRect.width - elementSize;
       modY = elementSize;
       break;
 
-    case 'ORDC':
+    case 'BELOW_RIGHT_BESIDE':
       modX = orienteerRect.width;
       modY = elementSize;
       break;
@@ -183,7 +183,7 @@ const setBoxEffect = (element, stateValues, validationResult) => {
 const applyBox = createApplyEffect(setBoxEffect, {
   true: { delay: 0, value: '' },
   false: { delay: 0, value: '' },
-  position: 'OR',
+  position: 'LEVEL_RIGHT_BESIDE',
   mode: 'MIN',
   id: 'apply_box_0',
 });
