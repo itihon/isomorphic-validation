@@ -107,8 +107,8 @@ const positionElementRelativeTo = (
       break;
   }
 
-  element.style.left = `${orienteerRect.left + modX}px`;
-  element.style.top = `${orienteerRect.top + modY}px`;
+  element.style.left = `${orienteerRect.left + modX + window.scrollX}px`;
+  element.style.top = `${orienteerRect.top + modY + window.scrollY}px`;
 };
 
 const createBox = (content) => {
