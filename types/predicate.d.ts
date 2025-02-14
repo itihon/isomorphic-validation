@@ -1,4 +1,4 @@
-import { stateCallback } from './shared';
+import { StateCallback } from './shared';
 
 export type Predicate = typeof PredicateAPI;
 export type Validator = { 
@@ -11,46 +11,46 @@ export type Validator = {
 declare namespace PredicateAPI {
     /**
      * Adds a state callback.
-     *  @param {stateCallback} callback
+     *  @param {StateCallback} callback
      *  @returns {Predicate}
      */
-    function started(callback: stateCallback): Predicate;
+    function started(callback: StateCallback): Predicate;
     /**
      * Adds a state callback.
-     *  @param {stateCallback} callback
+     *  @param {StateCallback} callback
      *  @returns {Predicate}
      */
-    function valid(callback: stateCallback): Predicate;
+    function valid(callback: StateCallback): Predicate;
     /**
      * Adds a state callback.
-     *  @param {stateCallback} callback
+     *  @param {StateCallback} callback
      *  @returns {Predicate}
      */
-    function invalid(callback: stateCallback): Predicate;
+    function invalid(callback: StateCallback): Predicate;
     /**
      * Adds a state callback.
-     *  @param {stateCallback} callback
+     *  @param {StateCallback} callback
      *  @returns {Predicate}
      */
-    function changed(callback: stateCallback): Predicate;
+    function changed(callback: StateCallback): Predicate;
     /**
      * Adds a state callback.
-     *  @param {stateCallback} callback
+     *  @param {StateCallback} callback
      *  @returns {Predicate}
      */
-    function validated(callback: stateCallback): Predicate;
+    function validated(callback: StateCallback): Predicate;
     /**
      * Adds a state callback.
-     *  @param {stateCallback} callback
+     *  @param {StateCallback} callback
      *  @returns {Predicate}
      */
-    function restored(callback: stateCallback): Predicate;
+    function restored(callback: StateCallback): Predicate;
     /**
      * Adds an error state callback and catches an error.
-     *  @param {stateCallback} callback
+     *  @param {StateCallback} callback
      *  @returns {Predicate}
      */
-    function error(callback: stateCallback): Predicate;
+    function error(callback: StateCallback): Predicate;
     /**
      * Refers to the api object on the server side and a dummy object on the client side.
      */

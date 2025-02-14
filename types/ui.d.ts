@@ -1,6 +1,6 @@
 import { ValidationResult } from "./validation-result";
 import { Validator } from "./predicate";
-import { stateCallback } from "./shared";
+import { StateCallback } from "./shared";
 
 type ValidatorEntry = [any, Validator];
 type ValidityStateValues = { true: any, false: any, anyValue?: any };
@@ -67,28 +67,28 @@ declare module "isomorphic-validation/ui" {
          * @param msgPropName - A property name of a validator message
          * @param rendererFn - A function that renders an entry of object and content to an HTML string
          */
-        declare function renderFirstError(msgPropName?: string, rendererFn?: RendererFn): stateCallback 
+        declare function renderFirstError(msgPropName?: string, rendererFn?: RendererFn): StateCallback 
 
         /**
          * Creates a state callback function for rendering messages of all "invalid" validators in the passed in validation result
          * @param msgPropName - A property name of a validator message
          * @param rendererFn - A function that renders an entry of object and content to an HTML string
          */
-        declare function renderAllErrors(msgPropName?: string, rendererFn?: RendererFn): stateCallback 
+        declare function renderAllErrors(msgPropName?: string, rendererFn?: RendererFn): StateCallback 
         
         /**
          * Creates a state callback function for rendering the specified property of all validators in the passed in validation result
          * @param propName - A property name of a validator
          * @param rendererFn - A function that renders an entry of object and content to an HTML string
          */
-        declare function renderProperty(propName?: string, rendererFn?: RendererFn): stateCallback 
+        declare function renderProperty(propName?: string, rendererFn?: RendererFn): StateCallback 
 
         /**
          * A function wrapper that allows to use a state callback function as an event handler
-         * @param stateCallback - A state callback function wich accepts ValidationResult as the argument
+         * @param callback - A state callback function wich accepts ValidationResult as the argument
          * @param isValid - Validity value with witch the state callback function will be called
          */
-        declare function toEventHandler(stateCallback: stateCallback, isValid?: boolean): EventListener 
+        declare function toEventHandler(callback: StateCallback, isValid?: boolean): EventListener 
 
         /**
          * Creates a function which performs a delayed effect depending on validity.

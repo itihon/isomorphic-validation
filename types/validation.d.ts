@@ -1,6 +1,6 @@
 import { ValidationResult } from './validation-result';
 import { Predicate, Validator } from './predicate';
-import { stateCallback, predicateFn } from './shared';
+import { StateCallback, predicateFn } from './shared';
 
 export type Validation = typeof ValidationAPI;
 export type mapperFn = (req: object, form: object) => any;
@@ -47,40 +47,40 @@ declare namespace ValidationAPI {
     let isomorphic: Validation;
     /**
      * Adds a state callback.
-     *  @param {stateCallback} callback
+     *  @param {StateCallback} callback
      *  @returns {Validation}
      */
-    function started(callback: stateCallback): Validation;
+    function started(callback: StateCallback): Validation;
     /**
      * Adds a state callback.
-     *  @param {stateCallback} callback
+     *  @param {StateCallback} callback
      *  @returns {Validation}
      */
-    function valid(callback: stateCallback): Validation;
+    function valid(callback: StateCallback): Validation;
     /**
      * Adds a state callback.
-     *  @param {stateCallback} callback
+     *  @param {StateCallback} callback
      *  @returns {Validation}
      */
-    function invalid(callback: stateCallback): Validation;
+    function invalid(callback: StateCallback): Validation;
     /**
      * Adds a state callback.
-     *  @param {stateCallback} callback
+     *  @param {StateCallback} callback
      *  @returns {Validation}
      */
-    function changed(callback: stateCallback): Validation;
+    function changed(callback: StateCallback): Validation;
     /**
      * Adds a state callback.
-     *  @param {stateCallback} callback
+     *  @param {StateCallback} callback
      *  @returns {Validation}
      */
-    function validated(callback: stateCallback): Validation;
+    function validated(callback: StateCallback): Validation;
     /**
      * Adds an error state callback and catches an error.
-     *  @param {stateCallback} callback
+     *  @param {StateCallback} callback
      *  @returns {Validation}
      */
-    function error(callback: stateCallback): Validation;
+    function error(callback: StateCallback): Validation;
     /**
      * Adds a constraint to the validation.
      *  @overload
