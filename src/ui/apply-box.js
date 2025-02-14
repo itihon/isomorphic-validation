@@ -117,14 +117,14 @@ const createBox = (content) => {
   return box;
 };
 
-const createContainer = (id, precedingElement) => {
+const createContainer = (where, id) => {
   const container = document.createElement('div');
   container.style.position = 'absolute';
   container.style.display = 'flex';
   container.style.alignItems = 'center';
   container.style.justifyContent = 'center';
   container.id = id;
-  precedingElement.insertAdjacentElement('afterend', container);
+  where.appendChild(container);
   return container;
 };
 
@@ -133,14 +133,16 @@ const boxesRegistry = new Map();
 
 const setBoxEffect = (element, stateValues, validationResult) => {
   const { isValid } = validationResult;
+  const { parentNode } = element;
+  const { id } = stateValues;
   let box;
 
   const container = retrieveIfHasOrCreate(
     containerRegistry,
-    stateValues.id,
+    id,
     createContainer,
-    stateValues.id,
-    element,
+    parentNode,
+    id,
   );
 
   const binaryBox = retrieveIfHasOrCreate(
@@ -150,6 +152,10 @@ const setBoxEffect = (element, stateValues, validationResult) => {
   );
 
   const { value } = stateValues[isValid];
+
+  if (container.parentNode !== parentNode) {
+    parentNode.appendChild(container);
+  }
 
   if (typeof value === 'function') {
     box = createBox(value(validationResult));
