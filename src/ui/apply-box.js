@@ -1,5 +1,7 @@
 import createApplyEffect from './create-apply-effect.js';
-import retrieveIfHasOrCreate from '../utils/retrieve-if-has-or-create.js';
+import retrieveIfHasOrCreate, {
+  newMap,
+} from '../utils/retrieve-if-has-or-create.js';
 
 const positionElementRelativeTo = (
   orienteer,
@@ -145,11 +147,7 @@ const setBoxEffect = (element, stateValues, validationResult) => {
     id,
   );
 
-  const binaryBox = retrieveIfHasOrCreate(
-    boxesRegistry,
-    stateValues,
-    () => new Map(),
-  );
+  const binaryBox = retrieveIfHasOrCreate(boxesRegistry, stateValues, newMap);
 
   const { value } = stateValues[isValid];
 
