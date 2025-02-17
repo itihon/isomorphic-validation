@@ -91,6 +91,7 @@ export default function ObservablePredicate(
     callID = undefined,
     revalidate = false,
     skipOptional = false,
+    invalidate = false, // invalidate if belongs to a non-optional group and the validatable value equals to the initial value
   ) {
     if (!revalidate) {
       stateCBs.runStarted();
@@ -98,6 +99,10 @@ export default function ObservablePredicate(
 
     if (skipOptional) {
       return predicatePostExec(true, forbidInvalid, callID);
+    }
+
+    if (invalidate) {
+      return predicatePostExec(false, forbidInvalid, callID);
     }
 
     const result = predicateFn(...items.map((item) => item.getValue(callID)));

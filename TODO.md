@@ -165,7 +165,7 @@
 
         - changed callback invokations have a slightly different order for original validation group and its clone. See grouping.test.js
 
-        - When a validated value is equal to its initial value, instead of validating it, maybe it's better to cancel and invalidate all validations.
+        + UPD: implemented without cancelation (the parameter `next` is responsible for cancelation). When a validated value is equal to its initial value, instead of validating it, maybe it's better to cancel and invalidate all predicates.
 
         - When a predicate added with the keepValid option, on every validation with the invalid result, it notifies subscribers twice: first when changed from valid to invalid and then when restores back to the last valid value. It also calls a predicate function twice. Not sure if this is appropriate. See ObservablePredicate integration tests.
 

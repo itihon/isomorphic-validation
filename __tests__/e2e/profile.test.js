@@ -141,24 +141,13 @@ describe('Validation.profile', () => {
     await signInVs.validate();
     await signUpVs.validate();
 
-    expect(isEmail.mock.calls).toStrictEqual([[email], ['']]);
-    expect(isLongerThan(4).mock.calls).toStrictEqual([
-      [email],
-      [password],
-      [''],
-      [''],
-      [''],
-    ]);
-    expect(isShorterThan(45).mock.calls).toStrictEqual([[email], ['']]);
-    expect(isShorterThan(25).mock.calls).toStrictEqual([[password], ['']]);
+    expect(isEmail.mock.calls).toStrictEqual([[email]]);
+    expect(isLongerThan(4).mock.calls).toStrictEqual([[email], [password]]);
+    expect(isShorterThan(45).mock.calls).toStrictEqual([[email]]);
+    expect(isShorterThan(25).mock.calls).toStrictEqual([[password]]);
     expect(isOnlyLetters.mock.calls).toStrictEqual([[password]]);
-    expect(isEmailNotBusy.mock.calls).toStrictEqual([['']]);
-    expect(areEqual.mock.calls).toStrictEqual([
-      ['', ''],
-      ['', ''],
-      ['', ''],
-      ['', ''],
-    ]); // !glued predicate is called 4 times. One call is enough
+    expect(isEmailNotBusy.mock.calls).toStrictEqual([]); // was not called, because equal to the initial value
+    expect(areEqual.mock.calls).toStrictEqual([]); // !glued predicate is called 4 times. One call is enough. UPD: was not called, because equal to the initial value
 
     expect(signInVs.isValid).toBe(true);
     expect(signUpVs.isValid).toBe(false);
@@ -450,6 +439,9 @@ describe('Validation.profile', () => {
     expect(constraints).toContain(predicate3.name);
     expect(constraints).toContain(predicate4.name);
     expect(constraints).not.toContain(predicate2.name);
+
+    signInForm.email.value = 'a@a.a';
+    signInForm.password.value = 'asdfg';
 
     await signInVs.validate();
 

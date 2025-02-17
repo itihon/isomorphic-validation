@@ -65,10 +65,13 @@ export default function ObservablePredicates(
       },
 
       run(...args) {
-        const skip = optional && item.isInitValue();
+        const isInitValue = item.isInitValue();
+        const skip = optional && isInitValue;
+        const invalidate = !optional && isInitValue;
+
         return withQueueRules
-          ? runPredicatesQueue(predicates, queueRules, args)
-          : Promise.all(predicates.run(...args, undefined, skip));
+          ? runPredicatesQueue(predicates, queueRules, args) // !!! probably aslo should be passed the skip and invalidate variables
+          : Promise.all(predicates.run(...args, undefined, skip, invalidate));
       },
 
       clone(registry = CloneRegistry()) {

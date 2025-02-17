@@ -512,6 +512,72 @@ describe('Validation', () => {
         (await Promise.all(results)).map((result) => result.isValid),
       ).toStrictEqual([false, true, true, true]);
     });
+
+    it('should invalidate predicates of a non-optional group without calling them when the validatable value equals to its initial value', async () => {
+      const obj = { value: '' };
+
+      const p1 = jest.fn(() => true);
+      const p2 = jest.fn(() => true);
+      const p3 = jest.fn(() => true);
+
+      const validCB = jest.fn();
+      const invalidCB = jest.fn();
+
+      const validation = Validation(obj)
+        .constraint(p1)
+        .constraint(p2)
+        .constraint(p3);
+
+      validation.constraints.forEach((validator) =>
+        validator.valid(validCB).invalid(invalidCB),
+      );
+
+      await validation.validate();
+
+      expect(p1).toHaveBeenCalledTimes(0);
+      expect(p2).toHaveBeenCalledTimes(0);
+      expect(p3).toHaveBeenCalledTimes(0);
+      expect(validCB).toHaveBeenCalledTimes(0);
+      expect(invalidCB).toHaveBeenCalledTimes(3);
+
+      expect(validation.isValid).toBe(false);
+
+      validation.constraints.forEach((validator) =>
+        expect(validator.isValid).toBe(false),
+      );
+
+      obj.value = '42';
+
+      await validation.validate();
+
+      expect(p1).toHaveBeenCalledTimes(1);
+      expect(p2).toHaveBeenCalledTimes(1);
+      expect(p3).toHaveBeenCalledTimes(1);
+      expect(validCB).toHaveBeenCalledTimes(3);
+      expect(invalidCB).toHaveBeenCalledTimes(3);
+
+      expect(validation.isValid).toBe(true);
+
+      validation.constraints.forEach((validator) =>
+        expect(validator.isValid).toBe(true),
+      );
+
+      obj.value = '';
+
+      await validation.validate();
+
+      expect(p1).toHaveBeenCalledTimes(1);
+      expect(p2).toHaveBeenCalledTimes(1);
+      expect(p3).toHaveBeenCalledTimes(1);
+      expect(validCB).toHaveBeenCalledTimes(3);
+      expect(invalidCB).toHaveBeenCalledTimes(6);
+
+      expect(validation.isValid).toBe(false);
+
+      validation.constraints.forEach((validator) =>
+        expect(validator.isValid).toBe(false),
+      );
+    });
   });
 
   describe('Iterator', () => {

@@ -316,6 +316,9 @@ describe('Validation.profile', () => {
     expect(constraints).not.toContain(predicate4.name);
 
     signUpForm.elements.email.value = 'a@a.a';
+    signUpForm.elements.password.value = 'asdf';
+    signUpForm.elements.pwdconfirm.value = 'qwer';
+
     await signUpVs.validate();
 
     expect(predicate1).toHaveBeenCalledTimes(6);
