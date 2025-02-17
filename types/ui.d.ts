@@ -5,24 +5,40 @@ import { StateCallback } from "./shared";
 type ValidatorEntry = [any, Validator];
 type ValidityStateValues = { true: any, false: any, anyValue?: any };
 type SetEffectFn = (validationResult: ValidationResult) => void;
-type CancelEffectFn = () => void;
+type CancelEffectFn = (validationResult: ValidationResult) => void;
 type EffectControlFns = [CancelEffectFn, SetEffectFn];
 type EffectFunction = (
     element: HTMLElement, 
     stateValues: ValidityStateValues, 
-    validationResult: ValidationResult
+    validationResult: ValidationResult,
+    effectID: string,
 ) => void;
 
 type SetEffectByValidityFn1 = (
-    htmlElement?: HTMLElement, stateValues?: ValidityStateValues
+    htmlElement?: HTMLElement, effectID?: string, stateValues?: ValidityStateValues
 ) => EffectControlFns;
-
 type SetEffectByValidityFn2 = (
-    stateValues?: ValidityStateValues, htmlElement?: HTMLElement
+    effectID?: string, htmlElement?: HTMLElement, stateValues?: ValidityStateValues
+) => EffectControlFns;
+type SetEffectByValidityFn3 = (
+    effectID?: string, stateValues?: ValidityStateValues, htmlElement?: HTMLElement 
+) => EffectControlFns;
+type SetEffectByValidityFn4 = (
+    htmlElement?: HTMLElement, stateValues?: ValidityStateValues, effectID?: string
+) => EffectControlFns;
+type SetEffectByValidityFn5 = (
+    stateValues?: ValidityStateValues, htmlElement?: HTMLElement, effectID?: string
+) => EffectControlFns;
+type SetEffectByValidityFn6 = (
+    stateValues?: ValidityStateValues, effectID?: string, htmlElement?: HTMLElement
 ) => EffectControlFns;
 
 type SetEffectByValidityFn = SetEffectByValidityFn1 
-    & SetEffectByValidityFn2;
+    & SetEffectByValidityFn2
+    & SetEffectByValidityFn3
+    & SetEffectByValidityFn4
+    & SetEffectByValidityFn5
+    & SetEffectByValidityFn6;
 
 type RendererFn = (entry: [obj: object, content: string], idx: number) => string;
 
