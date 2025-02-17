@@ -1,5 +1,7 @@
-import acceptOnlyFunction from '../helpers/accept-only-function';
-import parseArgsByTypes from '../utils/parse-args-by-types';
+import acceptOnlyFunction from '../helpers/accept-only-function.js';
+import indexedName from '../utils/indexed-name.js';
+import parseArgsByTypes from '../utils/parse-args-by-types.js';
+import OrderedTwoKeyedMap from '../types/ordered-two-keyed-map.js';
 
 const { warn } = console;
 
@@ -13,15 +15,15 @@ const createApplyEffect = (
   acceptOnlyFunction(effectFn);
 
   const setEffectByValidity = (...args) => {
-    const [htmlElement, stateValuesObj] = parseArgsByTypes(
+    const [htmlElement, stateValuesObj, effectID] = parseArgsByTypes(
       args,
-      [HTMLElement, Object],
-      [undefined, undefined],
+      [HTMLElement, Object, String],
+      [undefined, undefined, indexedName('applyEffect')],
     );
 
     const stateValues = { ...defaultStateValues, ...stateValuesObj };
 
-    const timeouts = new Map();
+    const timeouts = OrderedTwoKeyedMap();
 
     const set = (validationResult) => {
       const { target, isValid } = validationResult;
@@ -32,15 +34,17 @@ const createApplyEffect = (
           `Target element for ${effectFn.name}: was not set. The effect function will not be called.`,
         );
       } else {
-        clearTimeout(timeouts.get(element));
+        clearTimeout(timeouts.get(element, effectID));
         timeouts.set(
           element,
+          effectID,
           setTimeout(
             effectFn,
             stateValues[isValid].delay,
             element,
             stateValues,
             validationResult,
+            effectID,
           ),
         );
       }
@@ -54,7 +58,7 @@ const createApplyEffect = (
           `Target element for ${effectFn.name}: was not set. The effect function will not be cancelled.`,
         );
       } else {
-        clearTimeout(timeouts.get(element));
+        clearTimeout(timeouts.get(element, effectID));
       }
     };
 
