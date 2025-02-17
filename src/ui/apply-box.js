@@ -133,10 +133,9 @@ const createContainer = (where, id) => {
 const containerRegistry = new Map();
 const boxesRegistry = new Map();
 
-const setBoxEffect = (element, stateValues, validationResult) => {
+const setBoxEffect = (element, stateValues, validationResult, id) => {
   const { isValid } = validationResult;
   const { parentNode } = element;
-  const { id } = stateValues;
   let box;
 
   const container = retrieveIfHasOrCreate(
@@ -183,7 +182,6 @@ const applyBox = createApplyEffect(setBoxEffect, {
   false: { delay: 0, value: '' },
   position: 'LEVEL_RIGHT_BESIDE',
   mode: 'MIN_SIDE',
-  id: 'apply_box_0',
 });
 
 export default applyBox;
