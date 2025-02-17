@@ -6,3 +6,4 @@ const retrieveIfHasOrCreate = (map, key, creatorFn, ...args) => {
 };
 
 export default retrieveIfHasOrCreate;
+export const newMap = () => new Map();
