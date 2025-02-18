@@ -14,6 +14,8 @@ const createApplyEffect = (
 ) => {
   acceptOnlyFunction(effectFn);
 
+  const timeouts = OrderedTwoKeyedMap();
+
   const setEffectByValidity = (...args) => {
     const [htmlElement, stateValuesObj, effectID] = parseArgsByTypes(
       args,
@@ -22,8 +24,6 @@ const createApplyEffect = (
     );
 
     const stateValues = { ...defaultStateValues, ...stateValuesObj };
-
-    const timeouts = OrderedTwoKeyedMap();
 
     const set = (validationResult) => {
       const { target, isValid } = validationResult;
@@ -34,19 +34,26 @@ const createApplyEffect = (
           `Target element for ${effectFn.name}: was not set. The effect function will not be called.`,
         );
       } else {
+        const { delay } = stateValues[isValid];
+
         clearTimeout(timeouts.get(element, effectID));
-        timeouts.set(
-          element,
-          effectID,
-          setTimeout(
-            effectFn,
-            stateValues[isValid].delay,
+
+        if (delay) {
+          timeouts.set(
             element,
-            stateValues,
-            validationResult,
             effectID,
-          ),
-        );
+            setTimeout(
+              effectFn,
+              delay,
+              element,
+              stateValues,
+              validationResult,
+              effectID,
+            ),
+          );
+        } else {
+          effectFn(element, stateValues, validationResult, effectID);
+        }
       }
     };
 
