@@ -439,145 +439,168 @@ describe('Validation', () => {
       jest.clearAllMocks();
     });
 
-    it('should run optional predicates only if the validatable value does not equal the initial value', async () => {
-      const results = [];
-      const validation = Validation(obj1, { optional: true });
-      validation
-        .constraint(isGreaterThan(42))
-        .constraint(isGreaterThan(16))
-        .constraint(isGreaterThan(1));
+    it.each([
+      { next: true, title: 'next=true' },
+      { next: false, title: 'next=false' },
+    ])(
+      '$title: should run optional predicates only if the validatable value does not equal the initial value',
+      async ({ next }) => {
+        const results = [];
+        const validation = Validation(obj1, { optional: true });
+        validation
+          .constraint(isGreaterThan(1), { next })
+          .constraint(isGreaterThan(16), { next })
+          .constraint(isGreaterThan(42), { next });
 
-      obj1.value = 1;
-      results.push(validation.validate()); // false
-      expect(isGreaterThan(42)).toHaveBeenCalledTimes(1);
-      expect(isGreaterThan(16)).toHaveBeenCalledTimes(1);
-      expect(isGreaterThan(1)).toHaveBeenCalledTimes(1);
+        obj1.value = 17;
+        results.push(await validation.validate()); // false
+        expect(isGreaterThan(42)).toHaveBeenCalledTimes(1);
+        expect(isGreaterThan(16)).toHaveBeenCalledTimes(1);
+        expect(isGreaterThan(1)).toHaveBeenCalledTimes(1);
 
-      obj1.value = 43;
-      results.push(validation.validate()); // true
-      expect(isGreaterThan(42)).toHaveBeenCalledTimes(2);
-      expect(isGreaterThan(16)).toHaveBeenCalledTimes(2);
-      expect(isGreaterThan(1)).toHaveBeenCalledTimes(2);
+        obj1.value = 43;
+        results.push(await validation.validate()); // true
+        expect(isGreaterThan(42)).toHaveBeenCalledTimes(2);
+        expect(isGreaterThan(16)).toHaveBeenCalledTimes(2);
+        expect(isGreaterThan(1)).toHaveBeenCalledTimes(2);
 
-      obj1.value = ''; // initial value
-      results.push(validation.validate()); // true
-      expect(isGreaterThan(42)).toHaveBeenCalledTimes(2);
-      expect(isGreaterThan(16)).toHaveBeenCalledTimes(2);
-      expect(isGreaterThan(1)).toHaveBeenCalledTimes(2);
+        obj1.value = ''; // initial value
+        results.push(await validation.validate()); // true
+        expect(isGreaterThan(42)).toHaveBeenCalledTimes(2);
+        expect(isGreaterThan(16)).toHaveBeenCalledTimes(2);
+        expect(isGreaterThan(1)).toHaveBeenCalledTimes(2);
 
-      obj1.value = 44;
-      results.push(validation.validate()); // true
-      expect(isGreaterThan(42)).toHaveBeenCalledTimes(3);
-      expect(isGreaterThan(16)).toHaveBeenCalledTimes(3);
-      expect(isGreaterThan(1)).toHaveBeenCalledTimes(3);
+        obj1.value = 44;
+        results.push(await validation.validate()); // true
+        expect(isGreaterThan(42)).toHaveBeenCalledTimes(3);
+        expect(isGreaterThan(16)).toHaveBeenCalledTimes(3);
+        expect(isGreaterThan(1)).toHaveBeenCalledTimes(3);
 
-      expect(
-        (await Promise.all(results)).map((result) => result.isValid),
-      ).toStrictEqual([false, true, true, true]);
-    });
+        expect(results.map((result) => result.isValid)).toStrictEqual([
+          false,
+          true,
+          true,
+          true,
+        ]);
+      },
+    );
 
-    it('should be valid by default when optional', async () => {
+    it.each([
+      { next: true, title: 'next=true' },
+      { next: false, title: 'next=false' },
+    ])('$title: should be valid by default when optional', async ({ next }) => {
       const results = [];
       const validation = Validation(obj1, { optional: true });
 
       // After creation a Validation is in valid state since it is optional
       expect(validation.isValid).toBe(true);
 
-      validation.constraint(isGreaterThan(42)).constraint(isGreaterThan(1));
+      validation
+        .constraint(isGreaterThan(1), { next })
+        .constraint(isGreaterThan(42), { next });
 
       // remains valid by default after adding constraints
       expect(validation.isValid).toBe(true);
 
-      obj1.value = 1;
-      results.push(validation.validate()); // false
+      obj1.value = 17;
+      results.push(await validation.validate()); // false
       expect(isGreaterThan(42)).toHaveBeenCalledTimes(1);
       expect(isGreaterThan(1)).toHaveBeenCalledTimes(1);
 
       obj1.value = 43;
-      results.push(validation.validate()); // true
+      results.push(await validation.validate()); // true
       expect(isGreaterThan(42)).toHaveBeenCalledTimes(2);
       expect(isGreaterThan(1)).toHaveBeenCalledTimes(2);
 
       obj1.value = ''; // initial value
-      results.push(validation.validate()); // true
+      results.push(await validation.validate()); // true
       expect(isGreaterThan(42)).toHaveBeenCalledTimes(2);
       expect(isGreaterThan(1)).toHaveBeenCalledTimes(2);
 
       obj1.value = 44;
-      results.push(validation.validate()); // true
+      results.push(await validation.validate()); // true
       expect(isGreaterThan(42)).toHaveBeenCalledTimes(3);
       expect(isGreaterThan(1)).toHaveBeenCalledTimes(3);
 
-      expect(
-        (await Promise.all(results)).map((result) => result.isValid),
-      ).toStrictEqual([false, true, true, true]);
+      expect(results.map((result) => result.isValid)).toStrictEqual([
+        false,
+        true,
+        true,
+        true,
+      ]);
     });
 
-    it('should invalidate predicates of a non-optional group without calling them when the validatable value equals to its initial value', async () => {
-      const obj = { value: '' };
+    it.each([
+      { next: true, title: 'next=true' },
+      { next: false, title: 'next=false' },
+    ])(
+      '$title: should invalidate predicates of a non-optional group without calling them when the validatable value equals to its initial value',
+      async ({ next }) => {
+        const obj = { value: '' };
 
-      const p1 = jest.fn(() => true);
-      const p2 = jest.fn(() => true);
-      const p3 = jest.fn(() => true);
+        const p1 = jest.fn(() => true);
+        const p2 = jest.fn(() => true);
+        const p3 = jest.fn(() => true);
 
-      const validCB = jest.fn();
-      const invalidCB = jest.fn();
+        const validCB = jest.fn();
+        const invalidCB = jest.fn();
 
-      const validation = Validation(obj)
-        .constraint(p1)
-        .constraint(p2)
-        .constraint(p3);
+        const validation = Validation(obj)
+          .constraint(p1, { next })
+          .constraint(p2, { next })
+          .constraint(p3, { next });
 
-      validation.constraints.forEach((validator) =>
-        validator.valid(validCB).invalid(invalidCB),
-      );
+        validation.constraints.forEach((validator) =>
+          validator.valid(validCB).invalid(invalidCB),
+        );
 
-      await validation.validate();
+        await validation.validate();
 
-      expect(p1).toHaveBeenCalledTimes(0);
-      expect(p2).toHaveBeenCalledTimes(0);
-      expect(p3).toHaveBeenCalledTimes(0);
-      expect(validCB).toHaveBeenCalledTimes(0);
-      expect(invalidCB).toHaveBeenCalledTimes(3);
+        expect(p1).toHaveBeenCalledTimes(0);
+        expect(p2).toHaveBeenCalledTimes(0);
+        expect(p3).toHaveBeenCalledTimes(0);
+        expect(validCB).toHaveBeenCalledTimes(0);
+        expect(invalidCB).toHaveBeenCalledTimes(3);
 
-      expect(validation.isValid).toBe(false);
+        expect(validation.isValid).toBe(false);
 
-      validation.constraints.forEach((validator) =>
-        expect(validator.isValid).toBe(false),
-      );
+        validation.constraints.forEach((validator) =>
+          expect(validator.isValid).toBe(false),
+        );
 
-      obj.value = '42';
+        obj.value = '42';
 
-      await validation.validate();
+        await validation.validate();
 
-      expect(p1).toHaveBeenCalledTimes(1);
-      expect(p2).toHaveBeenCalledTimes(1);
-      expect(p3).toHaveBeenCalledTimes(1);
-      expect(validCB).toHaveBeenCalledTimes(3);
-      expect(invalidCB).toHaveBeenCalledTimes(3);
+        expect(p1).toHaveBeenCalledTimes(1);
+        expect(p2).toHaveBeenCalledTimes(1);
+        expect(p3).toHaveBeenCalledTimes(1);
+        expect(validCB).toHaveBeenCalledTimes(3);
+        expect(invalidCB).toHaveBeenCalledTimes(3);
 
-      expect(validation.isValid).toBe(true);
+        expect(validation.isValid).toBe(true);
 
-      validation.constraints.forEach((validator) =>
-        expect(validator.isValid).toBe(true),
-      );
+        validation.constraints.forEach((validator) =>
+          expect(validator.isValid).toBe(true),
+        );
 
-      obj.value = '';
+        obj.value = '';
 
-      await validation.validate();
+        await validation.validate();
 
-      expect(p1).toHaveBeenCalledTimes(1);
-      expect(p2).toHaveBeenCalledTimes(1);
-      expect(p3).toHaveBeenCalledTimes(1);
-      expect(validCB).toHaveBeenCalledTimes(3);
-      expect(invalidCB).toHaveBeenCalledTimes(6);
+        expect(p1).toHaveBeenCalledTimes(1);
+        expect(p2).toHaveBeenCalledTimes(1);
+        expect(p3).toHaveBeenCalledTimes(1);
+        expect(validCB).toHaveBeenCalledTimes(3);
+        expect(invalidCB).toHaveBeenCalledTimes(6);
 
-      expect(validation.isValid).toBe(false);
+        expect(validation.isValid).toBe(false);
 
-      validation.constraints.forEach((validator) =>
-        expect(validator.isValid).toBe(false),
-      );
-    });
+        validation.constraints.forEach((validator) =>
+          expect(validator.isValid).toBe(false),
+        );
+      },
+    );
   });
 
   describe('Iterator', () => {
