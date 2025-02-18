@@ -134,6 +134,10 @@ const containerRegistry = new Map();
 const boxesRegistry = new Map();
 
 const setBoxEffect = (element, stateValues, validationResult, id) => {
+  if (!element.offsetParent) {
+    return;
+  }
+
   const { isValid } = validationResult;
   const { parentNode } = element;
   let box;
