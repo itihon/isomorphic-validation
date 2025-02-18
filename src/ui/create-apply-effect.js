@@ -2,8 +2,11 @@ import acceptOnlyFunction from '../helpers/accept-only-function.js';
 import indexedName from '../utils/indexed-name.js';
 import parseArgsByTypes from '../utils/parse-args-by-types.js';
 import OrderedTwoKeyedMap from '../types/ordered-two-keyed-map.js';
+import { IS_SERVER } from '../utils/getenv.js';
 
 const { warn } = console;
+const emptyFns = [() => {}, () => {}];
+const setEffectByValidityEmpty = () => emptyFns;
 
 const createApplyEffect = (
   effectFn,
@@ -12,6 +15,13 @@ const createApplyEffect = (
     false: { delay: 0, value: null },
   },
 ) => {
+  if (IS_SERVER) {
+    warn(
+      `[isomorphic-validation/ui]: Function ${effectFn.name} has no effect on the server side.`,
+    );
+    return setEffectByValidityEmpty;
+  }
+
   acceptOnlyFunction(effectFn);
 
   const timeouts = OrderedTwoKeyedMap();
