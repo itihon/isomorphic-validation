@@ -1,7 +1,7 @@
 import renderItem from '../helpers/render-item.js';
 
 const renderProperty =
-  (propName = 'msg', rendererFn = renderItem) =>
+  (propName = 'msg', rendererFn = renderItem()) =>
   (validationResult) =>
     [...validationResult]
       .map(([obj, validator]) => [obj, validator[propName]])

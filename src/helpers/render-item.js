@@ -1,4 +1,6 @@
-const renderItem = ([, content], idx) =>
-  `<div><span>${idx + 1}. </span>${content}</div>`;
+const renderItem =
+  (icon = '') =>
+  ([, content]) =>
+    `<div>${icon ? `<span>${icon}</span> ` : ''}${content}</div>`;
 
 export default renderItem;
