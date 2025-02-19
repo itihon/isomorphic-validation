@@ -1,5 +1,5 @@
 import firstInvalid from './first-invalid.js';
-import renderItem from '../helpers/render-error.js';
+import renderItem from '../helpers/render-item.js';
 
 const renderFirstError =
   (msgPropName = 'msg', rendererFn = renderItem) =>

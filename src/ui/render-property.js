@@ -1,4 +1,4 @@
-import renderItem from '../helpers/render-error.js';
+import renderItem from '../helpers/render-item.js';
 
 const renderProperty =
   (propName = 'msg', rendererFn = renderItem) =>
