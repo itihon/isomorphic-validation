@@ -1,11 +1,16 @@
 import createApplyEffect from './create-apply-effect';
 
-const setClassEffect = (element, classNames, { isValid }) => {
-  const classNameToRemove = classNames[!isValid].value;
+const classRegistry = new Map();
+
+const setClassEffect = (element, classNames, { isValid }, effectID) => {
+  const classNameToRemove = classRegistry.get(effectID);
   const classNameToAdd = classNames[isValid].value;
 
   if (classNameToRemove) element.classList.remove(classNameToRemove);
-  if (classNameToAdd) element.classList.add(classNameToAdd);
+  if (classNameToAdd) {
+    element.classList.add(classNameToAdd);
+    classRegistry.set(effectID, classNameToAdd);
+  }
 };
 
 const applyClass = createApplyEffect(setClassEffect, {
