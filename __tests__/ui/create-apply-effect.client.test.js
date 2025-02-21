@@ -17,7 +17,10 @@ describe('createApplyEffect', () => {
 
   it('should return a function which accepts optional arguments in any order', () => {
     const htmlElement = document.createElement('div');
-    const valuesObj = { true: '', false: '' };
+    const valuesObj = {
+      true: { delay: 0, value: 't' },
+      false: { delay: 0, value: 'f' },
+    };
     let effectFnCallCount = 0;
 
     const effectFn = (element, stateValues, { isValid }) => {
@@ -83,8 +86,11 @@ describe('createApplyEffect', () => {
   it('should override default state values', () => {
     const htmlElement1 = document.createElement('div');
     const htmlElement2 = document.createElement('div');
-    const defaultStateValues = { true: '1', false: '2' };
-    const overridenStateValues = { true: 'one', false: 'two' };
+    const defaultStateValues = { true: { value: '1' }, false: { value: '2' } };
+    const overridenStateValues = {
+      true: { value: 'one' },
+      false: { value: 'two' },
+    };
     let effectFnCallCount = 0;
 
     const effectFn = (element, stateValues, { isValid }) => {

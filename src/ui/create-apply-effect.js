@@ -30,10 +30,15 @@ const createApplyEffect = (
     const [htmlElement, stateValuesObj, effectID] = parseArgsByTypes(
       args,
       [HTMLElement, Object, String],
-      [undefined, undefined, indexedName('applyEffect')],
+      [undefined, defaultStateValues, indexedName('applyEffect')],
     );
 
-    const stateValues = { ...defaultStateValues, ...stateValuesObj };
+    const stateValues = {
+      ...defaultStateValues,
+      ...stateValuesObj,
+      true: { ...defaultStateValues.true, ...stateValuesObj.true },
+      false: { ...defaultStateValues.false, ...stateValuesObj.false },
+    };
 
     const set = (validationResult) => {
       const { target, isValid } = validationResult;
