@@ -29,7 +29,7 @@ describe('applyOutline', () => {
     inputElement.value = 42;
     await v.validate();
     await wait(4);
-    expect(inputElement.style.outline).toBe('1px solid green');
+    expect(inputElement.style.outline).toBe('1px solid limegreen');
 
     inputElement.value = 21;
     await v.validate();
