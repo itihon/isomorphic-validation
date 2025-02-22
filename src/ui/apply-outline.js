@@ -5,7 +5,7 @@ const setOutlineEffect = (element, outlines, { isValid }) => {
 };
 
 const applyOutline = createApplyEffect(setOutlineEffect, {
-  true: { delay: 0, value: '1px solid green' },
+  true: { delay: 0, value: '1px solid limegreen' },
   false: { delay: 0, value: '1px solid red' },
 });
 
