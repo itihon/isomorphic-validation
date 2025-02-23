@@ -8,6 +8,7 @@
 
 
     ## Features
+        - [ ] UI module: `applyEffect(stateValues)` - consider adding `value` and `delay` properies in the root of the `stateValues` object which override their counterparts set for validity states.
         - [x] consider leaving .forEach method in Representation 
         - [x] implement a custom iterator for Representation [...Validation().constraints] to avoid complecated destructuring syntax so it yields exactly what is needed instead of what it actually contains
         - consider throwing an error if not an options object is passed into Validation().
