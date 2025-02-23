@@ -2,30 +2,61 @@
 export default function debounceP(fn = Function.prototype, delay = 0) {
   let timeout;
   let promise;
-  let resolve = () => {};
-  let reject = () => {};
+  let resolveFn = () => {};
+  let rejectFn = () => {};
+
   const suffix = '_DP';
   const debouncedFnName = fn.name + suffix;
 
-  const deferredFn = (...args) => {
+  const resolvers = new Map();
+  const rejecters = new Map();
+
+  const resolve = (res) => {
+    resolveFn(res);
+    promise = null;
+  };
+
+  const reject = (err) => {
+    rejectFn(err);
+    promise = null;
+  };
+
+  const emptyFn = () => {
+    promise = null;
+  };
+
+  const deferredFn = (id, ...args) => {
     try {
-      resolve(fn(...args));
+      const result = fn(...args);
+
+      if (result.then) {
+        result.then(
+          (res) => (resolvers.get(id) || emptyFn)(res),
+          (err) => (rejecters.get(id) || emptyFn)(err),
+        );
+      } else {
+        resolve(result);
+      }
     } catch (err) {
       reject(err);
     }
-    promise = null;
   };
 
   const debouncedFn = {
     [debouncedFnName]: (...args) => {
+      resolvers.clear();
+      rejecters.clear();
       clearTimeout(timeout);
 
-      timeout = setTimeout(deferredFn, delay, ...args);
+      const id = Symbol('debouncedFn.callID');
+      timeout = setTimeout(deferredFn, delay, id, ...args);
+      resolvers.set(id, resolve);
+      rejecters.set(id, reject);
 
       if (!promise) {
         promise = new Promise((res, rej) => {
-          resolve = res;
-          reject = rej;
+          resolveFn = res;
+          rejectFn = rej;
         });
       }
 

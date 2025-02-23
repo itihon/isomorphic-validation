@@ -204,4 +204,107 @@ describe('debounce', () => {
       expect(isLongerThan(4)).toHaveBeenCalledTimes(1);
     },
   );
+
+  it('should discard the execution result of a previous async predicate', async () => {
+    const validatableObject = { value: '' };
+    const debounce = 100;
+    const latency = 100;
+    const isMeaningOfLifeAsync = jest.fn(
+      (value) =>
+        new Promise((resolve) => {
+          setTimeout(resolve, latency, value === '42');
+        }),
+    );
+
+    const validation = Validation(validatableObject).constraint(
+      isMeaningOfLifeAsync,
+      { debounce },
+    );
+
+    validatableObject.value = '42';
+    validation.validate();
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(0);
+
+    await wait(debounce);
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(1);
+    expect(validation.isValid).toBe(false);
+
+    await wait(latency);
+    expect(validation.isValid).toBe(true);
+
+    validatableObject.value = '43';
+    validation.validate();
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(1);
+
+    await wait(debounce);
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(2);
+    expect(validation.isValid).toBe(true);
+
+    await wait(latency);
+    expect(validation.isValid).toBe(false);
+
+    validatableObject.value = '42';
+    validation.validate();
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(2);
+
+    await wait(debounce);
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(3);
+    expect(validation.isValid).toBe(false);
+
+    await wait(latency / 2);
+    expect(validation.isValid).toBe(false);
+
+    validatableObject.value = '43';
+    validation.validate();
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(3);
+
+    await wait(debounce / 2);
+    expect(validation.isValid).toBe(false);
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(3);
+
+    await wait(debounce / 2);
+    expect(validation.isValid).toBe(false);
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(4);
+
+    validatableObject.value = '42';
+    validation.validate();
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(4);
+
+    await wait(debounce / 2);
+    expect(validation.isValid).toBe(false);
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(4);
+
+    await wait(debounce / 2);
+    expect(validation.isValid).toBe(false);
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(5);
+
+    await wait(latency / 2);
+    expect(validation.isValid).toBe(false);
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(5);
+
+    validatableObject.value = '43';
+    validation.validate();
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(5);
+
+    await wait(debounce / 2);
+    expect(validation.isValid).toBe(false);
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(5);
+
+    await wait(debounce / 2);
+    expect(validation.isValid).toBe(false);
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(6);
+
+    await wait(latency / 2);
+    expect(validation.isValid).toBe(false);
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(6);
+
+    await wait(latency / 2);
+    expect(validation.isValid).toBe(false);
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(6);
+
+    // last time just in case
+    await wait(latency);
+    expect(validation.isValid).toBe(false);
+    expect(isMeaningOfLifeAsync).toHaveBeenCalledTimes(6);
+  });
 });
