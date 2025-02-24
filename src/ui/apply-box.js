@@ -10,107 +10,118 @@ const positionElementRelativeTo = (
   mode = 'MIN_SIDE',
 ) => {
   const { offsetLeft, offsetTop, offsetWidth, offsetHeight } = orienteer;
-  const elementSize = Math.min(offsetWidth, offsetHeight);
-
-  let modX = 0;
-  let modY = 0;
-
-  switch (position) {
-    case 'ABOVE_LEFT_BESIDE':
-      modX = -elementSize;
-      modY = -elementSize;
-      break;
-
-    case 'ABOVE_LEFT':
-      modX = 0;
-      modY = -elementSize;
-      break;
-
-    case 'ABOVE_CENTER':
-      modX = offsetWidth / 2 - elementSize / 2;
-      modY = -elementSize;
-      break;
-
-    case 'ABOVE_RIGHT':
-      modX = offsetWidth - elementSize;
-      modY = -elementSize;
-      break;
-
-    case 'ABOVE_RIGHT_BESIDE':
-      modX = offsetWidth;
-      modY = -elementSize;
-      break;
-
-    case 'LEVEL_LEFT_BESIDE':
-      modX = -elementSize;
-      modY = 0;
-      break;
-
-    case 'LEVEL_LEFT':
-      modX = 0;
-      modY = 0;
-      break;
-
-    case 'LEVEL_CENTER':
-      modX = offsetWidth / 2 - elementSize / 2;
-      modY = 0;
-      break;
-
-    case 'LEVEL_RIGHT':
-      modX = offsetWidth - elementSize;
-      modY = 0;
-      break;
-
-    case 'LEVEL_RIGHT_BESIDE':
-      modX = offsetWidth;
-      modY = 0;
-      break;
-
-    case 'BELOW_LEFT_BESIDE':
-      modX = -elementSize;
-      modY = elementSize;
-      break;
-
-    case 'BELOW_LEFT':
-      modX = 0;
-      modY = elementSize;
-      break;
-
-    case 'BELOW_CENTER':
-      modX = offsetWidth / 2 - elementSize / 2;
-      modY = elementSize;
-      break;
-
-    case 'BELOW_RIGHT':
-      modX = offsetWidth - elementSize;
-      modY = elementSize;
-      break;
-
-    case 'BELOW_RIGHT_BESIDE':
-      modX = offsetWidth;
-      modY = elementSize;
-      break;
-
-    default:
-      break;
-  }
+  const elementWidth = mode === 'MIN_SIDE' ? offsetHeight : offsetWidth;
+  const { style } = element;
 
   switch (mode) {
     case 'MIN_SIDE':
-      element.style.width = `${elementSize}px`;
-      element.style.height = `${elementSize}px`;
+      element.style.width = `${offsetHeight}px`;
+      element.style.height = `${offsetHeight}px`;
       break;
 
     case 'MAX_SIDE':
       element.style.width = `${offsetWidth}px`;
+      element.style.height = ``;
       break;
 
     default:
       break;
   }
 
-  element.style.left = `${offsetLeft + modX}px`;
-  element.style.top = `${offsetTop + modY}px`;
+  switch (position) {
+    case 'ABOVE_LEFT_BESIDE':
+      style.left = `${offsetLeft - elementWidth}px`;
+      style.top = `${offsetTop}px`;
+      style.transform = `translateY(-100%)`;
+      break;
+
+    case 'ABOVE_LEFT':
+      style.left = `${offsetLeft - elementWidth + offsetHeight}px`;
+      style.top = `${offsetTop}px`;
+      style.transform = `translateY(-100%)`;
+      break;
+
+    case 'ABOVE_CENTER':
+      style.left = `${offsetLeft + offsetWidth / 2 - elementWidth / 2}px`;
+      style.top = `${offsetTop}px`;
+      style.transform = `translateY(-100%)`;
+      break;
+
+    case 'ABOVE_RIGHT':
+      style.left = `${offsetLeft + offsetWidth - offsetHeight}px`;
+      style.top = `${offsetTop}px`;
+      style.transform = `translateY(-100%)`;
+      break;
+
+    case 'ABOVE_RIGHT_BESIDE':
+      style.left = `${offsetLeft + offsetWidth}px`;
+      style.top = `${offsetTop}px`;
+      style.transform = `translateY(-100%)`;
+      break;
+
+    case 'LEVEL_LEFT_BESIDE':
+      style.left = `${offsetLeft - elementWidth}px`;
+      style.top = `${offsetTop + offsetHeight / 2}px`;
+      style.transform = `translateY(-50%)`;
+      break;
+
+    case 'LEVEL_LEFT':
+      style.left = `${offsetLeft - elementWidth + offsetHeight}px`;
+      style.top = `${offsetTop + offsetHeight / 2}px`;
+      style.transform = `translateY(-50%)`;
+      break;
+
+    case 'LEVEL_CENTER':
+      style.left = `${offsetLeft + offsetWidth / 2 - elementWidth / 2}px`;
+      style.top = `${offsetTop + offsetHeight / 2}px`;
+      style.transform = `translateY(-50%)`;
+      break;
+
+    case 'LEVEL_RIGHT':
+      style.left = `${offsetLeft + offsetWidth - offsetHeight}px`;
+      style.top = `${offsetTop + offsetHeight / 2}px`;
+      style.transform = `translateY(-50%)`;
+      break;
+
+    case 'LEVEL_RIGHT_BESIDE':
+      style.left = `${offsetLeft + offsetWidth}px`;
+      style.top = `${offsetTop + offsetHeight / 2}px`;
+      style.transform = `translateY(-50%)`;
+      break;
+
+    case 'BELOW_LEFT_BESIDE':
+      style.left = `${offsetLeft - elementWidth}px`;
+      style.top = `${offsetTop + offsetHeight}px`;
+      style.transform = ``;
+      break;
+
+    case 'BELOW_LEFT':
+      style.left = `${offsetLeft - elementWidth + offsetHeight}px`;
+      style.top = `${offsetTop + offsetHeight}px`;
+      style.transform = ``;
+      break;
+
+    case 'BELOW_CENTER':
+      style.left = `${offsetLeft + offsetWidth / 2 - elementWidth / 2}px`;
+      style.top = `${offsetTop + offsetHeight}px`;
+      style.transform = ``;
+      break;
+
+    case 'BELOW_RIGHT':
+      style.left = `${offsetLeft + offsetWidth - offsetHeight}px`;
+      style.top = `${offsetTop + offsetHeight}px`;
+      style.transform = ``;
+      break;
+
+    case 'BELOW_RIGHT_BESIDE':
+      style.left = `${offsetLeft + offsetWidth}px`;
+      style.top = `${offsetTop + offsetHeight}px`;
+      style.transform = ``;
+      break;
+
+    default:
+      break;
+  }
 };
 
 const createBox = (content) => {
