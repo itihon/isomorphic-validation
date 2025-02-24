@@ -9,8 +9,8 @@ const positionElementRelativeTo = (
   position = 'LEVEL_RIGHT_BESIDE',
   mode = 'MIN_SIDE',
 ) => {
-  const orienteerRect = orienteer.getBoundingClientRect();
-  const elementSize = Math.min(orienteerRect.width, orienteerRect.height);
+  const { offsetLeft, offsetTop, offsetWidth, offsetHeight } = orienteer;
+  const elementSize = Math.min(offsetWidth, offsetHeight);
 
   let modX = 0;
   let modY = 0;
@@ -27,17 +27,17 @@ const positionElementRelativeTo = (
       break;
 
     case 'ABOVE_CENTER':
-      modX = orienteerRect.width / 2 - elementSize / 2;
+      modX = offsetWidth / 2 - elementSize / 2;
       modY = -elementSize;
       break;
 
     case 'ABOVE_RIGHT':
-      modX = orienteerRect.width - elementSize;
+      modX = offsetWidth - elementSize;
       modY = -elementSize;
       break;
 
     case 'ABOVE_RIGHT_BESIDE':
-      modX = orienteerRect.width;
+      modX = offsetWidth;
       modY = -elementSize;
       break;
 
@@ -52,17 +52,17 @@ const positionElementRelativeTo = (
       break;
 
     case 'LEVEL_CENTER':
-      modX = orienteerRect.width / 2 - elementSize / 2;
+      modX = offsetWidth / 2 - elementSize / 2;
       modY = 0;
       break;
 
     case 'LEVEL_RIGHT':
-      modX = orienteerRect.width - elementSize;
+      modX = offsetWidth - elementSize;
       modY = 0;
       break;
 
     case 'LEVEL_RIGHT_BESIDE':
-      modX = orienteerRect.width;
+      modX = offsetWidth;
       modY = 0;
       break;
 
@@ -77,17 +77,17 @@ const positionElementRelativeTo = (
       break;
 
     case 'BELOW_CENTER':
-      modX = orienteerRect.width / 2 - elementSize / 2;
+      modX = offsetWidth / 2 - elementSize / 2;
       modY = elementSize;
       break;
 
     case 'BELOW_RIGHT':
-      modX = orienteerRect.width - elementSize;
+      modX = offsetWidth - elementSize;
       modY = elementSize;
       break;
 
     case 'BELOW_RIGHT_BESIDE':
-      modX = orienteerRect.width;
+      modX = offsetWidth;
       modY = elementSize;
       break;
 
@@ -102,15 +102,15 @@ const positionElementRelativeTo = (
       break;
 
     case 'MAX_SIDE':
-      element.style.width = `${orienteerRect.width}px`;
+      element.style.width = `${offsetWidth}px`;
       break;
 
     default:
       break;
   }
 
-  element.style.left = `${orienteerRect.left + modX + window.scrollX}px`;
-  element.style.top = `${orienteerRect.top + modY + window.scrollY}px`;
+  element.style.left = `${offsetLeft + modX}px`;
+  element.style.top = `${offsetTop + modY}px`;
 };
 
 const createBox = (content) => {
