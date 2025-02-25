@@ -2,6 +2,7 @@ import createApplyEffect from './create-apply-effect.js';
 import retrieveIfHasOrCreate, {
   newMap,
 } from '../utils/retrieve-if-has-or-create.js';
+import getOffset from '../utils/get-offset.js';
 
 const positionElementRelativeTo = (
   orienteer,
@@ -9,7 +10,8 @@ const positionElementRelativeTo = (
   position = 'LEVEL_RIGHT_BESIDE',
   mode = 'MIN_SIDE',
 ) => {
-  const { offsetLeft, offsetTop, offsetWidth, offsetHeight } = orienteer;
+  const { offsetWidth, offsetHeight } = orienteer;
+  const { offsetLeft, offsetTop } = getOffset(orienteer);
   const elementWidth = mode === 'MIN_SIDE' ? offsetHeight : offsetWidth;
   const { style } = element;
 
@@ -186,9 +188,22 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
     stateValues.mode,
   );
 
+  const widthBefore = element.offsetParent.scrollWidth;
+
   if (box.hasChildNodes()) {
     Object.assign(box.style, stateValues.style);
     container.appendChild(box);
+  }
+
+  const widthAfter = element.offsetParent.scrollWidth;
+
+  if (widthBefore !== widthAfter) {
+    positionElementRelativeTo(
+      element,
+      container,
+      stateValues.position,
+      stateValues.mode,
+    );
   }
 };
 
