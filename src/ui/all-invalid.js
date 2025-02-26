@@ -11,7 +11,7 @@ const allInvalid = (validationResult) => {
     ({ value, done } = it.next());
   }
 
-  return result.length ? result : [[]];
+  return result.length ? result : [];
 };
 
 export default allInvalid;
