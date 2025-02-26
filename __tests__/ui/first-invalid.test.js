@@ -1,6 +1,6 @@
 import { it, describe, expect } from '@jest/globals';
-import { firstInvalid } from '../../src/index.ui.js';
 import { Validation } from '../../src/index.js';
+import firstInvalid from '../../src/ui/first-invalid.js';
 
 describe('firstInvalid', () => {
   it('should return the first invalid validator', async () => {
