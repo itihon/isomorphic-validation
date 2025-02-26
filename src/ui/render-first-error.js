@@ -1,12 +1,9 @@
 import firstInvalid from './first-invalid.js';
-import renderItem from '../helpers/render-item.js';
+import renderEntry from '../helpers/render-entry.js';
 
 const renderFirstError =
-  (msgPropName = 'msg', rendererFn = renderItem('⚠')) =>
+  (errorPropName = 'msg', toString = renderEntry('⚠', errorPropName)) =>
   (validationResult) =>
-    [firstInvalid(validationResult)]
-      .map(([obj, validator]) => [obj, validator[msgPropName]])
-      .map(rendererFn)
-      .join('');
+    [firstInvalid(validationResult)].map(toString).join('');
 
 export default renderFirstError;

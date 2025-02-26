@@ -1,11 +1,8 @@
-import renderItem from '../helpers/render-item.js';
+import renderEntry from '../helpers/render-entry.js';
 
 const renderProperty =
-  (propName = 'msg', rendererFn = renderItem()) =>
+  (propName = 'msg', toString = renderEntry('', propName)) =>
   (validationResult) =>
-    [...validationResult]
-      .map(([obj, validator]) => [obj, validator[propName]])
-      .map(rendererFn)
-      .join('');
+    [...validationResult].map(toString).join('');
 
 export default renderProperty;

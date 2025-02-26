@@ -1,12 +1,9 @@
 import allInvalid from './all-invalid.js';
-import renderItem from '../helpers/render-item.js';
+import renderEntry from '../helpers/render-entry.js';
 
 const renderAllErrors =
-  (msgPropName = 'msg', rendererFn = renderItem('⚠')) =>
+  (errorPropName = 'msg', toString = renderEntry('⚠', errorPropName)) =>
   (validationResult) =>
-    allInvalid(validationResult)
-      .map(([obj, validator]) => [obj, validator[msgPropName]])
-      .map(rendererFn)
-      .join('');
+    allInvalid(validationResult).map(toString).join('');
 
 export default renderAllErrors;
