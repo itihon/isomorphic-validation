@@ -51,8 +51,6 @@ const createApplyEffect = (
       } else {
         const { delay } = stateValues[isValid];
 
-        clearTimeout(timeouts.get(element, effectID));
-
         if (delay) {
           timeouts.set(
             element,

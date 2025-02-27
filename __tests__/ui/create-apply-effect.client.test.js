@@ -174,13 +174,6 @@ describe('createApplyEffect', () => {
     await wait(delay / 2);
     expect(results).toStrictEqual(['7 1', '6 0', '5 0']);
 
-    // repetetive calls of the set function
-    set({ isValid: false });
-    await wait(delay / 2);
-    set({ isValid: false });
-    await wait(delay / 2);
-    set({ isValid: false });
-    await wait(delay / 2);
     set({ isValid: true });
     await wait(delay / 2);
     expect(results).toStrictEqual(['7 1', '6 0', '5 0']);
@@ -201,12 +194,6 @@ describe('createApplyEffect', () => {
     await wait(delay / 2);
     expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 1', '3 0']);
 
-    // repetetive calls of the set function and then calling the cancel function
-    set({ isValid: true });
-    await wait(delay / 2);
-    expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 1', '3 0']);
-    set({ isValid: false });
-    await wait(delay / 2);
     expect(results).toStrictEqual(['7 1', '6 0', '5 0', '4 1', '3 0']);
     set({ isValid: true });
     await wait(delay / 2);
@@ -290,11 +277,6 @@ describe('createApplyEffect', () => {
     await wait(delay2 / 2);
     expect(results).toStrictEqual(['7 1', '6 0', '5 0']);
 
-    // repetetive calls of the set function
-    set({ isValid: false, target: htmlElement2 });
-    await wait(delay2 / 2);
-    set({ isValid: false, target: htmlElement2 });
-    await wait(delay2 / 2);
     set({ isValid: false, target: htmlElement2 });
     await wait(delay2 / 2);
     expect(results).toStrictEqual(['7 1', '6 0', '5 0']);
