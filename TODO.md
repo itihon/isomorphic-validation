@@ -8,7 +8,9 @@
 
 
     ## Features
+        - [ ] consider adding Validation.flat() method or Validation().validations.flat() or UI:getValidations() helper function to get an array of single validations from a grouping validation.
         - [ ] UI module: `applyEffect(stateValues)` - consider adding `value` and `delay` properies in the root of the `stateValues` object which override their counterparts set for validity states.
+        - [ ] state callbacks: consider adding the ability to pass the returned value of a state callback to another one following after. May be as the second parameter after validation result.
         - [x] consider leaving .forEach method in Representation 
         - [x] implement a custom iterator for Representation [...Validation().constraints] to avoid complecated destructuring syntax so it yields exactly what is needed instead of what it actually contains
         - consider throwing an error if not an options object is passed into Validation().
