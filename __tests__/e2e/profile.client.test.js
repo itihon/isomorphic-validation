@@ -400,9 +400,15 @@ describe('Validation.profile', () => {
   });
 
   it('should validate via eventHandler before creating a profile', async () => {
+    const warn = jest.spyOn(global.console, 'warn').mockImplementation();
     e.target = signUpForm.elements.email;
 
-    await expect(emailV(e)).rejects.toThrow();
+    expect((await emailV(e)).isValid).toBe(null);
+    expect(warn.mock.calls).toStrictEqual([
+      [
+        'There are no predicates associated with the target: email {} HTMLInputElement.',
+      ],
+    ]);
     expect((await emailV()).isValid).toBe(false);
 
     emailV.bind(signUpForm.elements.email);
@@ -410,5 +416,7 @@ describe('Validation.profile', () => {
 
     await emailV(e);
     expect(emailV.isValid).toBe(true);
+
+    warn.mockRestore();
   });
 });

@@ -35,6 +35,24 @@ export default function ValidationBuilder({
     },
 
     validate(target) {
+      if (target !== undefined && !pgs.has(target)) {
+        const { warn } = console;
+
+        warn(
+          `There are no predicates associated with the target: ${[]
+            .concat(
+              Object(target).name || [],
+              JSON.stringify(target) || typeof target,
+              Object(target)[Symbol.toStringTag] || [],
+            )
+            .join(' ')}.`,
+        );
+
+        return Object.create(pgs.result(), {
+          isValid: { value: null },
+          type: { value: 'validated' },
+        });
+      }
       // all items will be preserved regardless of the target
       // not the most optimal way, but fixes the bug with validating a glued validation
       // by target through a grouping validation

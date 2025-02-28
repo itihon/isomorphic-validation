@@ -640,8 +640,18 @@ describe('Validation.profile', () => {
     expect(signUpVs.isValid).toBe(false);
 
     // wrong target
-    await expect(signUpVs.validate(signInForm.password)).rejects.toThrow();
-    await expect(signInVs.validate(signUpForm.email)).rejects.toThrow();
+    const warn = jest.spyOn(global.console, 'warn').mockImplementation();
+    expect((await signUpVs.validate(signInForm.password)).isValid).toBe(null);
+    expect((await signInVs.validate(signUpForm.email)).isValid).toBe(null);
+    expect((await signInVs.validate(null)).isValid).toBe(null);
+    expect((await signInVs.validate({ foo: 'bar' })).isValid).toBe(null);
+    expect(warn.mock.calls).toStrictEqual([
+      ['There are no predicates associated with the target: password object.'],
+      ['There are no predicates associated with the target: email object.'],
+      ['There are no predicates associated with the target: null.'],
+      ['There are no predicates associated with the target: {"foo":"bar"}.'],
+    ]);
+    warn.mockRestore();
   });
 
   it('should recreate a form fields structure by paths', async () => {

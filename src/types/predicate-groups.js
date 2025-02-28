@@ -43,19 +43,11 @@ export default function PredicateGroups(
       run(id, callID) {
         const predicateGroups = id !== undefined ? pgs.get(id) : pgs.getAll();
 
-        return predicateGroups
-          ? Promise.all(
-              Array.from(predicateGroups, (predicateGroup) =>
-                predicateGroup.run(undefined, callID),
-              ),
-            ).then((res) => !res.flat().some((value) => value !== true)) // ! slow
-          : Promise.reject(
-              new Error(
-                `There are no predicates associated with the target ${JSON.stringify(
-                  id,
-                )}`,
-              ),
-            );
+        return Promise.all(
+          Array.from(predicateGroups, (predicateGroup) =>
+            predicateGroup.run(undefined, callID),
+          ),
+        ).then((res) => !res.flat().some((value) => value !== true)); // ! probably slow
       },
 
       clone(registry = CloneRegistry()) {
