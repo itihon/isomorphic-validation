@@ -48,10 +48,12 @@ export default function ValidationBuilder({
             .join(' ')}.`,
         );
 
-        return Object.create(pgs.result(), {
-          isValid: { value: null },
-          type: { value: 'validated' },
-        });
+        return Promise.resolve(
+          Object.create(pgs.result(), {
+            isValid: { value: null },
+            type: { value: 'validated' },
+          }),
+        );
       }
       // all items will be preserved regardless of the target
       // not the most optimal way, but fixes the bug with validating a glued validation
