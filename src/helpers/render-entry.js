@@ -1,6 +1,6 @@
 const renderEntry =
-  (icon = '', itemPropName = '') =>
-  ([, value]) =>
+  (icon = '') =>
+  ([, value, itemPropName = '']) =>
     `<div>${icon ? `<span>${icon}</span> ` : ''}${value[itemPropName] || ''}</div>`;
 
 export default renderEntry;
