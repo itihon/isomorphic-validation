@@ -88,7 +88,7 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
     position: 'relative',
     width: '',
     height: '',
-    display: 'flex',
+    display: 'grid',
     justifyContent: '',
     alignItems: 'center',
   };
