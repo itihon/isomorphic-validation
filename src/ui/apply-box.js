@@ -83,7 +83,15 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
   const { isValid } = validationResult;
   const { parentNode } = element;
   let box;
-  const boxStyle = { position: 'relative', width: '', height: '' };
+
+  const boxStyle = {
+    position: 'relative',
+    width: '',
+    height: '',
+    display: 'flex',
+    justifyContent: '',
+    alignItems: 'center',
+  };
 
   const container = retrieveIfHasOrCreate(
     containerRegistry,
@@ -126,11 +134,13 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
       case 'MIN_SIDE':
         boxStyle.width = `${offsetHeight}px`;
         boxStyle.height = `${offsetHeight}px`;
+        boxStyle.justifyContent = 'center';
         break;
 
       case 'MAX_SIDE':
         boxStyle.width = `${offsetWidth}px`;
         boxStyle.height = ``;
+        boxStyle.justifyContent = '';
         break;
 
       default:
