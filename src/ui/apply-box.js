@@ -83,7 +83,7 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
   const { isValid } = validationResult;
   const { parentNode } = element;
   let box;
-  const boxStyle = { width: '', height: '' };
+  const boxStyle = { position: 'relative', width: '', height: '' };
 
   const container = retrieveIfHasOrCreate(
     containerRegistry,
