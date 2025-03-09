@@ -2,7 +2,27 @@ import createApplyEffect from './create-apply-effect.js';
 import retrieveIfHasOrCreate, {
   newMap,
 } from '../utils/retrieve-if-has-or-create.js';
-import getOffset from '../utils/get-offset.js';
+
+const calcTop =
+  (offsetHeightMult = 0) =>
+  (offsetTop = 0, offsetHeight = 0) =>
+    `${offsetTop + offsetHeight * offsetHeightMult}px`;
+
+const calcLeft =
+  (ewMult = 0, owMult = 0, ohMult = 0) =>
+  (offsetLeft = 0, elementWidth = 0, offsetWidth = 0, offsetHeight = 0) =>
+    `${offsetLeft + offsetWidth * owMult + elementWidth * ewMult + offsetHeight * ohMult}px`;
+
+const positions = {
+  ABOVE: { top: calcTop(0), transform: () => `translateY(-100%)` },
+  LEVEL: { top: calcTop(0.5), transform: () => `translateY(-50%)` },
+  BELOW: { top: calcTop(1), transform: () => `` },
+  LEFT_BESIDE: { left: calcLeft(-1) },
+  LEFT: { left: calcLeft(-1, 0, 1) },
+  CENTER: { left: calcLeft(-0.5, 0.5) },
+  RIGHT: { left: calcLeft(0, 1, -1) },
+  RIGHT_BESIDE: { left: calcLeft(0, 1) },
+};
 
 const positionElementRelativeTo = (
   orienteer,
@@ -10,120 +30,26 @@ const positionElementRelativeTo = (
   position = 'LEVEL_RIGHT_BESIDE',
   mode = 'MIN_SIDE',
 ) => {
-  const { offsetWidth, offsetHeight } = orienteer;
-  const { offsetLeft, offsetTop } = getOffset(orienteer);
-  const elementWidth = mode === 'MIN_SIDE' ? offsetHeight : offsetWidth;
   const { style } = element;
+  const { offsetWidth, offsetHeight } = orienteer;
 
-  switch (mode) {
-    case 'MIN_SIDE':
-      element.style.width = `${offsetHeight}px`;
-      element.style.height = `${offsetHeight}px`;
-      break;
+  // reset element's coordinates in order to get the starting point of the element's relative coordinate system
+  style.left = 0;
+  style.top = 0;
 
-    case 'MAX_SIDE':
-      element.style.width = `${offsetWidth}px`;
-      element.style.height = ``;
-      break;
+  const offsetLeft = orienteer.offsetLeft - element.offsetLeft;
+  const offsetTop = orienteer.offsetTop - element.offsetTop;
+  const elementWidth = mode === 'MIN_SIDE' ? offsetHeight : offsetWidth;
+  const [VERT, ...HOR] = position.split('_', 3);
 
-    default:
-      break;
-  }
+  style.left = positions[HOR.join('_')].left(
+    offsetLeft,
+    elementWidth,
+    offsetWidth,
+    offsetHeight,
+  );
 
-  switch (position) {
-    case 'ABOVE_LEFT_BESIDE':
-      style.left = `${offsetLeft - elementWidth}px`;
-      style.top = `${offsetTop}px`;
-      style.transform = `translateY(-100%)`;
-      break;
-
-    case 'ABOVE_LEFT':
-      style.left = `${offsetLeft - elementWidth + offsetHeight}px`;
-      style.top = `${offsetTop}px`;
-      style.transform = `translateY(-100%)`;
-      break;
-
-    case 'ABOVE_CENTER':
-      style.left = `${offsetLeft + offsetWidth / 2 - elementWidth / 2}px`;
-      style.top = `${offsetTop}px`;
-      style.transform = `translateY(-100%)`;
-      break;
-
-    case 'ABOVE_RIGHT':
-      style.left = `${offsetLeft + offsetWidth - offsetHeight}px`;
-      style.top = `${offsetTop}px`;
-      style.transform = `translateY(-100%)`;
-      break;
-
-    case 'ABOVE_RIGHT_BESIDE':
-      style.left = `${offsetLeft + offsetWidth}px`;
-      style.top = `${offsetTop}px`;
-      style.transform = `translateY(-100%)`;
-      break;
-
-    case 'LEVEL_LEFT_BESIDE':
-      style.left = `${offsetLeft - elementWidth}px`;
-      style.top = `${offsetTop + offsetHeight / 2}px`;
-      style.transform = `translateY(-50%)`;
-      break;
-
-    case 'LEVEL_LEFT':
-      style.left = `${offsetLeft - elementWidth + offsetHeight}px`;
-      style.top = `${offsetTop + offsetHeight / 2}px`;
-      style.transform = `translateY(-50%)`;
-      break;
-
-    case 'LEVEL_CENTER':
-      style.left = `${offsetLeft + offsetWidth / 2 - elementWidth / 2}px`;
-      style.top = `${offsetTop + offsetHeight / 2}px`;
-      style.transform = `translateY(-50%)`;
-      break;
-
-    case 'LEVEL_RIGHT':
-      style.left = `${offsetLeft + offsetWidth - offsetHeight}px`;
-      style.top = `${offsetTop + offsetHeight / 2}px`;
-      style.transform = `translateY(-50%)`;
-      break;
-
-    case 'LEVEL_RIGHT_BESIDE':
-      style.left = `${offsetLeft + offsetWidth}px`;
-      style.top = `${offsetTop + offsetHeight / 2}px`;
-      style.transform = `translateY(-50%)`;
-      break;
-
-    case 'BELOW_LEFT_BESIDE':
-      style.left = `${offsetLeft - elementWidth}px`;
-      style.top = `${offsetTop + offsetHeight}px`;
-      style.transform = ``;
-      break;
-
-    case 'BELOW_LEFT':
-      style.left = `${offsetLeft - elementWidth + offsetHeight}px`;
-      style.top = `${offsetTop + offsetHeight}px`;
-      style.transform = ``;
-      break;
-
-    case 'BELOW_CENTER':
-      style.left = `${offsetLeft + offsetWidth / 2 - elementWidth / 2}px`;
-      style.top = `${offsetTop + offsetHeight}px`;
-      style.transform = ``;
-      break;
-
-    case 'BELOW_RIGHT':
-      style.left = `${offsetLeft + offsetWidth - offsetHeight}px`;
-      style.top = `${offsetTop + offsetHeight}px`;
-      style.transform = ``;
-      break;
-
-    case 'BELOW_RIGHT_BESIDE':
-      style.left = `${offsetLeft + offsetWidth}px`;
-      style.top = `${offsetTop + offsetHeight}px`;
-      style.transform = ``;
-      break;
-
-    default:
-      break;
-  }
+  style.top = positions[VERT].top(offsetTop, offsetHeight);
 };
 
 const createBox = (content) => {
@@ -134,12 +60,15 @@ const createBox = (content) => {
 
 const createContainer = (where, id) => {
   const container = document.createElement('div');
-  container.style.position = 'absolute';
-  container.style.display = 'flex';
-  container.style.alignItems = 'center';
-  container.style.justifyContent = 'center';
+  const { style } = container;
+
+  style.position = 'relative';
+  style.width = '0';
+  style.height = '0';
+
   container.id = id;
   where.appendChild(container);
+
   return container;
 };
 
@@ -154,6 +83,7 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
   const { isValid } = validationResult;
   const { parentNode } = element;
   let box;
+  const boxStyle = { width: '', height: '' };
 
   const container = retrieveIfHasOrCreate(
     containerRegistry,
@@ -172,7 +102,8 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
   }
 
   if (typeof value === 'function') {
-    box = createBox(value(validationResult));
+    box = retrieveIfHasOrCreate(binaryBox, isValid, createBox, '');
+    box.innerHTML = value(validationResult);
   } else {
     box = retrieveIfHasOrCreate(binaryBox, isValid, createBox, value);
   }
@@ -188,22 +119,29 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
     stateValues.mode,
   );
 
-  const widthBefore = element.offsetParent.scrollWidth;
-
   if (box.hasChildNodes()) {
-    Object.assign(box.style, stateValues.style);
+    const { offsetWidth, offsetHeight } = element;
+
+    switch (stateValues.mode) {
+      case 'MIN_SIDE':
+        boxStyle.width = `${offsetHeight}px`;
+        boxStyle.height = `${offsetHeight}px`;
+        break;
+
+      case 'MAX_SIDE':
+        boxStyle.width = `${offsetWidth}px`;
+        boxStyle.height = ``;
+        break;
+
+      default:
+        break;
+    }
+
+    const [VERT] = stateValues.position.split('_', 1);
+    boxStyle.transform = positions[VERT].transform();
+
+    Object.assign(box.style, boxStyle, stateValues.style);
     container.appendChild(box);
-  }
-
-  const widthAfter = element.offsetParent.scrollWidth;
-
-  if (widthBefore !== widthAfter) {
-    positionElementRelativeTo(
-      element,
-      container,
-      stateValues.position,
-      stateValues.mode,
-    );
   }
 };
 
