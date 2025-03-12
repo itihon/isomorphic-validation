@@ -2,18 +2,23 @@ import acceptOnlyFunctionOrPredicate from '../helpers/accept-only-function-or-pr
 import makeIsomorphicAPI from '../utils/make-isomorphic-api.js';
 import StateCallbacks from './state-callbacks.js';
 
-export default function Predicate(fnOrPred) {
+export default function Predicate(fnOrPred, anyDataObj) {
   acceptOnlyFunctionOrPredicate(fnOrPred);
 
   let stateCBs;
+  let anyData;
 
-  const fn = ({ stateCBs } = fnOrPred.valueOf()).valueOf();
+  const fn = ({ stateCBs, anyData } = fnOrPred.valueOf()).valueOf();
 
   stateCBs = StateCallbacks(stateCBs);
 
   const predicate = {
     valueOf() {
-      return { stateCBs, valueOf: () => fn };
+      return {
+        stateCBs,
+        anyData: { ...anyData, ...anyDataObj },
+        valueOf: () => fn,
+      };
     },
     valid: stateCBs.valid,
     invalid: stateCBs.invalid,

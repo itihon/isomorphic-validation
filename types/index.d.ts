@@ -56,17 +56,27 @@ declare module "isomorphic-validation" {
          * Creates a predicate object.
          * @overload
          * @param {PredicateFn} predicateFn - A predicate function to be wrapped.
+         * @param {object} options
+         * @param {any} [options.anyData] - Any additional data, will be accessible in the validation constraints collection and a validation result.
          * @returns {Predicate}
          */
-        declare function Predicate(predicateFn: PredicateFn): Predicate
+        declare function Predicate(
+          predicateFn: PredicateFn, 
+          options?: { anyData?: any; },
+        ): Predicate
 
         /**
          * Creates a predicate object.
          * @overload
          * @param {Predicate} predicate - A predicate object to be cloned.
+         * @param {object} options
+         * @param {any} [options.anyData] - Any additional data, will be accessible in the validation constraints collection and a validation result.
          * @returns {Predicate}
          */
-        declare function Predicate(predicate: Predicate): Predicate
+        declare function Predicate(
+          predicate: Predicate,
+          options?: { anyData?: any; },
+        ): Predicate
     }
 
     export = IsomorphicValidation;

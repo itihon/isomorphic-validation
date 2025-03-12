@@ -6,14 +6,7 @@ import ObservablePredicate from '../types/observable-predicate.js';
 export default function addObservablePredicate(
   predicate = Predicate(),
   items = ManyToManyMap(),
-  {
-    TYPE = SINGLE,
-    next = true,
-    keepValid = false,
-    debounce = 0,
-    anyData,
-    groups,
-  } = {},
+  { TYPE = SINGLE, next = true, debounce = 0, keepValid = false, groups } = {},
 ) {
   if (TYPE === GLUED) {
     // create ObservablePredicate the amount of groups number
@@ -24,7 +17,6 @@ export default function addObservablePredicate(
         keepValid,
         predicateGroup.isOptional(), // init state for an optional predicate
         debounce,
-        anyData,
         predicateGroup.getItem(), // A validatable item the predicate group associated with (used as "target" in ObservablePredicate -> ValidationResult)
       ),
     );
@@ -51,7 +43,6 @@ export default function addObservablePredicate(
         keepValid,
         predicateGroup.isOptional(), // init state for an optional predicate
         debounce,
-        anyData,
         predicateGroup.getItem(), // A validatable item the predicate group associated with (used as "target" in ObservablePredicate -> ValidationResult)
       ),
       { next },

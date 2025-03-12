@@ -259,7 +259,11 @@ describe('e2e', () => {
       expect(() => v.constraint(() => true, { foo: 'foo' })).not.toThrow();
     });
 
-    it('should pass anyData to validation result', async () => {
+    it.each([
+      { mode: 'predicate' },
+      { mode: 'constraint' },
+      { mode: 'override' },
+    ])('$mode: should pass anyData to validation result', async ({ mode }) => {
       const v = Validation();
       const predicateFoo = () => true;
       const predicateBar = () => true;
@@ -271,25 +275,63 @@ describe('e2e', () => {
         });
       };
 
-      v.constraint(predicateFoo, { msgFoo: 'foo' });
-      v.constraint(predicateBar, { msgBar: 'bar' });
+      if (mode === 'predicate') {
+        v.constraint(Predicate(predicateFoo, { msgFoo: 'foo' }));
+        v.constraint(Predicate(predicateBar, { msgBar: 'bar' }));
+      }
+
+      if (mode === 'constraint') {
+        v.constraint(predicateFoo, { msgFoo: 'foo' });
+        v.constraint(predicateBar, { msgBar: 'bar' });
+      }
+
+      if (mode === 'override') {
+        const pFoo = Predicate(predicateFoo, { msgFoo: 'qux' });
+        const pBar = Predicate(predicateBar, { msgBar: 'baz' });
+
+        v.constraint(pFoo, { msgFoo: 'foo' });
+        v.constraint(pBar, { msgBar: 'bar' });
+      }
+
       v.validated(validatedCB);
 
       await v.validate();
     });
 
-    it('should be accessible in the constraints property', async () => {
-      const v = Validation();
-      const predicateFoo = () => true;
-      const predicateBar = () => true;
+    it.each([
+      { mode: 'predicate' },
+      { mode: 'constraint' },
+      { mode: 'override' },
+    ])(
+      '$mode: should be accessible in the constraints property',
+      async ({ mode }) => {
+        const v = Validation();
+        const predicateFoo = () => true;
+        const predicateBar = () => true;
 
-      v.constraint(predicateFoo, { msgFoo: 'foo' });
-      v.constraint(predicateBar, { msgBar: 'bar' });
+        if (mode === 'predicate') {
+          v.constraint(Predicate(predicateFoo, { msgFoo: 'foo' }));
+          v.constraint(Predicate(predicateBar, { msgBar: 'bar' }));
+        }
 
-      v.constraints.forEach((validator) => {
-        const name = validator[Symbol.toStringTag].slice(9);
-        expect(validator[`msg${name}`]).toBe(name.toLowerCase());
-      });
-    });
+        if (mode === 'constraint') {
+          v.constraint(predicateFoo, { msgFoo: 'foo' });
+          v.constraint(predicateBar, { msgBar: 'bar' });
+        }
+
+        if (mode === 'override') {
+          const pFoo = Predicate(predicateFoo, { msgFoo: 'qux' });
+          const pBar = Predicate(predicateBar, { msgBar: 'baz' });
+
+          v.constraint(pFoo, { msgFoo: 'foo' });
+          v.constraint(pBar, { msgBar: 'bar' });
+        }
+
+        v.constraints.forEach((validator) => {
+          const name = validator[Symbol.toStringTag].slice(9);
+          expect(validator[`msg${name}`]).toBe(name.toLowerCase());
+        });
+      },
+    );
   });
 });

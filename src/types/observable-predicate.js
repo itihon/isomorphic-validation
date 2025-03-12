@@ -23,14 +23,14 @@ export default function ObservablePredicate(
   keepValid = false,
   initState = false,
   debounce = 0,
-  anyData = {},
   validatableItem = ValidatableItem(), // an item the predicate will be associated with, for setting validation result target
 ) {
   acceptOnlyPredicate(predicate);
 
   let stateCBs;
+  let anyData;
 
-  const fn = ({ stateCBs } = predicate.valueOf()).valueOf();
+  const fn = ({ stateCBs, anyData } = predicate.valueOf()).valueOf();
   const fnName = fn.name || indexedName('predicate');
   const obs = ObserverAnd(initState); // optional predicates are valid by default
   const onInvalidCBs = Functions();
@@ -140,7 +140,6 @@ export default function ObservablePredicate(
           keepValid,
           initState,
           debounce,
-          anyData,
           registry.cloneOnce(validatableItem),
         ),
     },

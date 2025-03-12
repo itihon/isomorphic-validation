@@ -20,14 +20,13 @@ export default function ValidationBuilder({
       validator = Predicate(),
       { next = true, debounce = 0, keepValid = false, ...anyData } = {},
     ) {
-      const predicate = Predicate(validator);
+      const predicate = Predicate(validator, { ...anyData });
       pgs.forEach(
         addObservablePredicate(predicate, items, {
           TYPE,
           next,
           debounce,
           keepValid,
-          anyData,
           groups: pgs.getAll(),
         }),
       );
