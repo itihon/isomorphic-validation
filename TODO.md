@@ -73,6 +73,7 @@
 
     ## Refactor
 
+        - [ ] consider changing the behavior of glued validations in the way so that when one glued validation is being validated it invokes the `.validate()` method of another one. This will allow to avoid adding extra 'changed' state callback to glued validations.
         - [x] ObservablePredicate: parameter "target" probably should be passed during creation time since it is known what validatable object the predicate belongs to;
             it will affect: .clone(), Validation.bind() methods.
         - [-] parameter "optional"
