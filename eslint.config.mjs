@@ -46,6 +46,6 @@ export default [
       }
     },
     {
-        ignores: ['dist/*', 'coverage/*', '**/*.jsdoc.*'],
+        ignores: ['dist/*', 'coverage/*', '**/*.jsdoc.*', '**/*bundle/*'],
     }
 ];
