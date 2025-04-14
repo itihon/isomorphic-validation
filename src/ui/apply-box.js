@@ -29,32 +29,43 @@ const createBox = (content) => {
   return box;
 };
 
+const adjustContainer = (targetElement, targetRect, ctx) => {
+  const { left, top } = targetRect;
+  const { startingPoint, containerStyle } = ctx;
+
+  const { left: containerInitLeft, top: containerInitTop } =
+    startingPoint.getBoundingClientRect();
+
+  const translateX = left - containerInitLeft;
+  const translateY = top - containerInitTop;
+
+  containerStyle.transform = `var(--translateX) var(--translateY) translate(${translateX}px, ${translateY}px)`;
+};
+
 const createContainer = (where, id, target) => {
   const container = document.createElement('div');
-  const { style } = container;
+  const startingPoint = document.createElement('div');
+  const { style: containerStyle } = container;
+  const ctx = { containerStyle, startingPoint };
+  const observer = new PositionObserver(adjustContainer, ctx);
 
-  container.style.setProperty('--translateX', 'translateX(0)');
-  container.style.setProperty('--translateY', 'translateY(0)');
-  style.position = 'absolute';
-  style.left = '0';
-  style.top = '0';
+  containerStyle.setProperty('--translateX', 'translateX(0)');
+  containerStyle.setProperty('--translateY', 'translateY(0)');
+  containerStyle.position = 'absolute';
+  containerStyle.left = '0';
+  containerStyle.top = '0';
+
+  startingPoint.style.position = 'absolute';
+  startingPoint.style.left = '0';
+  startingPoint.style.top = '0';
+  startingPoint.style.width = '0';
+  startingPoint.style.height = '0';
 
   container.id = id;
+  startingPoint.dataset.for = 'apply-box-starting-point';
+
   where.appendChild(container);
-
-  const observer = new PositionObserver((targetElement, targetRect) => {
-    const { left, top } = targetRect;
-
-    container.style.transform = ''; // put container to its coordinate system's start point
-
-    const { left: containerLeft, top: containerTop } =
-      container.getBoundingClientRect();
-
-    const translateX = left - containerLeft;
-    const translateY = top - containerTop;
-
-    container.style.transform = `var(--translateX) var(--translateY) translate(${translateX}px, ${translateY}px)`;
-  });
+  where.appendChild(startingPoint);
 
   observer.observe(target);
 
