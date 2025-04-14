@@ -45,28 +45,13 @@ const createContainer = (where, id, target) => {
   const observer = new PositionObserver((targetElement, targetRect) => {
     const { left, top } = targetRect;
 
-    const { left: offsetParentLeft, top: offsetParentTop } =
-      targetElement.offsetParent.getBoundingClientRect();
+    container.style.transform = ''; // put container to its coordinate system's start point
 
-    const {
-      scrollLeft: offsetParentScrollLeft,
-      scrollTop: offsetParentScrollTop,
-    } = targetElement.offsetParent;
+    const { left: containerLeft, top: containerTop } =
+      container.getBoundingClientRect();
 
-    const { borderLeftWidth, borderTopWidth } = getComputedStyle(
-      targetElement.offsetParent,
-    );
-
-    const translateX =
-      left -
-      offsetParentLeft +
-      offsetParentScrollLeft -
-      borderLeftWidth.slice(0, -2);
-    const translateY =
-      top -
-      offsetParentTop +
-      offsetParentScrollTop -
-      borderTopWidth.slice(0, -2);
+    const translateX = left - containerLeft;
+    const translateY = top - containerTop;
 
     container.style.transform = `var(--translateX) var(--translateY) translate(${translateX}px, ${translateY}px)`;
   });
