@@ -1,55 +1,26 @@
+import PositionObserver from '@itihon/position-observer';
 import createApplyEffect from './create-apply-effect.js';
 import retrieveIfHasOrCreate, {
   newMap,
 } from '../utils/retrieve-if-has-or-create.js';
 
-const calcTop =
-  (offsetHeightMult = 0) =>
-  (offsetTop = 0, offsetHeight = 0) =>
-    `${offsetTop + offsetHeight * offsetHeightMult}px`;
-
-const calcLeft =
-  (ewMult = 0, owMult = 0, ohMult = 0) =>
-  (offsetLeft = 0, elementWidth = 0, offsetWidth = 0, offsetHeight = 0) =>
-    `${offsetLeft + offsetWidth * owMult + elementWidth * ewMult + offsetHeight * ohMult}px`;
-
 const positions = {
-  ABOVE: { top: calcTop(0), transform: () => `translateY(-100%)` },
-  LEVEL: { top: calcTop(0.5), transform: () => `translateY(-50%)` },
-  BELOW: { top: calcTop(1), transform: () => `` },
-  LEFT_BESIDE: { left: calcLeft(-1) },
-  LEFT: { left: calcLeft(-1, 0, 1) },
-  CENTER: { left: calcLeft(-0.5, 0.5) },
-  RIGHT: { left: calcLeft(0, 1, -1) },
-  RIGHT_BESIDE: { left: calcLeft(0, 1) },
-};
-
-const positionElementRelativeTo = (
-  orienteer,
-  element,
-  position = 'LEVEL_RIGHT_BESIDE',
-  mode = 'MIN_SIDE',
-) => {
-  const { style } = element;
-  const { offsetWidth, offsetHeight } = orienteer;
-
-  // reset element's coordinates in order to get the starting point of the element's relative coordinate system
-  style.left = 0;
-  style.top = 0;
-
-  const offsetLeft = orienteer.offsetLeft - element.offsetLeft;
-  const offsetTop = orienteer.offsetTop - element.offsetTop;
-  const elementWidth = mode === 'MIN_SIDE' ? offsetHeight : offsetWidth;
-  const [VERT, ...HOR] = position.split('_', 3);
-
-  style.left = positions[HOR.join('_')].left(
-    offsetLeft,
-    elementWidth,
-    offsetWidth,
-    offsetHeight,
-  );
-
-  style.top = positions[VERT].top(offsetTop, offsetHeight);
+  ABOVE: { translateY: () => `translateY(-100%)` },
+  LEVEL: { translateY: (offset) => `translateY(calc(${offset / 2}px - 50%))` },
+  BELOW: { translateY: (offset) => `translateY(${offset}px)` },
+  LEFT_BESIDE: { translateX: () => `translateX(-100%)` },
+  LEFT: {
+    translateX: (_, offsetHeight) =>
+      `translateX(calc(-100% + ${offsetHeight}px))`,
+  },
+  CENTER: {
+    translateX: (offsetWidth) => `translateX(calc(${offsetWidth / 2}px - 50%))`,
+  },
+  RIGHT: {
+    translateX: (offsetWidth, offsetHeight) =>
+      `translateX(${offsetWidth - offsetHeight}px)`,
+  },
+  RIGHT_BESIDE: { translateX: (offsetWidth) => `translateX(${offsetWidth}px)` },
 };
 
 const createBox = (content) => {
@@ -58,16 +29,49 @@ const createBox = (content) => {
   return box;
 };
 
-const createContainer = (where, id) => {
+const createContainer = (where, id, target) => {
   const container = document.createElement('div');
   const { style } = container;
 
-  style.position = 'relative';
-  style.width = '0';
-  style.height = '0';
+  container.style.setProperty('--translateX', 'translateX(0)');
+  container.style.setProperty('--translateY', 'translateY(0)');
+  style.position = 'absolute';
+  style.left = '0';
+  style.top = '0';
 
   container.id = id;
   where.appendChild(container);
+
+  const observer = new PositionObserver((targetElement, targetRect) => {
+    const { left, top } = targetRect;
+
+    const { left: offsetParentLeft, top: offsetParentTop } =
+      targetElement.offsetParent.getBoundingClientRect();
+
+    const {
+      scrollLeft: offsetParentScrollLeft,
+      scrollTop: offsetParentScrollTop,
+    } = targetElement.offsetParent;
+
+    const { borderLeftWidth, borderTopWidth } = getComputedStyle(
+      targetElement.offsetParent,
+    );
+
+    const translateX =
+      left -
+      offsetParentLeft +
+      offsetParentScrollLeft -
+      borderLeftWidth.slice(0, -2);
+    const translateY =
+      top -
+      offsetParentTop +
+      offsetParentScrollTop -
+      borderTopWidth.slice(0, -2);
+
+    container.style.transform = `var(--translateX) var(--translateY) translate(${translateX}px, ${translateY}px)`;
+  });
+
+  observer.observe(target);
 
   return container;
 };
@@ -99,6 +103,7 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
     createContainer,
     parentNode,
     id,
+    element,
   );
 
   const binaryBox = retrieveIfHasOrCreate(boxesRegistry, stateValues, newMap);
@@ -119,13 +124,6 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
   while (container.hasChildNodes()) {
     container.lastElementChild.remove();
   }
-
-  positionElementRelativeTo(
-    element,
-    container,
-    stateValues.position,
-    stateValues.mode,
-  );
 
   if (box.hasChildNodes()) {
     const { offsetWidth, offsetHeight } = element;
@@ -148,7 +146,16 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
     }
 
     const [VERT] = stateValues.position.split('_', 1);
-    boxStyle.transform = positions[VERT].transform();
+    const [, ...HOR] = stateValues.position.split('_', 3);
+
+    const translateY = positions[VERT].translateY(element.offsetHeight);
+    const translateX = positions[HOR.join('_')].translateX(
+      element.offsetWidth,
+      element.offsetHeight,
+    );
+
+    container.style.setProperty('--translateY', translateY);
+    container.style.setProperty('--translateX', translateX);
 
     Object.assign(box.style, boxStyle, stateValues.style);
     container.appendChild(box);
