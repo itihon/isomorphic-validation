@@ -32,6 +32,7 @@
     "format:check": "prettier --check \"{src,__tests__}/**/*.{js,mjs}\"",
     "format:write": "prettier --write \"{src,__tests__}/**/*.{js,mjs}\"",
     "lint": "eslint --fix .",
+    "build:ui:test:watch": "rollup --config rollup.config.js __tests__/e2e/ui/apply-box/*.js --dir __tests__/e2e/ui/apply-box/bundle/ --format esm --watch",
     "build:esm": "rollup src/index.js --file dist/esm/index.js --format esm",
     "build:cjs": "rollup src/index.js --file dist/cjs/index.js --format cjs",
     "build:esm:ui": "rollup src/index.ui.js --dir dist/esm/ --format esm --preserveModules",
@@ -68,6 +69,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
     "@jest/globals": "^29.7.0",
+    "@rollup/plugin-node-resolve": "^16.0.1",
     "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.57.0",
@@ -96,5 +98,8 @@
       "prettier --write",
       "eslint --fix"
     ]
+  },
+  "dependencies": {
+    "@itihon/position-observer": "^1.1.2"
   }
 }
