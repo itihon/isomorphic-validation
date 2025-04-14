@@ -27,9 +27,24 @@ label {
 label:hover { background-color: rgb(221, 232, 247); }
 label:active { transform: scale(95%); }
 
-[type=radio]:checked + label { color: white; background-color: lightslategray; }
-[type=radio] { display: none; }
+[type=radio]:checked + label,
+[type=checkbox]:checked + label { 
+  color: white; 
+  background-color: lightslategray; 
+}
+[type=radio], [type=checkbox] { display: none; }
 [type=text] { width: 120px; }
+
+[type=checkbox] + label {
+  font-size: 10px;
+  margin-inline: 10px;
+}
+
+#outer-container:checked ~ .outer-container,
+#form:checked ~ .outer-container .form
+ {
+  position: relative;
+}
 
 .outer-container {
   margin: 50vmax;
