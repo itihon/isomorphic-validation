@@ -14,11 +14,25 @@ const compat = new FlatCompat({
 
 const filesToLint = ['{src,__tests__}/**/*.{js,mjs}'];
 
+const airbnb = compat.extends('eslint-config-airbnb-base')
+  .map(cfg => {
+    const rule = cfg.rules?.['no-restricted-syntax'];
+
+    if (rule) {
+      const allowForOfStatement = rule.filter(
+        ({ selector }) => selector !== 'ForOfStatement',
+      );
+
+      cfg.rules['no-restricted-syntax'] = allowForOfStatement;
+    }
+
+    return cfg;
+  })
+  .map(cfg => (cfg.files = filesToLint, cfg));
+
 /** @type { import("eslint").Linter.FlatConfig[] } */
 export default [
-  // mimic ESLintRC-style extends
-    ...compat.extends('eslint-config-airbnb-base')
-              .map(cfg => (cfg.files = filesToLint, cfg)),
+  ...airbnb,
     eslintConfigPrettier,
     {
       files: filesToLint,
