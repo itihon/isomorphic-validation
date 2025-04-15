@@ -30,6 +30,11 @@ const createBox = (content) => {
 };
 
 const adjustContainer = (targetElement, targetRect, ctx) => {
+  if (!targetElement.offsetParent) {
+    ctx.containerStyle.display = 'none';
+    return;
+  }
+
   const { left, top } = targetRect;
   const { startingPoint, containerStyle } = ctx;
 
@@ -40,12 +45,7 @@ const adjustContainer = (targetElement, targetRect, ctx) => {
   const translateY = top - containerInitTop;
 
   containerStyle.transform = `var(--translateX) var(--translateY) translate(${translateX}px, ${translateY}px)`;
-
-  if (!targetElement.offsetParent) {
-    containerStyle.display = 'none';
-  } else {
-    containerStyle.display = 'block';
-  }
+  containerStyle.display = 'block';
 };
 
 const createContainer = (where, id, target) => {
