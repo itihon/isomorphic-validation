@@ -40,6 +40,12 @@ const adjustContainer = (targetElement, targetRect, ctx) => {
   const translateY = top - containerInitTop;
 
   containerStyle.transform = `var(--translateX) var(--translateY) translate(${translateX}px, ${translateY}px)`;
+
+  if (!targetElement.offsetParent) {
+    containerStyle.display = 'none';
+  } else {
+    containerStyle.display = 'block';
+  }
 };
 
 const createContainer = (where, id, target) => {
@@ -69,7 +75,7 @@ const createContainer = (where, id, target) => {
 
   observer.observe(target);
 
-  return container;
+  return { container, observer };
 };
 
 const containerRegistry = new Map();
@@ -93,7 +99,7 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
     alignItems: 'center',
   };
 
-  const container = retrieveIfHasOrCreate(
+  const { container, observer } = retrieveIfHasOrCreate(
     containerRegistry,
     id,
     createContainer,
@@ -101,6 +107,12 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
     id,
     element,
   );
+
+  for (const target of observer.getTargets()) {
+    if (target !== element) observer.unobserve(target);
+  }
+
+  observer.observe(element);
 
   const binaryBox = retrieveIfHasOrCreate(boxesRegistry, stateValues, newMap);
 
@@ -150,6 +162,7 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
       element.offsetHeight,
     );
 
+    container.style.display = 'block';
     container.style.setProperty('--translateY', translateY);
     container.style.setProperty('--translateX', translateX);
 
