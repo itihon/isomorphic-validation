@@ -100,6 +100,6 @@
     ]
   },
   "dependencies": {
-    "@itihon/position-observer": "^1.1.5"
+    "@itihon/position-observer": "^1.2.1"
   }
 }
