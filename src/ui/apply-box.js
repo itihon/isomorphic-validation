@@ -71,7 +71,7 @@ const createContainer = (where, id, target) => {
   startingPoint.dataset.for = 'apply-box-starting-point';
 
   where.appendChild(container);
-  where.appendChild(startingPoint);
+  target.offsetParent.appendChild(startingPoint);
 
   observer.observe(target);
 
