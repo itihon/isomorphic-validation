@@ -23,6 +23,15 @@ const positions = {
   RIGHT_BESIDE: { translateX: (offsetWidth) => `translateX(${offsetWidth}px)` },
 };
 
+const boxStyle = {
+  position: 'relative',
+  width: '',
+  height: '',
+  display: 'grid',
+  justifyContent: '',
+  alignItems: 'center',
+};
+
 const createBox = (content) => {
   const box = document.createElement('div');
   box.innerHTML = content;
@@ -36,7 +45,14 @@ const adjustContainer = (targetElement, targetRect, ctx) => {
   }
 
   const { left, top } = targetRect;
-  const { startingPoint, containerStyle } = ctx;
+  const {
+    startingPoint,
+    containerStyle,
+    position,
+    mode,
+    box,
+    stateValuesStyle,
+  } = ctx;
 
   const { left: containerInitLeft, top: containerInitTop } =
     startingPoint.getBoundingClientRect();
@@ -44,19 +60,62 @@ const adjustContainer = (targetElement, targetRect, ctx) => {
   const translateX = left - containerInitLeft;
   const translateY = top - containerInitTop;
 
-  containerStyle.transform = `var(--translateX) var(--translateY) translate(${translateX}px, ${translateY}px)`;
+  const [VERT] = position.split('_', 1);
+  const [, ...HOR] = position.split('_', 3);
+
+  const offsetY = positions[VERT].translateY(targetElement.offsetHeight);
+  const offsetX = positions[HOR.join('_')].translateX(
+    targetElement.offsetWidth,
+    targetElement.offsetHeight,
+  );
+
+  const { offsetWidth, offsetHeight } = targetElement;
+
+  switch (mode) {
+    case 'MIN_SIDE':
+      boxStyle.width = `${offsetHeight}px`;
+      boxStyle.height = `${offsetHeight}px`;
+      boxStyle.justifyContent = 'center';
+      break;
+
+    case 'MAX_SIDE':
+      boxStyle.width = `${offsetWidth}px`;
+      boxStyle.height = ``;
+      boxStyle.justifyContent = '';
+      break;
+
+    default:
+      break;
+  }
+
+  Object.assign(box.style, boxStyle, stateValuesStyle);
+
+  containerStyle.transform = `${offsetX} ${offsetY} translate(${translateX}px, ${translateY}px)`;
   containerStyle.display = 'block';
 };
 
-const createContainer = (where, id, target) => {
+const createContainer = (
+  where,
+  id,
+  target,
+  position,
+  mode,
+  box,
+  stateValuesStyle,
+) => {
   const container = document.createElement('div');
   const startingPoint = document.createElement('div');
   const { style: containerStyle } = container;
-  const ctx = { containerStyle, startingPoint };
+  const ctx = {
+    containerStyle,
+    startingPoint,
+    position,
+    mode,
+    box,
+    stateValuesStyle,
+  };
   const observer = new PositionObserver(adjustContainer, ctx);
 
-  containerStyle.setProperty('--translateX', 'translateX(0)');
-  containerStyle.setProperty('--translateY', 'translateY(0)');
   containerStyle.position = 'absolute';
   containerStyle.left = '0';
   containerStyle.top = '0';
@@ -75,52 +134,24 @@ const createContainer = (where, id, target) => {
 
   observer.observe(target);
 
-  return { container, observer };
+  return { container, observer, ctx };
 };
 
 const containerRegistry = new Map();
 const boxesRegistry = new Map();
 
 const setBoxEffect = (element, stateValues, validationResult, id) => {
-  if (!element.offsetParent) {
-    return;
-  }
+  // if (!element.offsetParent) {
+  //  return;
+  // }
 
   const { isValid } = validationResult;
   const { parentNode } = element;
   let box;
 
-  const boxStyle = {
-    position: 'relative',
-    width: '',
-    height: '',
-    display: 'grid',
-    justifyContent: '',
-    alignItems: 'center',
-  };
-
-  const { container, observer } = retrieveIfHasOrCreate(
-    containerRegistry,
-    id,
-    createContainer,
-    parentNode,
-    id,
-    element,
-  );
-
-  for (const target of observer.getTargets()) {
-    if (target !== element) observer.unobserve(target);
-  }
-
-  observer.observe(element);
-
   const binaryBox = retrieveIfHasOrCreate(boxesRegistry, stateValues, newMap);
 
   const { value } = stateValues[isValid];
-
-  if (container.parentNode !== parentNode) {
-    parentNode.appendChild(container);
-  }
 
   if (typeof value === 'function') {
     box = retrieveIfHasOrCreate(binaryBox, isValid, createBox, '');
@@ -129,44 +160,40 @@ const setBoxEffect = (element, stateValues, validationResult, id) => {
     box = retrieveIfHasOrCreate(binaryBox, isValid, createBox, value);
   }
 
+  const { container, observer, ctx } = retrieveIfHasOrCreate(
+    containerRegistry,
+    id,
+    createContainer,
+    parentNode,
+    id,
+    element,
+    stateValues.position,
+    stateValues.mode,
+    box,
+    stateValues.style,
+  );
+
+  ctx.position = stateValues.position;
+  ctx.mode = stateValues.mode;
+  ctx.box = box;
+  ctx.stateValuesStyle = stateValues.style;
+
+  // for (const target of observer.getTargets()) {
+  //  if (target !== element) observer.unobserve(target);
+  // }
+  observer.disconnect();
+  observer.observe(element);
+
+  if (container.parentNode !== parentNode) {
+    parentNode.appendChild(container);
+  }
+
   while (container.hasChildNodes()) {
     container.lastElementChild.remove();
   }
 
   if (box.hasChildNodes()) {
-    const { offsetWidth, offsetHeight } = element;
-
-    switch (stateValues.mode) {
-      case 'MIN_SIDE':
-        boxStyle.width = `${offsetHeight}px`;
-        boxStyle.height = `${offsetHeight}px`;
-        boxStyle.justifyContent = 'center';
-        break;
-
-      case 'MAX_SIDE':
-        boxStyle.width = `${offsetWidth}px`;
-        boxStyle.height = ``;
-        boxStyle.justifyContent = '';
-        break;
-
-      default:
-        break;
-    }
-
-    const [VERT] = stateValues.position.split('_', 1);
-    const [, ...HOR] = stateValues.position.split('_', 3);
-
-    const translateY = positions[VERT].translateY(element.offsetHeight);
-    const translateX = positions[HOR.join('_')].translateX(
-      element.offsetWidth,
-      element.offsetHeight,
-    );
-
     container.style.display = 'block';
-    container.style.setProperty('--translateY', translateY);
-    container.style.setProperty('--translateX', translateX);
-
-    Object.assign(box.style, boxStyle, stateValues.style);
     container.appendChild(box);
   }
 };
