@@ -22,8 +22,11 @@
     },
     "./ui": {
       "types": "./types/ui.d.ts",
-      "import": "./dist/esm/index.ui.js",
-      "require": "./dist/cjs/index.ui.js"
+      "node": {
+        "import": "./dist/esm/dummy.ui.js",
+        "require": "./dist/cjs/dummy.ui.js"
+      },
+      "default": "./dist/esm/index.ui.js"
     }
   },
   "types": "types/index.d.ts",
