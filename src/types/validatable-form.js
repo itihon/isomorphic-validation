@@ -1,6 +1,6 @@
 import { INITVAL, PROPNAME } from '../constants.js';
 import acceptOnlyNotEmptyString from '../helpers/accept-only-not-empty-string.js';
-import createDummyObj from '../utils/createDummyObj.js';
+import createDummyObj from '../utils/create-dummy-obj.js';
 import { ifSide } from '../utils/getenv.js';
 
 const dummyObject = createDummyObj();
