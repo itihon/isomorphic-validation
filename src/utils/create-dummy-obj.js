@@ -1,7 +1,7 @@
 export default function createDummyObj(fromObj) {
   return new Proxy(
     fromObj != null
-      ? fromObj
+      ? Object(fromObj)
       : Object.defineProperty(() => createDummyObj(), 'name', {
           writable: true,
         }),
