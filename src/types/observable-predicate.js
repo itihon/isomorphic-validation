@@ -5,7 +5,6 @@ import ValidatableItem from './validatable-item.js';
 import CloneRegistry from './clone-registry.js';
 import Functions from './functions.js';
 import acceptOnlyBoolean from '../helpers/accept-only-boolean.js';
-import { IS_CLIENT } from '../utils/getenv.js';
 import debounceP from '../utils/debounce-p.js';
 import tryCatch from '../utils/try-catch.js';
 import {
@@ -68,7 +67,7 @@ export default function ObservablePredicate(
 
   stateCBs.setArg(validationResult);
 
-  const predicateFn = debounce && IS_CLIENT ? debounceP(fn, debounce) : fn;
+  const predicateFn = debounce ? debounceP(fn, debounce) : fn;
 
   obs.onChanged(stateCBs.runChanged);
 

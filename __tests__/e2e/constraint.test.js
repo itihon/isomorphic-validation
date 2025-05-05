@@ -233,6 +233,18 @@ describe('e2e', () => {
     );
   });
 
+  describe('debounce', () => {
+    it('should throw and error on the server side', () => {
+      expect(() =>
+        Validation().constraint(() => true, { debounce: 1 }),
+      ).toThrow();
+
+      expect(() =>
+        Validation().constraint(() => true, { debounce: 0 }),
+      ).not.toThrow();
+    });
+  });
+
   describe('anyData', () => {
     it('should throw an error if anyData names clash with Predicate API', () => {
       const v = Validation();

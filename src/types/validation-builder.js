@@ -7,6 +7,7 @@ import firstEntry from '../utils/firstEntry.js';
 import makeIsomorphicAPI from '../utils/make-isomorphic-api.js';
 import makeValidationHandlerFn from '../helpers/make-validation-handler-fn.js';
 import tryCatch from '../utils/try-catch.js';
+import preventDebounceOnServer from '../helpers/prevent-debounce-on-server.js';
 
 export default function ValidationBuilder({
   pgs = PredicateGroups(),
@@ -20,6 +21,8 @@ export default function ValidationBuilder({
       validator = Predicate(),
       { next = true, debounce = 0, keepValid = false, ...anyData } = {},
     ) {
+      preventDebounceOnServer(debounce);
+
       const predicate = Predicate(validator, { ...anyData });
       pgs.forEach(
         addObservablePredicate(predicate, items, {
