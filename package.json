@@ -106,6 +106,6 @@
     ]
   },
   "dependencies": {
-    "@itihon/position-observer": "^1.2.2"
+    "@itihon/position-observer": "^1.2.10"
   }
 }
